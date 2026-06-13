@@ -1,0 +1,29 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${AUTH_DB_URL:jdbc:postgresql://localhost:5432/auth_db}
+    driver-class-name: ${AUTH_DB_DRIVER:org.postgresql.Driver}
+    username: ${AUTH_DB_USERNAME:auth_user}
+    password: ${AUTH_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-ttl: ${JWT_ACCESS_TOKEN_TTL:15m}
+  refresh-token-ttl: ${JWT_REFRESH_TOKEN_TTL:24h}
+
+app:
+  admin-seed:
+    enabled: ${ADMIN_SEED_ENABLED:true}
+    email: ${ADMIN_SEED_EMAIL:admin@tutorspace.local}
+    password: ${ADMIN_SEED_PASSWORD:admin12345}
+  password-reset:
+    # Local test capability only. Never expose reset tokens in production.
+    expose-token: ${PASSWORD_RESET_EXPOSE_TOKEN:false}

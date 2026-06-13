@@ -1,0 +1,31 @@
+server:
+  port: ${SERVER_PORT:8085}
+
+spring:
+  application:
+    name: subscription-service
+  datasource:
+    url: ${SUBSCRIPTION_DB_URL:jdbc:postgresql://localhost:5432/subscription_db}
+    driver-class-name: ${SUBSCRIPTION_DB_DRIVER:org.postgresql.Driver}
+    username: ${SUBSCRIPTION_DB_USERNAME:subscription_user}
+    password: ${SUBSCRIPTION_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+yookassa:
+  api-url: ${YOOKASSA_API_URL:https://api.yookassa.ru}
+  shop-id: ${YOOKASSA_SHOP_ID:}
+  secret-key: ${YOOKASSA_SECRET_KEY:}
+  return-url: ${YOOKASSA_RETURN_URL:http://127.0.0.1:4173/app/tutor/subscription/checkout/result}
+  webhook-secret: ${YOOKASSA_WEBHOOK_SECRET:}
+  test-mode: ${YOOKASSA_TEST_MODE:true}
+
+internal:
+  admin-token: ${INTERNAL_SERVICE_TOKEN:${JWT_SECRET:}}

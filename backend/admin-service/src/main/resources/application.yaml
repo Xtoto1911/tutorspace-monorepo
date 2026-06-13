@@ -1,0 +1,24 @@
+server:
+  port: ${SERVER_PORT:8084}
+
+spring:
+  application:
+    name: admin-service
+  datasource:
+    url: ${ADMIN_DB_URL:jdbc:postgresql://localhost:5432/admin_db}
+    driver-class-name: ${ADMIN_DB_DRIVER:org.postgresql.Driver}
+    username: ${ADMIN_DB_USERNAME:admin_user}
+    password: ${ADMIN_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  secret: ${JWT_SECRET}
+
+app:
+  auth-service-url: ${AUTH_SERVICE_URL:http://auth-service:8080}
+  marketplace-service-url: ${MARKETPLACE_SERVICE_URL:http://marketplace-service:8081}
+  subscription-service-url: ${SUBSCRIPTION_SERVICE_URL:http://subscription-service:8085}
+  internal-service-token: ${INTERNAL_SERVICE_TOKEN:${JWT_SECRET:}}

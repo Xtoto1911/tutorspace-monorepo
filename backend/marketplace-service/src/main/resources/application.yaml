@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: marketplace-service
+  datasource:
+    url: ${MARKETPLACE_DB_URL:jdbc:postgresql://localhost:5432/marketplace_db}
+    driver-class-name: ${MARKETPLACE_DB_DRIVER:org.postgresql.Driver}
+    username: ${MARKETPLACE_DB_USERNAME:marketplace_user}
+    password: ${MARKETPLACE_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.validator.apply_to_ddl: false
+    open-in-view: false
+    show-sql: true
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+jwt:
+  secret: ${JWT_SECRET}
+
+app:
+  crm-service-url: ${CRM_SERVICE_URL:}
+  notification-service-url: ${NOTIFICATION_SERVICE_URL:}
+  admin-service-url: ${ADMIN_SERVICE_URL:}
+  internal-service-token: ${INTERNAL_SERVICE_TOKEN:${JWT_SECRET:}}

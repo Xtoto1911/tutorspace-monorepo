@@ -1,0 +1,197 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tutorspace-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_ADMIN_USER:-tutorspace_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:-tutorspace_admin_password}
+      POSTGRES_DB: postgres
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD:-auth_dev_password}
+      MARKETPLACE_DB_PASSWORD: ${MARKETPLACE_DB_PASSWORD:-marketplace_dev_password}
+      CRM_DB_PASSWORD: ${CRM_DB_PASSWORD:-crm_dev_password}
+      NOTIFICATION_DB_PASSWORD: ${NOTIFICATION_DB_PASSWORD:-notification_dev_password}
+      ADMIN_DB_PASSWORD: ${ADMIN_DB_PASSWORD:-admin_dev_password}
+      SUBSCRIPTION_DB_PASSWORD: ${SUBSCRIPTION_DB_PASSWORD:-subscription_dev_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init-databases.sh:/docker-entrypoint-initdb.d/10-init-databases.sh:ro
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - test -f "$$PGDATA/.tutorspace-init-complete" && pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  gateway:
+    build:
+      context: ./frontend
+      dockerfile: gateway/Dockerfile
+      args:
+        VITE_API_MODE: live
+        VITE_AUTH_API_MODE: live
+        VITE_API_BASE_URL: /api
+    container_name: tutorspace-gateway
+    ports:
+      - "4173:80"
+    depends_on:
+      - auth-service
+      - marketplace-service
+      - crm-service
+      - notification-service
+      - admin-service
+      - subscription-service
+
+  auth-service:
+    build:
+      context: ./backend/auth-service
+    container_name: tutorspace-auth-service
+    environment:
+      AUTH_DB_URL: jdbc:postgresql://postgres:5432/auth_db
+      AUTH_DB_DRIVER: org.postgresql.Driver
+      AUTH_DB_USERNAME: auth_user
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD:-auth_dev_password}
+      JWT_SECRET: ${JWT_SECRET:-MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+      JWT_ACCESS_TOKEN_TTL: ${JWT_ACCESS_TOKEN_TTL:-15m}
+      JWT_REFRESH_TOKEN_TTL: ${JWT_REFRESH_TOKEN_TTL:-24h}
+      ADMIN_SEED_ENABLED: ${ADMIN_SEED_ENABLED:-true}
+      ADMIN_SEED_EMAIL: ${ADMIN_SEED_EMAIL:-admin@tutorspace.local}
+      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin12345}
+      KAFKA_BOOTSTRAP: kafka:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  marketplace-service:
+    build:
+      context: ./backend/marketplace-service
+    container_name: tutorspace-marketplace-service
+    environment:
+      SERVER_PORT: 8081
+      MARKETPLACE_DB_URL: jdbc:postgresql://postgres:5432/marketplace_db
+      MARKETPLACE_DB_DRIVER: org.postgresql.Driver
+      MARKETPLACE_DB_USERNAME: marketplace_user
+      MARKETPLACE_DB_PASSWORD: ${MARKETPLACE_DB_PASSWORD:-marketplace_dev_password}
+      JWT_SECRET: ${JWT_SECRET:-MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+      CRM_SERVICE_URL: http://crm-service:8082
+      ADMIN_SERVICE_URL: http://admin-service:8084
+      NOTIFICATION_SERVICE_URL: http://notification-service:8083
+      KAFKA_BOOTSTRAP: kafka:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+  crm-service:
+    build:
+      context: ./backend/crm-service
+    container_name: tutorspace-crm-service
+    environment:
+      SERVER_PORT: 8082
+      CRM_DB_URL: jdbc:postgresql://postgres:5432/crm_db
+      CRM_DB_DRIVER: org.postgresql.Driver
+      CRM_DB_USERNAME: crm_user
+      CRM_DB_PASSWORD: ${CRM_DB_PASSWORD:-crm_dev_password}
+      JWT_SECRET: ${JWT_SECRET:-MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+      NOTIFICATION_SERVICE_URL: http://notification-service:8083
+      MARKETPLACE_SERVICE_URL: http://marketplace-service:8081
+      KAFKA_BOOTSTRAP: kafka:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+  notification-service:
+    build:
+      context: ./backend/notification-service
+    container_name: tutorspace-notification-service
+    environment:
+      SERVER_PORT: 8083
+      NOTIFICATION_DB_URL: jdbc:postgresql://postgres:5432/notification_db
+      NOTIFICATION_DB_DRIVER: org.postgresql.Driver
+      NOTIFICATION_DB_USERNAME: notification_user
+      NOTIFICATION_DB_PASSWORD: ${NOTIFICATION_DB_PASSWORD:-notification_dev_password}
+      JWT_SECRET: ${JWT_SECRET:-MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+      KAFKA_BOOTSTRAP: kafka:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+  admin-service:
+    build:
+      context: ./backend/admin-service
+    container_name: tutorspace-admin-service
+    environment:
+      SERVER_PORT: 8084
+      ADMIN_DB_URL: jdbc:postgresql://postgres:5432/admin_db
+      ADMIN_DB_DRIVER: org.postgresql.Driver
+      ADMIN_DB_USERNAME: admin_user
+      ADMIN_DB_PASSWORD: ${ADMIN_DB_PASSWORD:-admin_dev_password}
+      JWT_SECRET: ${JWT_SECRET:-MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+      AUTH_SERVICE_URL: http://auth-service:8080
+      MARKETPLACE_SERVICE_URL: http://marketplace-service:8081
+      KAFKA_BOOTSTRAP: kafka:9092
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      marketplace-service:
+        condition: service_started
+
+  subscription-service:
+    build:
+      context: ./backend/subscription-service
+    container_name: tutorspace-subscription-service
+    environment:
+      SERVER_PORT: 8085
+      SUBSCRIPTION_DB_URL: jdbc:postgresql://postgres:5432/subscription_db
+      SUBSCRIPTION_DB_DRIVER: org.postgresql.Driver
+      SUBSCRIPTION_DB_USERNAME: subscription_user
+      SUBSCRIPTION_DB_PASSWORD: ${SUBSCRIPTION_DB_PASSWORD:-subscription_dev_password}
+      JWT_SECRET: ${JWT_SECRET:-MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+      KAFKA_BOOTSTRAP: kafka:9092
+      YOOKASSA_SHOP_ID: ${YOOKASSA_SHOP_ID:-}
+      YOOKASSA_SECRET_KEY: ${YOOKASSA_SECRET_KEY:-}
+      YOOKASSA_RETURN_URL: ${YOOKASSA_RETURN_URL:-http://localhost:4173/app/tutor/subscription/checkout/result}
+      YOOKASSA_WEBHOOK_SECRET: ${YOOKASSA_WEBHOOK_SECRET:-}
+      YOOKASSA_TEST_MODE: ${YOOKASSA_TEST_MODE:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+  kafka:
+    image: apache/kafka:3.9.0
+    container_name: tutorspace-kafka
+    environment:
+      KAFKA_NODE_ID: 0
+      KAFKA_PROCESS_ROLES: controller,broker
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CLUSTER_ID: tutorspace-kraft-cluster
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: tutorspace-kafka-ui
+    environment:
+      KAFKA_CLUSTERS_0_NAME: tutorspace
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    depends_on:
+      - kafka
+
+volumes:
+  postgres_data:

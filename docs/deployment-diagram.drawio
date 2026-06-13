@@ -1,0 +1,149 @@
+<mxfile host="app.diagrams.net" modified="2026-06-04T00:00:00.000Z" agent="Codex" version="26.0.0" type="device">
+  <diagram id="tutorspace-deployment" name="Deployment">
+    <mxGraphModel dx="1700" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="TutorSpace deployment diagram" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="50" y="30" width="520" height="50" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="client" value="&lt;&lt;device&gt;&gt;&lt;br/&gt;&lt;b&gt;Client&lt;/b&gt;&lt;br/&gt;Browser" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=12;darkOpacity=0.05;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="80" y="180" width="180" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="server" value="&lt;&lt;device&gt;&gt;&lt;br/&gt;&lt;b&gt;Server&lt;/b&gt;&lt;br/&gt;Docker Compose runtime" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=14;darkOpacity=0.05;fillColor=#f8f9fa;strokeColor=#666666;fontSize=14;align=left;verticalAlign=top;spacingLeft=14;spacingTop=8;" vertex="1" parent="1">
+          <mxGeometry x="360" y="110" width="1250" height="1010" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="frontend" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;Frontend&lt;/b&gt;&lt;br/&gt;tutorspace-frontend&lt;br/&gt;Node server&lt;br/&gt;4173:4173" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="435" y="55" width="180" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="gateway" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;API Gateway&lt;/b&gt;&lt;br/&gt;/api/** router&lt;br/&gt;JWT forwarding&lt;br/&gt;target public API" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="435" y="230" width="180" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="auth" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;AuthService&lt;/b&gt;&lt;br/&gt;Spring Boot&lt;br/&gt;Java 21&lt;br/&gt;18080:8080" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="85" y="465" width="165" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="marketplace" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;MarketplaceService&lt;/b&gt;&lt;br/&gt;Spring Boot&lt;br/&gt;Java 21&lt;br/&gt;18081:8081" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="285" y="465" width="180" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="crm" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;CRMService&lt;/b&gt;&lt;br/&gt;Spring Boot&lt;br/&gt;Java 21&lt;br/&gt;18082:8082" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="500" y="465" width="165" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="notification" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;NotificationService&lt;/b&gt;&lt;br/&gt;Spring Boot&lt;br/&gt;Java 21&lt;br/&gt;18083:8083" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="700" y="465" width="190" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="admin" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;AdminService&lt;/b&gt;&lt;br/&gt;Spring Boot&lt;br/&gt;Java 21&lt;br/&gt;18084:8084" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="925" y="465" width="165" height="125" as="geometry"/>
+        </mxCell>
+        <mxCell id="subscription" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;SubscriptionService&lt;/b&gt;&lt;br/&gt;Spring Boot&lt;br/&gt;Java 21&lt;br/&gt;18086:8085" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="1125" y="465" width="190" height="125" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="postgres" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;PostgreSQL&lt;/b&gt;&lt;br/&gt;Service databases / schemas&lt;br/&gt;AuthDB, MarketplaceDB, CRMDB, NotificationDB, AdminDB, SubscriptionDB&lt;br/&gt;TCP 5432" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="210" y="790" width="730" height="135" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="kafka" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;Kafka&lt;/b&gt;&lt;br/&gt;apache/kafka:3.9.0&lt;br/&gt;9092:9092" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="1015" y="755" width="170" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="kafka-ui" value="&lt;&lt;docker&gt;&gt;&lt;br/&gt;&lt;b&gt;Kafka UI&lt;/b&gt;&lt;br/&gt;18085:8080" style="shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="server">
+          <mxGeometry x="1025" y="905" width="150" height="85" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="yookassa" value="&lt;&lt;external API&gt;&gt;&lt;br/&gt;&lt;b&gt;YooKassa&lt;/b&gt;&lt;br/&gt;test mode&lt;br/&gt;api.yookassa.ru" style="shape=cloud;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="930" width="190" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="note" value="Added to the original deployment view: notification-service, subscription-service, Kafka UI, YooKassa link, and current REST/Kafka connections. API Gateway and PostgreSQL are kept as requested." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;align=left;verticalAlign=top;spacingLeft=12;spacingTop=10;" vertex="1" parent="server">
+          <mxGeometry x="40" y="55" width="310" height="145" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="client-to-front" value="HTTPS" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="client" target="frontend">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="front-to-gateway" value="/api/**" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="server" source="frontend" target="gateway">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="gw-auth" value="/api/auth/**" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="server" source="gateway" target="auth">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="gw-marketplace" value="/api/marketplace/**" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="server" source="gateway" target="marketplace">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="gw-crm" value="/api/client/**&#xa;/api/tutor/**" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="server" source="gateway" target="crm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="gw-notification" value="/api/notifications/**" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="server" source="gateway" target="notification">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="gw-admin" value="/api/admin/**&#xa;/api/moderator/**" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="server" source="gateway" target="admin">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="gw-subscription" value="/api/subscription/**&#xa;/api/tutor/subscription/**" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="server" source="gateway" target="subscription">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="marketplace-crm" value="HTTP REST&#xa;CRM_SERVICE_URL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="server" source="marketplace" target="crm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="marketplace-admin" value="HTTP REST&#xa;ADMIN_SERVICE_URL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="server" source="marketplace" target="admin">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="admin-auth" value="HTTP REST&#xa;AUTH_SERVICE_URL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="server" source="admin" target="auth">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="admin-marketplace" value="HTTP REST&#xa;MARKETPLACE_SERVICE_URL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="server" source="admin" target="marketplace">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="admin-subscription" value="HTTP REST&#xa;SUBSCRIPTION_SERVICE_URL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="server" source="admin" target="subscription">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="auth-db" value="TCP 5432&#xa;AuthDB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=diamondThin;endFill=1;" edge="1" parent="server" source="auth" target="postgres">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="marketplace-db" value="TCP 5432&#xa;MarketplaceDB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=diamondThin;endFill=1;" edge="1" parent="server" source="marketplace" target="postgres">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="crm-db" value="TCP 5432&#xa;CRMDB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=diamondThin;endFill=1;" edge="1" parent="server" source="crm" target="postgres">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="notification-db" value="TCP 5432&#xa;NotificationDB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=diamondThin;endFill=1;" edge="1" parent="server" source="notification" target="postgres">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="admin-db" value="TCP 5432&#xa;AdminDB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=diamondThin;endFill=1;" edge="1" parent="server" source="admin" target="postgres">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="subscription-db" value="TCP 5432&#xa;SubscriptionDB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=diamondThin;endFill=1;" edge="1" parent="server" source="subscription" target="postgres">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="marketplace-kafka" value="Publish events&#xa;Kafka 9092" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#9673a6;" edge="1" parent="server" source="marketplace" target="kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="crm-kafka" value="Publish/read events&#xa;Kafka 9092" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#9673a6;" edge="1" parent="server" source="crm" target="kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="subscription-kafka" value="Publish crm-events&#xa;Kafka 9092" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#9673a6;" edge="1" parent="server" source="subscription" target="kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="kafka-notification" value="Read notification events&#xa;tutor-notifications&#xa;client-notifications" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#9673a6;" edge="1" parent="server" source="kafka" target="notification">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="kafka-ui-kafka" value="kafka:9092" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#9673a6;" edge="1" parent="server" source="kafka-ui" target="kafka">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="subscription-yookassa" value="HTTPS&#xa;payment create/check" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="subscription" target="yookassa">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
