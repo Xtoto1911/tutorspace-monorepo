@@ -1,9 +1,10 @@
-# TutorSpace local Docker setup
+# TutorSpace
 
 ## Project docs
 
 - [Architecture](./ARCHITECTURE.md)
 - [Backlog](./BACKLOG.md)
+- [Ubuntu deployment and CI/CD](./docs/DEPLOYMENT.md)
 
 ## Start everything
 
@@ -14,13 +15,12 @@ docker compose up --build
 After startup:
 
 - Frontend: http://localhost:4173
-- Auth service: http://localhost:18080
-- Marketplace service: http://localhost:18081
-- CRM service: http://localhost:18082
+- Gateway health: http://localhost:4173/health
 
 ## Frontend API flow
 
-The frontend always talks to its own `/api/**` origin. Inside Docker the frontend dev server currently proxies these paths:
+The frontend always talks to its own `/api/**` origin. Inside Docker the Nginx
+gateway proxies these paths:
 
 - `/api/auth/**` -> `auth-service`
 - `/api/marketplace/**` -> `marketplace-service`
@@ -40,7 +40,8 @@ http://localhost:4173/api/auth/login
 http://localhost:4173/api/auth/register
 ```
 
-Backend ports are published as `18080` and `18081` on the host to avoid collisions with locally running Spring Boot services on `8080` and `8081`.
+Backend services, PostgreSQL, Kafka, and Kafka UI stay on the internal Docker
+network and are not published on the host.
 
 ## Environment
 
@@ -84,7 +85,7 @@ docker compose down
 
 ## Notes
 
-- Databases are currently in-memory H2 databases inside each backend service.
-- Registered users disappear after the `auth-service` container restarts.
+- The Docker stack uses PostgreSQL with the persistent `postgres_data` volume.
+- Maven tests use isolated H2 databases.
 - Public catalog, subjects, tutor profile and request submission already use live `marketplace-service` endpoints.
 - Home page metrics/process content and FAQ pages remain local static content during the pre-gateway MVP phase.

@@ -1,0 +1,32 @@
+services:
+  postgres:
+    restart: unless-stopped
+
+  gateway:
+    restart: unless-stopped
+    ports: !override
+      - "80:80"
+
+  auth-service:
+    restart: unless-stopped
+
+  marketplace-service:
+    restart: unless-stopped
+
+  crm-service:
+    restart: unless-stopped
+
+  notification-service:
+    restart: unless-stopped
+
+  admin-service:
+    restart: unless-stopped
+
+  subscription-service:
+    restart: unless-stopped
+
+  kafka:
+    restart: unless-stopped
+
+  kafka-ui:
+    restart: unless-stopped
