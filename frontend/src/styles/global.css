@@ -16332,6 +16332,17 @@ p {
   align-items: center;
 }
 
+.home-desk-card--profile > div:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.home-desk-card--profile > div:nth-child(2) > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .home-desk-card--board {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   background: var(--primary-soft);

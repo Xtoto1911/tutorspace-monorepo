@@ -13,7 +13,7 @@
 ### Task 1: Protect the home profile card layout
 
 **Files:**
-- Create: `frontend/src/styles/home-profile-card-layout.test.ts`
+- Create: `frontend/src/styles/home-profile-card-layout.test.mjs`
 - Modify: `frontend/src/styles/global.css:16330`
 - Modify: `UI_FIX_CHECKLIST.md`
 
@@ -26,7 +26,7 @@ Create a Vitest test that reads `global.css` and asserts that
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `npm test -- src/styles/home-profile-card-layout.test.ts`
+Run: `npm test -- src/styles/home-profile-card-layout.test.mjs`
 
 Expected: FAIL because the focused details-wrapper declarations do not exist.
 
@@ -52,7 +52,7 @@ Add these focused rules near `.home-desk-card--profile`:
 Run:
 
 ```powershell
-npm test -- src/styles/home-profile-card-layout.test.ts
+npm test -- src/styles/home-profile-card-layout.test.mjs
 npm run build
 docker compose up --build -d
 ```
