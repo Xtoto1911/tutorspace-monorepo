@@ -87,4 +87,4 @@ jobs:
             -o IdentitiesOnly=yes \
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "sudo /usr/local/sbin/tutorspace-deploy '${{ github.sha }}'"
+            "sudo /usr/local/sbin/tutorspace-deploy ${{ github.sha }}"

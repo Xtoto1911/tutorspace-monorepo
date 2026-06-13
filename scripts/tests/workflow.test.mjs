@@ -46,6 +46,13 @@ assertMatch(workflow, /DEPLOY_KNOWN_HOSTS/, "known_hosts secret is missing");
 assertMatch(workflow, /StrictHostKeyChecking=yes/, "strict SSH host verification is required");
 assertMatch(workflow, /github\.sha/, "deployment must pass the tested GitHub SHA");
 assertMatch(workflow, /sudo \/usr\/local\/sbin\/tutorspace-deploy/, "workflow must use the sudo deployment wrapper");
+if (/tutorspace-deploy\s+'?\$\{\{\s*github\.sha\s*\}\}'?/.test(workflow)) {
+  assertMatch(
+    workflow,
+    /tutorspace-deploy\s+\$\{\{\s*github\.sha\s*\}\}/,
+    "deployment SHA must be sent without shell quotes for the SSH forced-command contract",
+  );
+}
 
 assertMatch(productionCompose, /gateway:[\s\S]*ports:\s*!override\s*\n\s*-\s*"80:80"/, "gateway must publish port 80");
 const publishedPortBlocks = productionCompose.match(/^\s+ports:/gm) ?? [];
