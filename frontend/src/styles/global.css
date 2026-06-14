@@ -5643,6 +5643,15 @@ a.workspace-profile--link:hover,
   gap: 28px;
 }
 
+.client-settings__header > div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.client-settings__header .btn {
+  flex-shrink: 0;
+}
+
 .client-settings__header h1 {
   color: #111827;
   font-size: 40px;
@@ -5759,7 +5768,7 @@ a.workspace-profile--link:hover,
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 32px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .settings-bottom-grid {
@@ -5778,7 +5787,6 @@ a.workspace-profile--link:hover,
 
 .settings-profile-card,
 .settings-students-card {
-  min-height: 420px;
   padding: 28px;
 }
 
@@ -6057,7 +6065,7 @@ a.workspace-profile--link:hover,
 
 .settings-account-card {
   display: grid;
-  align-content: stretch;
+  align-content: center;
   gap: 18px;
 }
 
