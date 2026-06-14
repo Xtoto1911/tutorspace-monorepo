@@ -124,7 +124,6 @@ export function ClientApplicationsPage() {
                 {(application.status === 'Ждет ответа' || application.status === 'Заявка принята' || application.status === 'Занятие назначено') && (
                   <Button variant="ghost" onClick={() => openCancelModal(application.id)}>Отменить</Button>
                 )}
-                <Button>{application.action}</Button>
               </div>
             </article>
           ))}
