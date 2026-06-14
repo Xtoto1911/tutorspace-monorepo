@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class PasswordResetRequestDto {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
+    @NotBlank(message = "Укажите email.")
+    @Email(message = "Некорректный формат email.")
     private String email;
 }

@@ -10,18 +10,18 @@ import lombok.Data;
 @Data
 public class RegisterRequestDto {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
+    @NotBlank(message = "Укажите email.")
+    @Email(message = "Некорректный формат email.")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
+    @NotBlank(message = "Укажите пароль.")
+    @Size(min = 6, message = "Пароль должен содержать минимум 6 символов.")
     private String password;
 
-    @NotBlank(message = "Name is required")
-    @Size(max = 255, message = "Name must be at most 255 characters")
+    @NotBlank(message = "Укажите имя.")
+    @Size(max = 255, message = "Имя не должно превышать 255 символов.")
     private String name;
 
-    @NotNull(message = "Role is required")
+    @NotNull(message = "Укажите роль.")
     private Role role;
 }

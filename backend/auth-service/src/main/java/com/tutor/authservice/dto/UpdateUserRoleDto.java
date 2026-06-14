@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class UpdateUserRoleDto {
 
-    @NotNull(message = "Role is required")
+    @NotNull(message = "Укажите роль.")
     private Role role;
 }

@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class AuthControllerTest {
 
     private static final String NEUTRAL_MESSAGE =
-            "If the account exists, password reset instructions have been created";
+            "Если аккаунт существует, инструкции по сбросу пароля созданы.";
 
     private MockMvc mockMvc;
     private UserService userService;
@@ -69,8 +69,8 @@ class AuthControllerTest {
                                 {"email":"invalid-email"}
                                 """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Invalid email format"))
-                .andExpect(jsonPath("$.email").value("Invalid email format"));
+                .andExpect(jsonPath("$.message").value("Некорректный формат email."))
+                .andExpect(jsonPath("$.email").value("Некорректный формат email."));
     }
 
     @Test
@@ -85,7 +85,7 @@ class AuthControllerTest {
                                 """))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("""
-                        {"message":"Invalid or expired password reset token"}
+                        {"message":"Ссылка для сброса пароля устарела или недействительна."}
                         """, JsonCompareMode.STRICT));
     }
 
@@ -97,7 +97,7 @@ class AuthControllerTest {
                                 {"token":"reset-token","password":"short"}
                                 """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Password must be at least 8 characters"))
-                .andExpect(jsonPath("$.password").value("Password must be at least 8 characters"));
+                .andExpect(jsonPath("$.message").value("Пароль должен содержать минимум 8 символов."))
+                .andExpect(jsonPath("$.password").value("Пароль должен содержать минимум 8 символов."));
     }
 }

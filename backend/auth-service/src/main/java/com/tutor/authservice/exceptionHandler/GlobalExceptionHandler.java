@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
         String message = ex.getBindingResult().getAllErrors().stream()
                 .findFirst()
                 .map(error -> error.getDefaultMessage())
-                .orElse("Invalid request");
+                .orElse("Некорректный запрос. Проверьте введенные данные.");
         errors.put("message", message);
         return ResponseEntity.badRequest().body(errors);
     }
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ResponseEntity<String> handleUserNotFound(UsernameNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный email или пароль.");
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
@@ -83,13 +83,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AuthorizationDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<String> handleAuthorizationDenied(AuthorizationDeniedException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Доступ запрещен. Обратитесь в поддержку.");
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> handleGenericException(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An error occurred: " + ex.getMessage());
+                .body("Произошла ошибка. Попробуйте позже или обратитесь в поддержку.");
     }
 }
