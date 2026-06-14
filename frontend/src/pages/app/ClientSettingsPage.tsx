@@ -60,20 +60,6 @@ export function ClientSettingsPage() {
       next.email = 'Введите корректный email';
     }
 
-    if (!p.city || p.city.trim().length < 1) {
-      next.city = 'Укажите город';
-    } else if (p.city.length > 100) {
-      next.city = 'Город не должен превышать 100 символов';
-    }
-
-    if (!p.timezone || p.timezone.trim().length < 1) {
-      next.timezone = 'Укажите часовой пояс';
-    }
-
-    if (!p.language || p.language.trim().length < 1) {
-      next.language = 'Укажите язык интерфейса';
-    }
-
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -175,39 +161,6 @@ export function ClientSettingsPage() {
                 onChange={(e) => handleChange('email', e.target.value)}
               />
               {errors.email && <small className="settings-field__error">{errors.email}</small>}
-            </label>
-            <label className="settings-field" htmlFor="client-settings-city">
-              <span>Город</span>
-              <input
-                id="client-settings-city"
-                name="city"
-                value={settings.profile.city}
-                autoComplete="address-level2"
-                onChange={(e) => handleChange('city', e.target.value)}
-              />
-              {errors.city && <small className="settings-field__error">{errors.city}</small>}
-            </label>
-            <label className="settings-field" htmlFor="client-settings-timezone">
-              <span>Часовой пояс</span>
-              <input
-                id="client-settings-timezone"
-                name="timezone"
-                value={settings.profile.timezone}
-                autoComplete="off"
-                onChange={(e) => handleChange('timezone', e.target.value)}
-              />
-              {errors.timezone && <small className="settings-field__error">{errors.timezone}</small>}
-            </label>
-            <label className="settings-field" htmlFor="client-settings-language">
-              <span>Язык интерфейса</span>
-              <input
-                id="client-settings-language"
-                name="language"
-                value={settings.profile.language}
-                autoComplete="language"
-                onChange={(e) => handleChange('language', e.target.value)}
-              />
-              {errors.language && <small className="settings-field__error">{errors.language}</small>}
             </label>
           </div>
         </section>
