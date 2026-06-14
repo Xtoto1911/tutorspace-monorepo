@@ -991,7 +991,7 @@ p {
 
 .tutor-profile__stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1326,6 +1326,34 @@ p {
 .tutor-profile__slot-option.is-active {
   border-color: var(--primary);
   background: var(--primary-soft);
+}
+
+.tutor-profile__slot-select {
+  display: grid;
+  gap: 8px;
+}
+
+.tutor-profile__slot-select span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tutor-profile__slot-select select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.tutor-profile__slot-select small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .tutor-profile__request-note {
