@@ -9,10 +9,6 @@ function validateEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-function validatePhone(phone: string): boolean {
-  return /^\+?[\d\s\-()]{10,20}$/.test(phone);
-}
-
 export function ClientSettingsPage() {
   const [settings, setSettings] = useState<ClientSettings | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,10 +46,6 @@ export function ClientSettingsPage() {
       next.parentName = 'Имя должно содержать минимум 2 символа';
     } else if (p.parentName.length > 100) {
       next.parentName = 'Имя не должно превышать 100 символов';
-    }
-
-    if (!p.phone || !validatePhone(p.phone)) {
-      next.phone = 'Введите корректный телефон';
     }
 
     if (!p.email || !validateEmail(p.email)) {
@@ -139,17 +131,6 @@ export function ClientSettingsPage() {
                 onChange={(e) => handleChange('parentName', e.target.value)}
               />
               {errors.parentName && <small className="settings-field__error">{errors.parentName}</small>}
-            </label>
-            <label className="settings-field" htmlFor="client-settings-phone">
-              <span>Телефон</span>
-              <input
-                id="client-settings-phone"
-                name="phone"
-                value={settings.profile.phone}
-                autoComplete="tel"
-                onChange={(e) => handleChange('phone', e.target.value)}
-              />
-              {errors.phone && <small className="settings-field__error">{errors.phone}</small>}
             </label>
             <label className="settings-field" htmlFor="client-settings-email">
               <span>Email</span>
