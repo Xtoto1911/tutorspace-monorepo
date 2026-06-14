@@ -96,6 +96,9 @@ function getDurationMinutes(startTime: string, endTime: string) {
 }
 
 const calendarWeekdayLabels = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const tutorCalendarStartHour = 8;
+const tutorCalendarLastStartHour = 22;
+const tutorCalendarEndHour = tutorCalendarLastStartHour + 1;
 
 export type CalendarWeekDay = {
   day: string;
@@ -103,6 +106,25 @@ export type CalendarWeekDay = {
   isoDate: string;
   active: boolean;
 };
+
+export function buildTutorCalendarTimeSlots(): string[] {
+  return Array.from(
+    { length: tutorCalendarLastStartHour - tutorCalendarStartHour + 1 },
+    (_, index) => `${String(tutorCalendarStartHour + index).padStart(2, '0')}:00`,
+  );
+}
+
+export function getTutorCalendarGridPosition(startTime: string, endTime: string) {
+  const visibleStart = tutorCalendarStartHour * 60;
+  const visibleEnd = tutorCalendarEndHour * 60;
+  const clampedStart = Math.min(Math.max(toMinutes(startTime), visibleStart), visibleEnd - 1);
+  const clampedEnd = Math.min(Math.max(toMinutes(endTime), clampedStart + 1), visibleEnd);
+
+  return {
+    row: Math.floor((clampedStart - visibleStart) / 60),
+    rowSpan: Math.max(1, Math.ceil((clampedEnd - clampedStart) / 60)),
+  };
+}
 
 export function buildCalendarWeekDays(weekStart: Date, now = new Date()): CalendarWeekDay[] {
   const todayIso = formatDateISO(now);

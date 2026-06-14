@@ -6904,7 +6904,7 @@ p {
 
 .tutor-calendar-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 32px;
   align-items: start;
 }
@@ -6919,6 +6919,7 @@ p {
 }
 
 .tutor-week-card {
+  min-width: 0;
   min-height: 738px;
   padding: 28px 24px;
 }
@@ -6974,8 +6975,13 @@ p {
 }
 
 .tutor-week-scroll {
-  overflow-x: auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  max-height: 720px;
+  overflow: auto;
   padding-bottom: 4px;
+  scrollbar-gutter: stable;
 }
 
 .tutor-calendar-empty {
@@ -6999,10 +7005,11 @@ p {
 }
 
 .tutor-week-grid {
-  min-width: 820px;
+  width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 62px repeat(7, minmax(92px, 1fr));
-  grid-template-rows: 58px repeat(6, 86px);
+  grid-template-columns: 56px repeat(7, minmax(0, 1fr));
+  grid-template-rows: 58px repeat(15, 64px);
 }
 
 .tutor-week-grid__corner,
@@ -7013,10 +7020,22 @@ p {
 }
 
 .tutor-week-grid__head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
   display: grid;
   place-items: center;
   align-content: center;
+  background: #ffffff;
   color: #6b7280;
+}
+
+.tutor-week-grid__corner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  background: #ffffff;
 }
 
 .tutor-week-grid__head span {
@@ -7035,10 +7054,14 @@ p {
 }
 
 .tutor-week-grid__time {
+  position: sticky;
+  left: 0;
+  z-index: 2;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
   padding: 9px 14px 0 0;
+  background: #ffffff;
   color: #8aa0bd;
   font-size: 13px;
 }
@@ -7082,13 +7105,14 @@ p {
 
 .tutor-week-event {
   z-index: 1;
-  align-self: center;
+  align-self: stretch;
   justify-self: center;
   width: calc(100% - 16px);
-  min-height: 68px;
+  min-height: 0;
   display: grid;
   align-content: center;
   gap: 6px;
+  margin: 6px 0;
   padding: 12px;
   border: 1px solid;
   border-radius: 14px;
@@ -7142,6 +7166,7 @@ p {
 
 .tutor-calendar-side {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 26px;
 }
 
@@ -14083,7 +14108,7 @@ p {
   }
 
   .tutor-calendar-side {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .tutor-student-profile-card {

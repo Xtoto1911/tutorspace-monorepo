@@ -686,11 +686,16 @@ public class PageViewService {
             throw new IllegalArgumentException("'from' date must not be after 'to' date");
         }
         LocalDate weekStart = fromDate.with(DayOfWeek.MONDAY);
+        List<Lesson> visibleLessons = lessons.stream()
+                .filter(lesson -> isWithinDisplayedWeek(lesson.getStartsAt().toLocalDate(), fromDate, toDate))
+                .toList();
         List<TutorCalendarPageDto.EventDto> events = new ArrayList<>();
 
-        for (Lesson lesson : lessons) {
+        for (Lesson lesson : visibleLessons) {
             int column = Math.max(1, Math.min(7, lesson.getStartsAt().getDayOfWeek().getValue()));
-            int row = Math.max(0, Math.min(4, (lesson.getStartsAt().getHour() - 12) / 2));
+            int startMinutes = lesson.getStartsAt().getHour() * 60 + lesson.getStartsAt().getMinute();
+            int row = Math.max(0, Math.min(14, (startMinutes - 8 * 60) / 60));
+            int rows = Math.max(1, Math.min(15 - row, (lesson.getDurationMinutes() + 59) / 60));
             events.add(new TutorCalendarPageDto.EventDto(
                     lesson.getId().toString(),
                     lesson.getSubjectName(),
@@ -698,7 +703,7 @@ public class PageViewService {
                     "indigo",
                     column,
                     row,
-                    1,
+                    rows,
                     lesson.getStartsAt().toString(),
                     lesson.getSeriesId() == null ? null : lesson.getSeriesId().toString(),
                     lesson.getSeriesId() == null ? "одноразовый урок" : "еженедельная серия",
@@ -727,7 +732,9 @@ public class PageViewService {
                         new TutorCalendarPageDto.StatDto("CRM", "sync", "Связано", "заявки, ученики, сообщения", "amber")
                 ),
                 buildTutorWeekDays(weekStart),
-                List.of("12:00", "14:00", "16:00", "18:00", "20:00"),
+                java.util.stream.IntStream.rangeClosed(8, 22)
+                        .mapToObj(hour -> String.format("%02d:00", hour))
+                        .toList(),
                 events,
                 nextLesson == null
                         ? new TutorCalendarPageDto.NextLessonDto("Пока пусто", "Назначьте первый урок", "После принятия заявки создайте занятие.")
