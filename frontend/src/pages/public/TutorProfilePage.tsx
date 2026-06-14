@@ -459,8 +459,6 @@ export function TutorProfilePage() {
 
   const statTiles = [
     { label: 'отзывов', value: `${profile.stats.reviews}` },
-    { label: 'успешных заявок', value: profile.stats.successRate },
-    { label: 'учеников сейчас', value: profile.stats.activeStudents == null ? 'Нет данных' : `${profile.stats.activeStudents}` },
     { label: 'средняя оценка', value: formatRating(profile.stats.averageRating) },
   ];
 
@@ -539,9 +537,6 @@ export function TutorProfilePage() {
                 {isFavorite ? '♥ В избранном' : '♡ В избранное'}
               </Button>
             ) : null}
-            <LinkButton to="/auth/sign-up" variant="ghost">
-              Написать репетитору
-            </LinkButton>
             {canReportProfile ? (
               <Button type="button" variant="ghost" disabled={profileReportBusy} onClick={handleReportProfile}>
                 Пожаловаться
@@ -626,23 +621,41 @@ export function TutorProfilePage() {
               </div>
 
               {selectedRequest === 'slot' && slotOptions.length > 0 ? (
-                <div className="tutor-profile__slot-picker" aria-label="Свободные слоты репетитора">
-                  {slotOptions.map((slot) => {
-                    const active = selectedSlot?.id === slot.id;
+                slotOptions.length > 8 ? (
+                  <label className="tutor-profile__slot-select">
+                    <span>Свободное время</span>
+                    <select
+                      value={selectedSlotId}
+                      onChange={(event) => setSelectedSlotId(event.target.value)}
+                      aria-label="Свободные слоты репетитора"
+                    >
+                      {slotOptions.map((slot) => (
+                        <option key={slot.id} value={slot.id}>
+                          {slot.label}
+                        </option>
+                      ))}
+                    </select>
+                    <small>Запрос попадет репетитору с выбранным временем.</small>
+                  </label>
+                ) : (
+                  <div className="tutor-profile__slot-picker" aria-label="Свободные слоты репетитора">
+                    {slotOptions.map((slot) => {
+                      const active = selectedSlot?.id === slot.id;
 
-                    return (
-                      <button
-                        key={slot.id}
-                        type="button"
-                        className={`tutor-profile__schedule-item tutor-profile__slot-option${active ? ' is-active' : ''}`}
-                        onClick={() => setSelectedSlotId(slot.id)}
-                      >
-                        <strong>{slot.label}</strong>
-                        <span>Запрос попадет репетитору с этим временем</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                      return (
+                        <button
+                          key={slot.id}
+                          type="button"
+                          className={`tutor-profile__schedule-item tutor-profile__slot-option${active ? ' is-active' : ''}`}
+                          onClick={() => setSelectedSlotId(slot.id)}
+                        >
+                          <strong>{slot.label}</strong>
+                          <span>Запрос попадет репетитору с этим временем</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )
               ) : (
                 <p className="tutor-profile__request-note">
                   Быстрая заявка не бронирует календарь. Если репетитор ее примет, ученик появится в списке кандидатов, и преподаватель сам назначит урок.
