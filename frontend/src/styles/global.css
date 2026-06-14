@@ -3960,6 +3960,7 @@ p {
 .messages-list-panel,
 .messages-chat-panel,
 .messages-context-card {
+  min-width: 0;
   border: 1px solid var(--border);
   background: var(--surface);
   box-shadow: none;
@@ -4147,6 +4148,7 @@ p {
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .conversation-card__preview {
@@ -4290,6 +4292,8 @@ p {
   color: oklch(0.36 0.022 72);
   font-size: 14px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .chat-message.is-own strong,
@@ -4382,6 +4386,7 @@ p {
 }
 
 .messages-context-panel {
+  min-width: 0;
   display: grid;
   align-content: start;
   gap: 16px;
@@ -7213,6 +7218,10 @@ p {
   min-height: 42px;
   margin-top: 18px;
   border-radius: 14px;
+}
+
+.tutor-calendar-event-row .btn {
+  grid-column: 2 / -1;
 }
 
 .tutor-calendar-automation {
