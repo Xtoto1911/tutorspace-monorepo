@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, LinkButton } from '../../components/primitives';
 import { useDialog } from '../../components/dialog';
 import { createTutorStudent, getTutorStudents } from '../../shared/api/tutor';
@@ -19,6 +19,7 @@ export function TutorStudentsPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isMutating, setIsMutating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const loadStudents = async () => {
     setIsLoading(true);
@@ -36,6 +37,20 @@ export function TutorStudentsPage() {
   useEffect(() => {
     void loadStudents();
   }, []);
+
+  const filteredStudents = useMemo(() => {
+    const students = pageData?.students ?? [];
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      return students;
+    }
+    return students.filter((student) =>
+      student.name.toLowerCase().includes(query)
+      || student.subject.toLowerCase().includes(query)
+      || student.details.toLowerCase().includes(query)
+      || student.note.toLowerCase().includes(query),
+    );
+  }, [pageData?.students, searchQuery]);
 
   const handleCreateStudent = async () => {
     const name = (await dialog.prompt('Имя ученика', { title: 'Новый ученик' }))?.trim() ?? '';
@@ -125,7 +140,23 @@ export function TutorStudentsPage() {
 
         <label className="tutor-student-search">
           <span className="sr-only">Поиск ученика</span>
-          <input id="tutor-student-search" name="tutor-student-search" placeholder="Поиск ученика" />
+          <input
+            id="tutor-student-search"
+            name="tutor-student-search"
+            placeholder="Поиск ученика"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+          {searchQuery ? (
+            <button
+              type="button"
+              className="tutor-student-search__clear"
+              onClick={() => setSearchQuery('')}
+              aria-label="Очистить поиск"
+            >
+              ×
+            </button>
+          ) : null}
         </label>
 
         <Button>Фильтры</Button>
@@ -133,7 +164,16 @@ export function TutorStudentsPage() {
 
       <div className="tutor-students-layout">
         <section className="tutor-student-list" aria-label="Список учеников">
-          {pageData.students.map((student) => {
+          {filteredStudents.length === 0 && searchQuery ? (
+            <div className="tutor-student-empty">
+              <strong>Учеников не найдено</strong>
+              <p>Попробуйте изменить запрос или очистить поиск.</p>
+              <Button variant="ghost" onClick={() => setSearchQuery('')}>
+                Очистить поиск
+              </Button>
+            </div>
+          ) : null}
+          {filteredStudents.map((student) => {
             const progressTone = getProgressTone(student.progress);
             return (
               <article
