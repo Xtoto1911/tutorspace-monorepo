@@ -103,9 +103,6 @@ export function ClientMessagesPage() {
         <aside className="messages-list-panel" aria-label="Список диалогов">
           <div className="messages-list-panel__top">
             <h2>Диалоги</h2>
-            <button type="button" aria-label="Создать диалог">
-              +
-            </button>
           </div>
 
           <label className="messages-search">

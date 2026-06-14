@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button, LinkButton } from '../../components/primitives';
+import { useDialog } from '../../components/dialog';
 import {
   createTutorAvailabilitySchedule,
   createTutorLesson,
@@ -76,6 +77,7 @@ const legend = [
 
 export function TutorCalendarPage() {
   const [searchParams] = useSearchParams();
+  const dialog = useDialog();
   const [pageData, setPageData] = useState<TutorCalendarPageData | null>(null);
   const [viewMode, setViewMode] = useState<'lessons' | 'availability'>('lessons');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -332,7 +334,7 @@ export function TutorCalendarPage() {
       closeLessonModal();
       await loadCalendarData(currentWeekStart);
     } catch (err) {
-      alert('Не удалось создать занятие: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось создать занятие: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -365,7 +367,7 @@ export function TutorCalendarPage() {
     const createdScheduleIds: string[] = [];
 
     if (days.length === 0) {
-      alert('Выберите хотя бы один день недели.');
+      await dialog.alert('Выберите хотя бы один день недели.');
       return;
     }
 
@@ -387,17 +389,17 @@ export function TutorCalendarPage() {
       form.reset();
     } catch (err) {
       await Promise.allSettled(createdScheduleIds.map((id) => deleteTutorAvailabilitySchedule(id)));
-      alert('Не удалось сохранить правило: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось сохранить правило: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
   const handleDeleteSchedule = async (id: string) => {
-    if (!confirm('Удалить это правило?')) return;
+    if (!(await dialog.confirm('Удалить это правило?'))) return;
     try {
       await deleteTutorAvailabilitySchedule(id);
       await loadAvailabilityData(currentWeekStart);
     } catch (err) {
-      alert('Не удалось удалить: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось удалить: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -420,7 +422,7 @@ export function TutorCalendarPage() {
       setEditingSchedule(null);
       await loadAvailabilityData();
     } catch (err) {
-      alert('Не удалось обновить: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось обновить: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -441,7 +443,7 @@ export function TutorCalendarPage() {
       setShowCreateSlotModal(false);
       await handleSync();
     } catch (err) {
-      alert('Не удалось создать окно: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось создать окно: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -471,7 +473,7 @@ export function TutorCalendarPage() {
       setSelectedSlot(null);
       await handleSync();
     } catch (err) {
-      alert('Не удалось записать ученика: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось записать ученика: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -491,7 +493,7 @@ export function TutorCalendarPage() {
       setSelectedLesson(null);
       await handleSync();
     } catch (err) {
-      alert('Не удалось перенести урок: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось перенести урок: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 

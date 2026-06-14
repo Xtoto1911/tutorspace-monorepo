@@ -344,34 +344,11 @@ export function TutorWorkspaceProfilePage() {
                   </article>
                 ))}
               </div>
-              <p className="tutor-settings-privacy">Контакты показываются только после отклика или активной заявки.</p>
-            </section>
-          ) : null}
-
-          <section className="tutor-profile-preview-card">
-            <span>{profile.publicCard.subtitle}</span>
-            <h2>{profile.publicCard.title}</h2>
-            <div className="tutor-profile-preview-card__avatar">{profile.identity.avatarInitials}</div>
-            <h3>{profile.identity.name}</h3>
-            <p>{profile.identity.role}</p>
-
-            <div className="tutor-profile-preview-card__chips">
-              {profile.publicCard.chips.map((chip) => (
-                <strong key={chip}>{chip}</strong>
-              ))}
-            </div>
-
-            <div className="tutor-profile-preview-card__facts">
-              <span>{profile.publicCard.rating}</span>
-              <span>{profile.publicCard.price}</span>
-              <span>{profile.publicCard.response}</span>
-              <span>{profile.publicCard.views}</span>
-            </div>
-
-            <Button variant="ghost">Обновить превью</Button>
+            <p className="tutor-settings-privacy">Контакты показываются только после отклика или активной заявки.</p>
           </section>
+        ) : null}
 
-        </aside>
+      </aside>
       </div>
 
       <section className="tutor-profile-note" aria-label="Подсказка по профилю">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button, LinkButton } from '../../components/primitives';
-import { createParentReport, createTutorStudent, getTutorStudents } from '../../shared/api/tutor';
+import { useDialog } from '../../components/dialog';
+import { createTutorStudent, getTutorStudents } from '../../shared/api/tutor';
 import { cn } from '../../shared/lib/cn';
 import type { TutorStudentsPageData } from '../../shared/types';
 
@@ -13,6 +14,7 @@ function getProgressTone(progress: number) {
 }
 
 export function TutorStudentsPage() {
+  const dialog = useDialog();
   const [pageData, setPageData] = useState<TutorStudentsPageData | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -36,13 +38,13 @@ export function TutorStudentsPage() {
   }, []);
 
   const handleCreateStudent = async () => {
-    const name = window.prompt('Имя ученика');
-    if (!name?.trim()) return;
-    const details = window.prompt('Класс и цель обучения');
-    if (!details?.trim()) return;
-    const subject = window.prompt('Предмет');
-    if (!subject?.trim()) return;
-    const note = window.prompt('Заметка (необязательно)') ?? '';
+    const name = (await dialog.prompt('Имя ученика', { title: 'Новый ученик' }))?.trim() ?? '';
+    if (!name) return;
+    const details = (await dialog.prompt('Класс и цель обучения', { title: 'Новый ученик' }))?.trim() ?? '';
+    if (!details) return;
+    const subject = (await dialog.prompt('Предмет', { title: 'Новый ученик' }))?.trim() ?? '';
+    if (!subject) return;
+    const note = (await dialog.prompt('Заметка (необязательно)', { title: 'Новый ученик' })) ?? '';
 
     setIsMutating(true);
     setError('');
@@ -51,31 +53,6 @@ export function TutorStudentsPage() {
       await loadStudents();
     } catch {
       setError('Не удалось добавить ученика.');
-    } finally {
-      setIsMutating(false);
-    }
-  };
-
-  const handleCreateReport = async (studentId: string) => {
-    const title = window.prompt('Название отчета');
-    if (!title?.trim()) return;
-    const summary = window.prompt('Краткий итог обучения');
-    if (!summary?.trim()) return;
-    const progressText = window.prompt('Прогресс от 0 до 100');
-    if (progressText === null) return;
-    const progress = Number(progressText);
-    if (!Number.isInteger(progress) || progress < 0 || progress > 100) {
-      setError('Прогресс должен быть целым числом от 0 до 100.');
-      return;
-    }
-
-    setIsMutating(true);
-    setError('');
-    try {
-      await createParentReport(studentId, { title, summary, progress });
-      await loadStudents();
-    } catch {
-      setError('Не удалось создать отчет.');
     } finally {
       setIsMutating(false);
     }
@@ -249,29 +226,6 @@ export function TutorStudentsPage() {
           </LinkButton>
         </aside>
       </div>
-
-      <section className="tutor-students-bottom" aria-label="CRM-действия по ученикам">
-        <article className="tutor-student-action-card">
-          <h2>{pageData.cards.homework.title}</h2>
-          <p>{pageData.cards.homework.text}</p>
-          <Button>Проверить задания</Button>
-        </article>
-
-        <article className="tutor-student-payment-card">
-          <span>{pageData.cards.payments.label}</span>
-          <strong>{pageData.cards.payments.value}</strong>
-          <p>{pageData.cards.payments.text}</p>
-          <Button variant="ghost">Открыть выплаты</Button>
-        </article>
-
-        <article className="tutor-student-action-card">
-          <h2>{pageData.cards.reports.title}</h2>
-          <p>{pageData.cards.reports.text}</p>
-          <Button disabled={isMutating} onClick={() => void handleCreateReport(selectedStudentId)}>
-            {isMutating ? 'Сохраняем...' : 'Создать отчёт'}
-          </Button>
-        </article>
-      </section>
 
       <section className="tutor-student-note" aria-label="Подсказка по CRM учеников">
         <strong>Подсказка</strong>

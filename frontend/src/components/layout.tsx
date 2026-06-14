@@ -343,6 +343,22 @@ function getWorkspaceRouteLabel(sectionKey: keyof typeof sectionBasePaths, route
   return route.title;
 }
 
+function getWorkspaceProfileLinkTarget(sectionKey: keyof typeof sectionBasePaths): string {
+  if (sectionKey === 'tutor') {
+    return '/app/tutor';
+  }
+  if (sectionKey === 'client') {
+    return '/app/client';
+  }
+  if (sectionKey === 'admin') {
+    return '/admin';
+  }
+  if (sectionKey === 'moderator') {
+    return '/moderator';
+  }
+  return '#';
+}
+
 export function SectionLayout({ sectionKey }: { sectionKey: keyof typeof sectionBasePaths }) {
   const section = roadmapSections.find((item) => item.key === sectionKey);
   const location = useLocation();
@@ -652,13 +668,16 @@ export function SectionLayout({ sectionKey }: { sectionKey: keyof typeof section
             id={`workspace-sidebar-${sectionKey}`}
             className={cn('workspace-sidebar', navigationOpen && 'is-open')}
           >
-            <div className="workspace-profile">
+            <Link
+              to={getWorkspaceProfileLinkTarget(sectionKey)}
+              className="workspace-profile workspace-profile--link"
+            >
               <span className="workspace-profile__avatar">{workspaceUser.initials}</span>
               <span>
                 <strong>{workspaceUser.name}</strong>
                 <small>{workspaceUser.role}</small>
               </span>
-            </div>
+            </Link>
             <button className="workspace-sidebar__logout" type="button" onClick={handleLogout}>
               Выйти из аккаунта
             </button>
