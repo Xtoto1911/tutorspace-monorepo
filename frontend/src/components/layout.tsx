@@ -220,7 +220,7 @@ const sectionChrome: Record<
     subtitle: 'Кабинет клиента',
     profileName: 'Анна Родионова',
     profileInitials: 'АР',
-    profileRole: 'родитель / клиент',
+    profileRole: 'клиент',
     navTitle: 'Навигация клиента',
     primaryCardTitle: 'Расписание',
     primaryCardMeta: 'Live CRM',
@@ -286,7 +286,7 @@ const tutorNavLabelMap: Record<string, string> = {
 const tutorRouteOrder = ['requests', 'calendar', 'students', 'profile', 'messages', 'subscription'];
 
 const roleLabelMap: Record<Role, string> = {
-  parent: 'родитель',
+  parent: 'клиент',
   tutor: 'репетитор',
   admin: 'admin',
   moderator: 'moderator',

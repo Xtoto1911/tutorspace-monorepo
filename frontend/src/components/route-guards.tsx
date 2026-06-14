@@ -33,3 +33,13 @@ export function AppEntryRedirect() {
 
   return <Navigate to={getAppRouteForRole(session.user.role)} replace />;
 }
+
+export function RequireGuest({ children }: { children: ReactNode }) {
+  const session = readAuthSession();
+
+  if (session) {
+    return <Navigate to={getAppRouteForRole(session.user.role)} replace />;
+  }
+
+  return <>{children}</>;
+}
