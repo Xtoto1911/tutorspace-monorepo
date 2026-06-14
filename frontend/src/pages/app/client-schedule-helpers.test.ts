@@ -1,14 +1,28 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  getClientScheduleWeekRange,
   getClientRescheduleSuccessMessage,
   getClientScheduleMessageLink,
   getClientSchedulePrimaryLink,
   getClientScheduleUpcomingLessons,
+  shiftClientScheduleWeekStart,
   shouldShowClientScheduleEmptyState,
 } from './client-schedule-helpers';
 
 describe('client schedule helpers', () => {
+  it('normalizes any date to a Monday-to-Sunday range', () => {
+    expect(getClientScheduleWeekRange(new Date('2026-06-17T12:00:00'))).toEqual({
+      from: '2026-06-15',
+      to: '2026-06-21',
+    });
+  });
+
+  it('moves a selected week by exact seven-day increments', () => {
+    expect(shiftClientScheduleWeekStart('2026-06-15', -1)).toBe('2026-06-08');
+    expect(shiftClientScheduleWeekStart('2026-06-15', 1)).toBe('2026-06-22');
+  });
+
   it('prefers application details when applicationId is present', () => {
     expect(getClientSchedulePrimaryLink({ applicationId: 'app-1', threadId: 'thread-1' })).toBe('/app/client/applications/app-1');
   });

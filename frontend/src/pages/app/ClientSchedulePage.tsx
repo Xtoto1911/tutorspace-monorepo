@@ -5,27 +5,29 @@ import { cn } from '../../shared/lib/cn';
 import type { ClientSchedulePageData } from '../../shared/types';
 import {
   getClientRescheduleSuccessMessage,
+  getClientScheduleWeekRange,
   getClientScheduleMessageLink,
   getClientSchedulePrimaryLink,
   getClientScheduleUpcomingLessons,
-  shouldShowClientScheduleEmptyState,
+  shiftClientScheduleWeekStart,
 } from './client-schedule-helpers';
 
 export function ClientSchedulePage() {
+  const [selectedWeekStart, setSelectedWeekStart] = useState(() => getClientScheduleWeekRange(new Date()).from);
   const [pageData, setPageData] = useState<ClientSchedulePageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [rescheduleNotice, setRescheduleNotice] = useState<string | null>(null);
 
-  async function loadPage() {
+  async function loadPage(weekStart = selectedWeekStart) {
     setIsLoading(true);
     setError(null);
 
     try {
-      setPageData(await getClientSchedulePage());
+      const range = getClientScheduleWeekRange(new Date(`${weekStart}T12:00:00`));
+      setPageData(await getClientSchedulePage(range.from, range.to));
     } catch (loadError) {
-      setPageData(null);
       setError(loadError instanceof Error ? loadError.message : 'Не удалось загрузить расписание.');
     } finally {
       setIsLoading(false);
@@ -33,8 +35,8 @@ export function ClientSchedulePage() {
   }
 
   useEffect(() => {
-    void loadPage();
-  }, []);
+    void loadPage(selectedWeekStart);
+  }, [selectedWeekStart]);
 
   async function handleReschedule(lessonId: string) {
     setIsSubmitting(true);
@@ -57,10 +59,11 @@ export function ClientSchedulePage() {
   const nextLesson = upcomingLessons[0] ?? null;
   const primaryLessonLink = nextLesson ? getClientSchedulePrimaryLink(nextLesson) : '/app/client/applications';
   const primaryMessageLink = nextLesson ? getClientScheduleMessageLink(nextLesson) : null;
-  const showEmptyState = pageData ? shouldShowClientScheduleEmptyState(pageData) : false;
+  const selectedWeekIsEmpty = pageData ? pageData.events.length === 0 : false;
   const hasScheduleData = pageData ? !pageData.emptyState.show : false;
+  const currentWeekStart = getClientScheduleWeekRange(new Date()).from;
 
-  if (isLoading) {
+  if (isLoading && !pageData) {
     return (
       <div className="client-schedule">
         <section className="schedule-loading-state" aria-live="polite">
@@ -71,7 +74,7 @@ export function ClientSchedulePage() {
     );
   }
 
-  if (error || !pageData) {
+  if (!pageData) {
     return (
       <div className="client-schedule">
         <p role="alert">{error || 'Расписание недоступно.'}</p>
@@ -106,13 +109,13 @@ export function ClientSchedulePage() {
         </div>
       </header>
 
-      {isLoading ? (
-        <section className="schedule-loading-state" aria-live="polite">
-          <h2>Загружаем расписание</h2>
-          <p>Подтягиваем ближайшие уроки, переносы и доступные действия.</p>
-        </section>
-      ) : (
-        <>
+      <>
+          {error ? (
+            <div className="schedule-inline-error" role="alert">
+              {error}
+            </div>
+          ) : null}
+
           {rescheduleNotice ? (
             <div className="schedule-inline-status" role="status">
               {rescheduleNotice}
@@ -138,9 +141,43 @@ export function ClientSchedulePage() {
             </div>
 
             <div className="schedule-period">
-              <span className="schedule-period__caption">Текущий период</span>
-              <strong>{pageData.period.label}</strong>
-              <span>{pageData.period.from && pageData.period.to ? `${pageData.period.from} - ${pageData.period.to}` : 'данные из CRM'}</span>
+              <Button
+                variant="ghost"
+                className="schedule-period__nav"
+                aria-label="Предыдущая неделя"
+                disabled={isLoading || isSubmitting}
+                onClick={() => {
+                  setSelectedWeekStart((weekStart) => shiftClientScheduleWeekStart(weekStart, -1));
+                }}
+              >
+                ←
+              </Button>
+              <div className="schedule-period__copy">
+                <span className="schedule-period__caption">Выбранная неделя</span>
+                <strong>{pageData.period.label}</strong>
+                <span>{pageData.period.from && pageData.period.to ? `${pageData.period.from} - ${pageData.period.to}` : 'данные из CRM'}</span>
+                <button
+                  className="schedule-period__today"
+                  type="button"
+                  disabled={selectedWeekStart === currentWeekStart || isLoading || isSubmitting}
+                  onClick={() => {
+                    setSelectedWeekStart(currentWeekStart);
+                  }}
+                >
+                  Текущая неделя
+                </button>
+              </div>
+              <Button
+                variant="ghost"
+                className="schedule-period__nav"
+                aria-label="Следующая неделя"
+                disabled={isLoading || isSubmitting}
+                onClick={() => {
+                  setSelectedWeekStart((weekStart) => shiftClientScheduleWeekStart(weekStart, 1));
+                }}
+              >
+                →
+              </Button>
             </div>
 
             <Button
@@ -160,70 +197,68 @@ export function ClientSchedulePage() {
               <div className="week-calendar-card__heading">
                 <div>
                   <h2>Неделя занятий</h2>
-                  <p>{showEmptyState ? pageData.emptyState.text : 'Уроки и подтвержденные окна из актуального расписания.'}</p>
+                  <p>{selectedWeekIsEmpty ? 'На выбранной неделе пока нет занятий.' : 'Уроки и подтвержденные окна из актуального расписания.'}</p>
                 </div>
               </div>
 
-              {showEmptyState ? (
+              <div className="week-calendar-card__days" aria-label="Дни недели">
+                {pageData.weekDays.map((item) => (
+                  <button key={`${item.day}-${item.date}`} className={item.active ? 'is-active' : undefined} type="button">
+                    <span>{item.day}</span>
+                    <strong>{item.date}</strong>
+                  </button>
+                ))}
+              </div>
+
+              {selectedWeekIsEmpty ? (
                 <div className="schedule-empty-state">
-                  <h3>{pageData.emptyState.title}</h3>
-                  <p>{pageData.emptyState.text}</p>
+                  <h3>На этой неделе занятий нет</h3>
+                  <p>Переключите неделю стрелками или вернитесь к текущей неделе.</p>
                 </div>
-              ) : (
-                <>
-                  <div className="week-calendar-card__days" aria-label="Дни недели">
-                    {pageData.weekDays.map((item) => (
-                      <button key={`${item.day}-${item.date}`} className={item.active ? 'is-active' : undefined} type="button">
-                        <span>{item.day}</span>
-                        <strong>{item.date}</strong>
-                      </button>
-                    ))}
-                  </div>
+              ) : null}
 
-                  <div className="week-calendar-scroll">
-                    <div className="week-calendar-grid">
-                      <div className="week-calendar-grid__corner" />
-                      {pageData.weekDays.map((item) => (
-                        <div key={`head-${item.day}-${item.date}`} className="week-calendar-grid__head">
-                          {item.day}
-                        </div>
-                      ))}
-
-                      {pageData.timeSlots.map((slot, slotIndex) => (
-                        <div
-                          key={slot}
-                          className="week-calendar-grid__time"
-                          style={{ gridColumn: '1', gridRow: String(slotIndex + 2) }}
-                        >
-                          {slot}
-                        </div>
-                      ))}
-
-                      {pageData.timeSlots.flatMap((slot, slotIndex) =>
-                        pageData.weekDays.map((day, dayIndex) => (
-                          <div
-                            key={`cell-${slot}-${day.day}-${day.date}`}
-                            className="week-calendar-grid__cell"
-                            style={{ gridColumn: String(dayIndex + 2), gridRow: String(slotIndex + 2) }}
-                          />
-                        )),
-                      )}
-
-                      {pageData.events.map((event) => (
-                        <article
-                          key={event.id}
-                          className={cn('schedule-event', `schedule-event--${event.tone}`)}
-                          style={{ gridColumn: String(event.column + 1), gridRow: String(event.row + 2) }}
-                        >
-                          <strong>{event.title}</strong>
-                          <span>{event.meta}</span>
-                          <small>{event.time}</small>
-                        </article>
-                      ))}
+              <div className="week-calendar-scroll">
+                <div className="week-calendar-grid">
+                  <div className="week-calendar-grid__corner" />
+                  {pageData.weekDays.map((item) => (
+                    <div key={`head-${item.day}-${item.date}`} className="week-calendar-grid__head">
+                      {item.day}
                     </div>
-                  </div>
-                </>
-              )}
+                  ))}
+
+                  {pageData.timeSlots.map((slot, slotIndex) => (
+                    <div
+                      key={slot}
+                      className="week-calendar-grid__time"
+                      style={{ gridColumn: '1', gridRow: String(slotIndex + 2) }}
+                    >
+                      {slot}
+                    </div>
+                  ))}
+
+                  {pageData.timeSlots.flatMap((slot, slotIndex) =>
+                    pageData.weekDays.map((day, dayIndex) => (
+                      <div
+                        key={`cell-${slot}-${day.day}-${day.date}`}
+                        className="week-calendar-grid__cell"
+                        style={{ gridColumn: String(dayIndex + 2), gridRow: String(slotIndex + 2) }}
+                      />
+                    )),
+                  )}
+
+                  {pageData.events.map((event) => (
+                    <article
+                      key={event.id}
+                      className={cn('schedule-event', `schedule-event--${event.tone}`)}
+                      style={{ gridColumn: String(event.column + 1), gridRow: String(event.row + 2) }}
+                    >
+                      <strong>{event.title}</strong>
+                      <span>{event.meta}</span>
+                      <small>{event.time}</small>
+                    </article>
+                  ))}
+                </div>
+              </div>
             </section>
 
             <aside className="schedule-side-panel" aria-label="Ближайшие события">
@@ -357,8 +392,7 @@ export function ClientSchedulePage() {
               </LinkButton>
             </article>
           </section>
-        </>
-      )}
+      </>
     </div>
   );
 }

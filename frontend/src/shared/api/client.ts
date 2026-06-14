@@ -30,8 +30,11 @@ export function getClientSchedule() {
   return apiRequest<ClientSchedulePageData>('/client/schedule');
 }
 
-export function getClientSchedulePage() {
-  return apiRequest<ClientSchedulePageData>('/client/schedule');
+export function getClientSchedulePage(from?: string, to?: string) {
+  const path = from && to
+    ? `/client/schedule?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+    : '/client/schedule';
+  return apiRequest<ClientSchedulePageData>(path);
 }
 
 export function requestClientLessonReschedule(
