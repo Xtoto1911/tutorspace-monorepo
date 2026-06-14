@@ -113,7 +113,8 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.register(dto))
                 .isInstanceOf(InvalidRoleRegistrationException.class)
-                .hasMessageContaining("ROLE_ADMIN");
+                .hasMessageContaining("ROLE_ADMIN")
+                .hasMessageContaining("Регистрация");
 
         verifyNoInteractions(userRepository, userSessionRepository, passwordEncoder, jwtService);
     }
@@ -124,7 +125,8 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.register(dto))
                 .isInstanceOf(InvalidRoleRegistrationException.class)
-                .hasMessageContaining("ROLE_MODERATOR");
+                .hasMessageContaining("ROLE_MODERATOR")
+                .hasMessageContaining("Регистрация");
 
         verifyNoInteractions(userRepository, userSessionRepository, passwordEncoder, jwtService);
     }
@@ -272,7 +274,7 @@ class UserServiceTest {
         verify(passwordResetTokenRepository).save(tokenCaptor.capture());
         PasswordResetToken savedToken = tokenCaptor.getValue();
 
-        assertThat(response.getMessage()).isEqualTo("If the account exists, password reset instructions have been created");
+        assertThat(response.getMessage()).isEqualTo("Если аккаунт существует, инструкции по сбросу пароля созданы.");
         assertThat(response.getTestToken()).isNotBlank();
         assertThat(savedToken.getUser()).isSameAs(user);
         assertThat(savedToken.getTokenHash()).isEqualTo(sha256(response.getTestToken()));
@@ -291,7 +293,7 @@ class UserServiceTest {
                 passwordResetRequest("missing@example.com")
         );
 
-        assertThat(response.getMessage()).isEqualTo("If the account exists, password reset instructions have been created");
+        assertThat(response.getMessage()).isEqualTo("Если аккаунт существует, инструкции по сбросу пароля созданы.");
         assertThat(response.getTestToken()).isNull();
         verifyNoInteractions(passwordResetTokenRepository);
     }
@@ -331,7 +333,7 @@ class UserServiceTest {
                 passwordResetRequest("client@example.com")
         );
 
-        assertThat(response.getMessage()).isEqualTo("If the account exists, password reset instructions have been created");
+        assertThat(response.getMessage()).isEqualTo("Если аккаунт существует, инструкции по сбросу пароля созданы.");
         assertThat(response.getTestToken()).isNull();
         assertThat(currentToken.getUsedAt()).isNull();
         verify(passwordResetTokenRepository).deleteUsedOrExpiredByUserId(any(UUID.class), any(Instant.class));
@@ -372,7 +374,7 @@ class UserServiceTest {
                 passwordResetRequest("client@example.com")
         );
 
-        assertThat(response.getMessage()).isEqualTo("If the account exists, password reset instructions have been created");
+        assertThat(response.getMessage()).isEqualTo("Если аккаунт существует, инструкции по сбросу пароля созданы.");
         assertThat(priorToken.getUsedAt()).isNotNull();
         verify(passwordResetTokenRepository).save(any(PasswordResetToken.class));
     }
@@ -393,7 +395,7 @@ class UserServiceTest {
                 passwordResetConfirm("raw-reset-token", "new-password")
         );
 
-        assertThat(response.getMessage()).isEqualTo("Password has been reset");
+        assertThat(response.getMessage()).isEqualTo("Пароль успешно обновлен.");
         assertThat(response.getTestToken()).isNull();
         assertThat(user.getPassword()).isEqualTo("encoded-new-password");
         assertThat(resetToken.getUsedAt()).isNotNull();
@@ -415,7 +417,7 @@ class UserServiceTest {
                 passwordResetConfirm("expired-token", "new-password")
         ))
                 .isInstanceOf(InvalidPasswordResetTokenException.class)
-                .hasMessage("Invalid or expired password reset token");
+                .hasMessage("Ссылка для сброса пароля устарела или недействительна.");
 
         verify(passwordEncoder, never()).encode(anyString());
         verifyNoInteractions(userSessionRepository);
@@ -433,7 +435,7 @@ class UserServiceTest {
                 passwordResetConfirm("used-token", "new-password")
         ))
                 .isInstanceOf(InvalidPasswordResetTokenException.class)
-                .hasMessage("Invalid or expired password reset token");
+                .hasMessage("Ссылка для сброса пароля устарела или недействительна.");
 
         verify(passwordEncoder, never()).encode(anyString());
         verifyNoInteractions(userSessionRepository);

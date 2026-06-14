@@ -19,10 +19,32 @@ const roleFromBackend = {
   ROLE_MODERATOR: 'moderator',
 } as const;
 
+const englishErrorMap: Record<string, string> = {
+  'Invalid email or password': 'Неверный email или пароль.',
+  'Email already registered': 'Этот email уже зарегистрирован.',
+  'Invalid or expired password reset token': 'Ссылка для сброса пароля устарела или недействительна.',
+  'Public registration is not allowed for role': 'Регистрация с выбранной ролью недоступна.',
+  'User not found': 'Пользователь не найден.',
+  'User account is blocked': 'Аккаунт заблокирован. Обратитесь в поддержку.',
+  'Invalid refresh token': 'Недействительный refresh-токен. Войдите заново.',
+  'Access denied': 'Доступ запрещен. Обратитесь в поддержку.',
+  'An error occurred': 'Произошла ошибка. Попробуйте позже или обратитесь в поддержку.',
+};
+
+function translateErrorMessage(message: string): string {
+  for (const [english, russian] of Object.entries(englishErrorMap)) {
+    if (message.toLowerCase().startsWith(english.toLowerCase())) {
+      return russian;
+    }
+  }
+  return message;
+}
+
 async function readErrorMessage(response: Response, path: string) {
   try {
     const payload = (await response.json()) as { message?: string; error?: string };
-    return payload.message ?? payload.error ?? `Request failed for ${path}`;
+    const raw = payload.message ?? payload.error ?? `Request failed for ${path}`;
+    return translateErrorMessage(String(raw));
   } catch {
     if (path.startsWith('/auth/') && response.status === 401) {
       return 'Неверный email или пароль.';

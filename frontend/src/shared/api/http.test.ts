@@ -94,7 +94,7 @@ describe('apiRequest', () => {
 
   it.each([
     [{ message: 'Profile is incomplete' }, 'Profile is incomplete'],
-    [{ error: 'Access denied' }, 'Access denied'],
+    [{ error: 'Access denied' }, 'Доступ запрещен. Обратитесь в поддержку.'],
   ])('parses structured backend errors from %j', async (payload, expectedMessage) => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response(400, payload)));
 

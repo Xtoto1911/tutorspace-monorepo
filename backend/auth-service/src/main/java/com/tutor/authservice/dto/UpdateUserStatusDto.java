@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class UpdateUserStatusDto {
 
-    @NotNull(message = "Status is required")
+    @NotNull(message = "Укажите статус.")
     private UserStatus status;
 }

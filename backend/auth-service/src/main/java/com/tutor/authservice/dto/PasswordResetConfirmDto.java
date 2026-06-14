@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class PasswordResetConfirmDto {
 
-    @NotBlank(message = "Password reset token is required")
+    @NotBlank(message = "Укажите токен сброса пароля.")
     private String token;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 8, message = "Password must be at least 8 characters")
+    @NotBlank(message = "Укажите пароль.")
+    @Size(min = 8, message = "Пароль должен содержать минимум 8 символов.")
     private String password;
 }

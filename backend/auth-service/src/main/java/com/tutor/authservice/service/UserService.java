@@ -117,7 +117,7 @@ public class UserService {
 
             return tokens;
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid email or password");
+            throw new BadCredentialsException("Неверный email или пароль.");
         }
     }
 
@@ -131,11 +131,11 @@ public class UserService {
         String email = jwtService.getEmailFromToken(refreshToken);
 
         if (!email.equals(user.getEmail())) {
-            throw new BadCredentialsException("Token owner mismatch");
+            throw new BadCredentialsException("Неверный владелец токена.");
         }
 
         if (!user.isAccountNonLocked() || !user.isEnabled()) {
-            throw new LockedException("User account is blocked");
+            throw new LockedException("Аккаунт заблокирован. Обратитесь в поддержку.");
         }
 
         session.revoke(Instant.now());
@@ -154,7 +154,7 @@ public class UserService {
 
     @Transactional
     public PasswordResetResponseDto requestPasswordReset(PasswordResetRequestDto dto) {
-        String message = "If the account exists, password reset instructions have been created";
+        String message = "Если аккаунт существует, инструкции по сбросу пароля созданы.";
         User user = userRepository.findByEmailForPasswordReset(dto.getEmail()).orElse(null);
 
         if (user == null) {
@@ -207,7 +207,7 @@ public class UserService {
         resetToken.setUsedAt(now);
         revokeActiveSessions(user, now);
 
-        return new PasswordResetResponseDto("Password has been reset", null);
+        return new PasswordResetResponseDto("Пароль успешно обновлен.", null);
     }
 
     @Transactional(readOnly = true)
@@ -255,16 +255,16 @@ public class UserService {
 
     private void validateRefreshToken(String refreshToken) {
         if (!jwtService.validateJwtToken(refreshToken)) {
-            throw new BadCredentialsException("Invalid refresh token");
+            throw new BadCredentialsException("Недействительный refresh-токен. Войдите заново.");
         }
     }
 
     private UserSession findActiveSession(String refreshToken) {
         UserSession session = userSessionRepository.findByRefreshTokenHash(hashRefreshToken(refreshToken))
-                .orElseThrow(() -> new BadCredentialsException("Invalid refresh token"));
+                .orElseThrow(() -> new BadCredentialsException("Недействительный refresh-токен. Войдите заново."));
 
         if (!session.isActive(Instant.now())) {
-            throw new BadCredentialsException("Invalid refresh token");
+            throw new BadCredentialsException("Недействительный refresh-токен. Войдите заново.");
         }
 
         return session;
