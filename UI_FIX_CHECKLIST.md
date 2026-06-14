@@ -14,7 +14,7 @@
 - [ ] Сделать ошибки регистрации и входа понятными: перевести сообщения, убрать английские тексты и технические коды.
 - [ ] На `/app/tutor/profile` удалить карточки «Уведомления», «Модерация» и «Что улучшить».
 - [x] На `/app/tutor/calendar` переработать сетку так, чтобы вся неделя помещалась по ширине экрана на полном разрешении и корректно отображала ранние уроки, например в 08:00.
-- [ ] На `/app/tutor/subscription` удалить блок `tutor-subscription-stats`.
+- [x] На `/app/tutor/subscription` удалить блок `tutor-subscription-stats`.
 - [ ] На `/app/tutor/subscription/checkout/result` удалить блок `tutor-checkout-summary`.
 - [ ] На `/app/tutor/messages` исправить переполнение и «плавающую» верстку блоков.
 - [ ] На `/app/tutor/calendar` удалить блок `tutor-calendar-stat tutor-calendar-stat--amber` с надписью «Связано».
