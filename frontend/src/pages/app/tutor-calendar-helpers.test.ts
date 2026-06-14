@@ -5,8 +5,10 @@ import {
   buildCellLessonPayload,
   buildLessonReschedulePayload,
   buildSlotLessonPayload,
+  buildTutorCalendarTimeSlots,
   formatLessonRequestStartTime,
   getLessonModalDefaults,
+  getTutorCalendarGridPosition,
   getTutorCalendarDisplayStats,
   isCalendarCellInPast,
 } from './tutor-calendar-helpers';
@@ -24,6 +26,41 @@ describe('tutor calendar helpers', () => {
       { day: 'Сб', date: '16', isoDate: '2026-05-16', active: false },
       { day: 'Вс', date: '17', isoDate: '2026-05-17', active: false },
     ]);
+  });
+
+  it('builds the complete tutor workday from 08:00 through 22:00', () => {
+    expect(buildTutorCalendarTimeSlots()).toEqual([
+      '08:00',
+      '09:00',
+      '10:00',
+      '11:00',
+      '12:00',
+      '13:00',
+      '14:00',
+      '15:00',
+      '16:00',
+      '17:00',
+      '18:00',
+      '19:00',
+      '20:00',
+      '21:00',
+      '22:00',
+    ]);
+  });
+
+  it('positions early and partial-hour calendar entries on the visible scale', () => {
+    expect(getTutorCalendarGridPosition('08:00', '09:30')).toEqual({
+      row: 0,
+      rowSpan: 2,
+    });
+    expect(getTutorCalendarGridPosition('07:30', '08:30')).toEqual({
+      row: 0,
+      rowSpan: 1,
+    });
+    expect(getTutorCalendarGridPosition('21:30', '23:00')).toEqual({
+      row: 13,
+      rowSpan: 2,
+    });
   });
 
   it('marks only past calendar cells as unavailable for booking', () => {

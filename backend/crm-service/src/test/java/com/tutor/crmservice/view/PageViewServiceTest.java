@@ -44,6 +44,89 @@ class PageViewServiceTest {
     private final Clock clock = Clock.fixed(Instant.parse("2026-05-06T10:00:00Z"), ZoneId.of("UTC"));
 
     @Test
+    void getTutorCalendarPage_positionsEarlyLessonOnFullTimeScale() {
+        TestContext context = new TestContext();
+        PageViewService service = createService(context);
+        UUID tutorId = UUID.randomUUID();
+        UUID clientId = UUID.randomUUID();
+
+        Lesson earlyLesson = createLesson(
+                UUID.randomUUID(),
+                null,
+                tutorId,
+                clientId,
+                "Анна Смирнова",
+                "Иван Петров",
+                "Ранняя математика",
+                "Математика",
+                "Онлайн",
+                LocalDateTime.of(2026, 5, 6, 8, 0),
+                90,
+                "Запланировано"
+        );
+        context.lessonsByTutor.put(tutorId, List.of(earlyLesson));
+
+        TutorCalendarPageDto page = service.getTutorCalendarPage(
+                tutorId,
+                LocalDate.of(2026, 5, 4),
+                LocalDate.of(2026, 5, 10)
+        );
+
+        assertEquals("08:00", page.timeSlots().get(0));
+        assertEquals("22:00", page.timeSlots().get(page.timeSlots().size() - 1));
+        assertEquals(15, page.timeSlots().size());
+        assertEquals(0, page.events().get(0).row());
+        assertEquals(2, page.events().get(0).rows());
+    }
+
+    @Test
+    void getTutorCalendarPage_returnsOnlyLessonsFromRequestedWeek() {
+        TestContext context = new TestContext();
+        PageViewService service = createService(context);
+        UUID tutorId = UUID.randomUUID();
+        UUID clientId = UUID.randomUUID();
+
+        Lesson selectedWeekLesson = createLesson(
+                UUID.randomUUID(),
+                null,
+                tutorId,
+                clientId,
+                "Анна Смирнова",
+                "Иван Петров",
+                "Урок выбранной недели",
+                "Математика",
+                "Онлайн",
+                LocalDateTime.of(2026, 5, 6, 10, 0),
+                60,
+                "Запланировано"
+        );
+        Lesson anotherWeekLesson = createLesson(
+                UUID.randomUUID(),
+                null,
+                tutorId,
+                clientId,
+                "Анна Смирнова",
+                "Мария Петрова",
+                "Урок другой недели",
+                "Физика",
+                "Онлайн",
+                LocalDateTime.of(2026, 5, 13, 10, 0),
+                60,
+                "Запланировано"
+        );
+        context.lessonsByTutor.put(tutorId, List.of(selectedWeekLesson, anotherWeekLesson));
+
+        TutorCalendarPageDto page = service.getTutorCalendarPage(
+                tutorId,
+                LocalDate.of(2026, 5, 4),
+                LocalDate.of(2026, 5, 10)
+        );
+
+        assertEquals(List.of(selectedWeekLesson.getId().toString()),
+                page.events().stream().map(TutorCalendarPageDto.EventDto::id).toList());
+    }
+
+    @Test
     void getClientOverviewPage_aggregatesApplicationsNextLessonAndRecentConversation() {
         TestContext context = new TestContext();
         PageViewService service = createService(context);
