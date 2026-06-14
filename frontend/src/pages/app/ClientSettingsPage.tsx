@@ -101,9 +101,6 @@ export function ClientSettingsPage() {
     <div className="client-settings">
       <header className="client-settings__header">
         <div>
-          {saveSuccess && <span className="client-settings__success">Настройки сохранены</span>}
-          {saveError && <span className="client-settings__error">{saveError}</span>}
-          {!saveSuccess && !saveError && <span>&nbsp;</span>}
           <h1>Настройки аккаунта</h1>
           <p>Личные данные и управление аккаунтом.</p>
         </div>
@@ -112,6 +109,17 @@ export function ClientSettingsPage() {
           {saving ? 'Сохранение...' : 'Сохранить изменения'}
         </Button>
       </header>
+
+      {saveSuccess ? (
+        <div className="settings-notice settings-notice--success" role="status">
+          Настройки сохранены
+        </div>
+      ) : null}
+      {saveError ? (
+        <div className="settings-notice settings-notice--error" role="alert">
+          {saveError}
+        </div>
+      ) : null}
 
       <div className="settings-main-grid">
         <section className="settings-card settings-profile-card" aria-label="Личные данные">
@@ -149,8 +157,12 @@ export function ClientSettingsPage() {
         <section className="settings-card settings-account-card" aria-label="Действия аккаунта">
           <h2>Действия аккаунта</h2>
           <div>
-            <Button variant="ghost">Выйти</Button>
+            <Button variant="ghost">
+              <span className="settings-account-card__icon" aria-hidden="true">↪</span>
+              Выйти
+            </Button>
             <Button variant="ghost" className="settings-account-card__delete">
+              <span className="settings-account-card__icon" aria-hidden="true">×</span>
               Удалить
             </Button>
           </div>
