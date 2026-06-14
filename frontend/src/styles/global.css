@@ -2456,13 +2456,6 @@ p {
   line-height: 1.5;
 }
 
-.client-applications__new {
-  min-width: 156px;
-  min-height: 46px;
-  border-radius: 14px;
-  font-size: 15px;
-}
-
 .client-applications__metrics {
   display: flex;
   align-items: flex-start;
@@ -2716,74 +2709,6 @@ p {
   color: #4338ca;
   font-size: 13px;
   font-weight: 600;
-}
-
-.match-progress {
-  display: grid;
-  gap: 14px;
-}
-
-.match-progress__item {
-  display: grid;
-  gap: 8px;
-}
-
-.match-progress__item div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.match-progress__item span {
-  color: #374151;
-  font-size: 14px;
-}
-
-.match-progress__item strong {
-  color: #6b7280;
-  font-size: 13px;
-}
-
-.match-progress meter {
-  width: 100%;
-  height: 7px;
-}
-
-.match-progress meter::-webkit-meter-bar {
-  border: 0;
-  border-radius: 999px;
-  background: #eef2f7;
-}
-
-.match-progress meter::-webkit-meter-optimum-value {
-  border-radius: 999px;
-  background: #4f46e5;
-}
-
-.client-recommendations {
-  display: grid;
-  gap: 14px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.client-recommendations li {
-  position: relative;
-  padding-left: 20px;
-  color: #4b5563;
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.client-recommendations li::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  top: -2px;
-  color: #4f46e5;
-  font-size: 18px;
 }
 
 .application-details {

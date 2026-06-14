@@ -8,6 +8,8 @@ export function ClientApplicationsPage() {
   const [pageData, setPageData] = useState<ClientApplicationsPageData | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [cancelModalId, setCancelModalId] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const loadPage = async () => {
     setIsLoading(true);
@@ -22,13 +24,26 @@ export function ClientApplicationsPage() {
     }
   };
 
-  const handleCancel = async (applicationId: string) => {
-    if (!confirm('Отменить заявку? Это действие нельзя отменить.')) return;
+  const openCancelModal = (applicationId: string) => {
+    setCancelModalId(applicationId);
+    setError('');
+  };
+
+  const closeCancelModal = () => {
+    setCancelModalId(null);
+    setIsCancelling(false);
+  };
+
+  const handleCancel = async () => {
+    if (!cancelModalId) return;
+    setIsCancelling(true);
     try {
-      await cancelClientApplication(applicationId);
+      await cancelClientApplication(cancelModalId);
+      closeCancelModal();
       await loadPage();
     } catch {
       setError('Не удалось отменить заявку.');
+      setIsCancelling(false);
     }
   };
 
@@ -56,7 +71,6 @@ export function ClientApplicationsPage() {
           <h1>Мои заявки</h1>
           <p>Отслеживайте ответы репетиторов, ближайшие занятия и историю обращений.</p>
         </div>
-        <Button className="client-applications__new">Новая заявка</Button>
       </header>
 
       <section className="client-applications__metrics" aria-label="Сводка по заявкам">
@@ -108,7 +122,7 @@ export function ClientApplicationsPage() {
                   Открыть
                 </LinkButton>
                 {(application.status === 'Ждет ответа' || application.status === 'Заявка принята' || application.status === 'Занятие назначено') && (
-                  <Button variant="ghost" onClick={() => void handleCancel(application.id)}>Отменить</Button>
+                  <Button variant="ghost" onClick={() => openCancelModal(application.id)}>Отменить</Button>
                 )}
                 <Button>{application.action}</Button>
               </div>
@@ -124,32 +138,25 @@ export function ClientApplicationsPage() {
             <p>{pageData.nextLesson.text}</p>
             <Button variant="ghost">Открыть урок</Button>
           </section>
-
-          <section className="client-side-card">
-            <h2>Подбор репетитора</h2>
-            <div className="match-progress">
-              {pageData.matchProgress.map((item) => (
-                <div key={item.label} className="match-progress__item">
-                  <div>
-                    <span>{item.label}</span>
-                    <strong>{item.value}%</strong>
-                  </div>
-                  <meter min="0" max="100" value={item.value} />
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="client-side-card">
-            <h2>Рекомендации</h2>
-            <ul className="client-recommendations">
-              {pageData.recommendations.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </section>
         </aside>
       </div>
+
+      {cancelModalId && (
+        <div className="modal-backdrop" onClick={closeCancelModal}>
+          <div className="modal" onClick={(event) => event.stopPropagation()}>
+            <h3>Отменить заявку?</h3>
+            <p className="modal-hint">Это действие нельзя отменить. Заявка будет закрыта, и репетитор увидит статус «Отменена».</p>
+            <div className="modal-actions">
+              <Button variant="ghost" onClick={closeCancelModal} disabled={isCancelling}>
+                Вернуться
+              </Button>
+              <Button onClick={() => void handleCancel()} disabled={isCancelling}>
+                {isCancelling ? 'Отмена...' : 'Отменить заявку'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
