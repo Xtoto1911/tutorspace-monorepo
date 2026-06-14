@@ -17,7 +17,7 @@
 - [x] На `/app/tutor/subscription` удалить блок `tutor-subscription-stats`.
 - [x] На `/app/tutor/subscription/checkout/result` удалить блок `tutor-checkout-summary`.
 - [ ] На `/app/tutor/messages` исправить переполнение и «плавающую» верстку блоков.
-- [ ] На `/app/tutor/calendar` удалить блок `tutor-calendar-stat tutor-calendar-stat--amber` с надписью «Связано».
+- [x] На `/app/tutor/calendar` удалить блок `tutor-calendar-stat tutor-calendar-stat--amber` с надписью «Связано».
 - [ ] На `/app/tutor/requests` после отправки заявки в архив изменить текст кнопки и явно показать, что дальнейшие действия с заявкой недоступны.
 - [ ] На `/app/tutor/calendar` в блоке «Ожидают записи» исправить выход текста кнопки «Назначить урок» за границы.
 - [x] На `/app/client/schedule` доработать календарь:

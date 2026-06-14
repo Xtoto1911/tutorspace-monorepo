@@ -556,7 +556,7 @@ export function TutorCalendarPage() {
     return acc;
   }, {});
   const calendarWeekDays = buildCalendarWeekDays(currentWeekStart, calendarNow);
-  const displayStats = getTutorCalendarDisplayStats(pageData);
+  const displayStats = getTutorCalendarDisplayStats(pageData).filter((stat) => stat.tone !== 'amber');
 
   return (
     <div className="tutor-calendar-page">
