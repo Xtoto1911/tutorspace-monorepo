@@ -180,14 +180,14 @@ export function SignUpChoicePage() {
     <AuthShell
       eyebrow="Регистрация"
       title="Выберите роль"
-      description="Форма дальше адаптируется под ученика, родителя или репетитора."
+      description="Форма дальше адаптируется под клиента, ученика или репетитора."
       asideTitle="Один аккаунт для обучения и работы"
       asideText="TutorSpace разводит сценарии по ролям, но сохраняет общий стиль кабинета и понятный маршрут после регистрации."
       asideItems={['Заявки и статусы', 'Профиль репетитора', 'Календарь занятий']}
     >
       <div className="auth-role-list">
         <Link to="/auth/sign-up/parent" className="auth-role-card">
-          <Badge tone="indigo">Родитель / ученик</Badge>
+          <Badge tone="indigo">Клиент / ученик</Badge>
           <strong>Найти репетитора и вести обучение</strong>
           <span>Заявки, расписание, переписка и история занятий в личном кабинете.</span>
         </Link>

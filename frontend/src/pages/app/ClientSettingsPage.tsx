@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button } from '../../components/primitives';
 import { getClientSettings, updateClientSettings } from '../../shared/api/client';
-import { cn } from '../../shared/lib/cn';
 import type { ClientSettings } from '../../shared/types';
 
 type FormErrors = Partial<Record<string, string>>;
@@ -91,17 +90,6 @@ export function ClientSettingsPage() {
     setSaveError(null);
   };
 
-  const handleToggle = (section: 'notifications' | 'privacy', index: number) => {
-    setSettings((prev) => {
-      if (!prev) return prev;
-      const list = [...prev[section]];
-      list[index] = { ...list[index], enabled: !list[index].enabled };
-      return { ...prev, [section]: list };
-    });
-    setSaveSuccess(false);
-    setSaveError(null);
-  };
-
   const handleSave = async () => {
     if (!settings || !validate()) return;
     setSaving(true);
@@ -139,24 +127,13 @@ export function ClientSettingsPage() {
           {saveError && <span className="client-settings__error">{saveError}</span>}
           {!saveSuccess && !saveError && <span>&nbsp;</span>}
           <h1>Настройки аккаунта</h1>
-          <p>Профиль, уведомления, безопасность и предпочтения поиска репетиторов.</p>
+          <p>Личные данные и управление аккаунтом.</p>
         </div>
 
         <Button onClick={handleSave} disabled={saving}>
           {saving ? 'Сохранение...' : 'Сохранить изменения'}
         </Button>
       </header>
-
-      <section className="settings-stats" aria-label="Сводка настроек">
-        {settings.metrics.map((metric) => (
-          <article key={metric.label} className={cn('settings-stat', `settings-stat--${metric.tone}`)}>
-            <span className="settings-stat__icon">{metric.icon}</span>
-            <strong>{metric.value}</strong>
-            <span>{metric.label}</span>
-            <small>{metric.sublabel}</small>
-          </article>
-        ))}
-      </section>
 
       <div className="settings-main-grid">
         <section className="settings-card settings-profile-card" aria-label="Личные данные">
@@ -167,7 +144,7 @@ export function ClientSettingsPage() {
 
           <div className="settings-profile-grid">
             <label className="settings-field" htmlFor="client-settings-parentName">
-              <span>Имя родителя</span>
+              <span>Имя</span>
               <input
                 id="client-settings-parentName"
                 name="parentName"
@@ -232,102 +209,6 @@ export function ClientSettingsPage() {
               />
               {errors.language && <small className="settings-field__error">{errors.language}</small>}
             </label>
-          </div>
-        </section>
-
-        <section className="settings-card settings-students-card" aria-label="Ученики">
-          <div className="settings-card__heading">
-            <h2>Ученики</h2>
-            <p>Профили детей помогают точнее подбирать репетиторов.</p>
-          </div>
-
-          <div className="settings-students-list">
-            {settings.students.length === 0 ? (
-              <div className="settings-empty-state">
-                <strong>Ученики пока не добавлены</strong>
-                <p>Когда появится live-профиль ученика, он будет показан здесь без демо-данных.</p>
-              </div>
-            ) : (
-              settings.students.map((student) => (
-                <article key={student.id} className="settings-student-row">
-                  <span className={cn('settings-student-row__dot', `settings-student-row__dot--${student.tone}`)} />
-                  <div>
-                    <strong>{student.name}</strong>
-                    <p>{student.details}</p>
-                  </div>
-                  <span className={cn('settings-pill', `settings-pill--${student.tone}`)}>{student.goal}</span>
-                </article>
-              ))
-            )}
-          </div>
-        </section>
-      </div>
-
-      <div className="settings-main-grid">
-        <section className="settings-card" aria-label="Уведомления">
-          <div className="settings-card__heading">
-            <h2>Уведомления</h2>
-            <p>Выберите, какие события отправлять по email и push.</p>
-          </div>
-
-          <div className="settings-toggle-list">
-            {settings.notifications.map((item, index) => (
-              <article key={item.id} className="settings-toggle-row">
-                <div>
-                  <strong>{item.title}</strong>
-                  <p>{item.description}</p>
-                </div>
-                <button
-                  className={cn('settings-switch', item.enabled && 'is-on')}
-                  type="button"
-                  aria-pressed={item.enabled}
-                  aria-label={item.title}
-                  onClick={() => handleToggle('notifications', index)}
-                />
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="settings-card" aria-label="Приватность и безопасность">
-          <div className="settings-card__heading">
-            <h2>Приватность и безопасность</h2>
-            <p>Контроль доступа к данным и действиям в аккаунте.</p>
-          </div>
-
-          <div className="settings-toggle-list">
-            {settings.privacy.map((item, index) => (
-              <article key={item.id} className="settings-toggle-row">
-                <div>
-                  <strong>{item.title}</strong>
-                  <p>{item.description}</p>
-                </div>
-                <button
-                  className={cn('settings-switch', item.enabled && 'is-on')}
-                  type="button"
-                  aria-pressed={item.enabled}
-                  aria-label={item.title}
-                  onClick={() => handleToggle('privacy', index)}
-                />
-              </article>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      <div className="settings-bottom-grid">
-        <section className="settings-card settings-preferences-card" aria-label="Предпочтения поиска">
-          <h2>Предпочтения поиска</h2>
-          <div className="settings-preference-list">
-            {settings.searchPreferences.length === 0 ? (
-              <p className="settings-empty-copy">Предпочтения появятся после сохранения поиска или заявки.</p>
-            ) : (
-              settings.searchPreferences.map((item, index) => (
-                <span key={item} className={`settings-preference settings-preference--${index + 1}`}>
-                  {item}
-                </span>
-              ))
-            )}
           </div>
         </section>
 
