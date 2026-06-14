@@ -89,19 +89,6 @@ export function TutorSubscriptionPage() {
 
       {statusMessage ? <p className="tutor-subscription-alert">{statusMessage}</p> : null}
 
-      <section className="tutor-subscription-stats" aria-label="Эффект подписки">
-        {subscription.metrics.map((metric) => (
-          <article key={metric.label} className={cn('tutor-subscription-stat', `tutor-subscription-stat--${metric.tone}`)}>
-            <span className="tutor-subscription-stat__icon">{metric.icon}</span>
-            <div>
-              <strong>{metric.label}</strong>
-              <p>{metric.sublabel}</p>
-            </div>
-            <b>{metric.value}</b>
-          </article>
-        ))}
-      </section>
-
       <section className="tutor-subscription-card tutor-subscription-tariffs">
         <div className="tutor-subscription-card__heading">
           <h2>Тарифные планы</h2>
