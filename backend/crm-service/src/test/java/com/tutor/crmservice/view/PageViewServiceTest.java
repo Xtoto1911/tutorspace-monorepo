@@ -573,11 +573,92 @@ class PageViewServiceTest {
         assertTrue(page.upcomingLessons().get(0).canJoin());
         assertTrue(page.upcomingLessons().get(0).canReschedule());
         assertEquals(weekStart.toString(), page.period().from());
-        assertEquals(weekStart.plusDays(4).toString(), page.period().to());
+        assertEquals(weekStart.plusDays(6).toString(), page.period().to());
         assertEquals(
-                String.format("%02d-%02d", weekStart.getDayOfMonth(), weekStart.plusDays(4).getDayOfMonth()),
+                String.format("%02d-%02d", weekStart.getDayOfMonth(), weekStart.plusDays(6).getDayOfMonth()),
                 page.period().label()
         );
+    }
+
+    @Test
+    void getClientSchedulePage_selectedWeekIncludesSundayAndSevenDays() {
+        TestContext context = new TestContext();
+        PageViewService service = createService(context);
+        UUID clientId = UUID.randomUUID();
+        UUID applicationId = UUID.randomUUID();
+        LocalDate weekStart = LocalDate.of(2026, 6, 15);
+        LocalDateTime sundayLessonStart = weekStart.plusDays(6).atTime(11, 0);
+
+        Lesson lesson = createLesson(
+                UUID.randomUUID(),
+                applicationId,
+                null,
+                clientId,
+                "Анна Смирнова",
+                "Иван Петров",
+                "Воскресный урок",
+                "Математика",
+                "Онлайн",
+                sundayLessonStart,
+                60,
+                "Запланировано"
+        );
+
+        context.lessonsByClient.put(clientId, List.of(lesson));
+        context.messageThreadByApplication.put(applicationId, null);
+        context.reschedulesByClient.put(clientId, List.of());
+
+        ClientSchedulePageDto page = service.getClientSchedulePage(
+                clientId,
+                weekStart,
+                weekStart.plusDays(6)
+        );
+
+        assertEquals(7, page.weekDays().size());
+        assertEquals(weekStart.plusDays(6).toString(), page.period().to());
+        assertEquals(1, page.events().size());
+        assertEquals(7, page.events().get(0).column());
+        assertEquals(sundayLessonStart.toString(), page.events().get(0).startsAt());
+    }
+
+    @Test
+    void getClientSchedulePage_selectedEmptyWeekKeepsGlobalUpcomingLesson() {
+        TestContext context = new TestContext();
+        PageViewService service = createService(context);
+        UUID clientId = UUID.randomUUID();
+        UUID applicationId = UUID.randomUUID();
+        LocalDate selectedWeekStart = LocalDate.of(2026, 6, 15);
+        LocalDateTime futureLessonStart = selectedWeekStart.plusWeeks(1).atTime(18, 0);
+
+        Lesson lesson = createLesson(
+                UUID.randomUUID(),
+                applicationId,
+                null,
+                clientId,
+                "Анна Смирнова",
+                "Иван Петров",
+                "Следующий урок",
+                "Математика",
+                "Онлайн",
+                futureLessonStart,
+                60,
+                "Запланировано"
+        );
+
+        context.lessonsByClient.put(clientId, List.of(lesson));
+        context.messageThreadByApplication.put(applicationId, null);
+        context.reschedulesByClient.put(clientId, List.of());
+
+        ClientSchedulePageDto page = service.getClientSchedulePage(
+                clientId,
+                selectedWeekStart,
+                selectedWeekStart.plusDays(6)
+        );
+
+        assertTrue(page.events().isEmpty());
+        assertEquals(1, page.upcomingLessons().size());
+        assertEquals(futureLessonStart.toString(), lesson.getStartsAt().toString());
+        assertFalse(page.emptyState().show());
     }
 
     @Test
@@ -810,7 +891,7 @@ class PageViewServiceTest {
         ClientSchedulePageDto page = service.getClientSchedulePage(clientId);
 
         assertEquals(nextWeekStart.toString(), page.period().from());
-        assertEquals(nextWeekStart.plusDays(4).toString(), page.period().to());
+        assertEquals(nextWeekStart.plusDays(6).toString(), page.period().to());
         assertEquals(1, page.events().size());
         assertEquals(nextWeekStart.atTime(18, 0).toString(), page.events().get(0).startsAt());
     }

@@ -3311,6 +3311,14 @@ p {
 
 .schedule-period {
   display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: min(100%, 520px);
+}
+
+.schedule-period__copy {
+  display: grid;
   gap: 4px;
   justify-items: center;
 }
@@ -3331,6 +3339,28 @@ p {
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+}
+
+.schedule-period__nav {
+  width: 42px;
+  min-width: 42px;
+  padding-inline: 0;
+  font-size: 20px;
+}
+
+.schedule-period__today {
+  border: 0;
+  background: transparent;
+  color: #4f46e5;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.schedule-period__today:disabled {
+  color: var(--muted);
+  cursor: default;
 }
 
 .schedule-toolbar__sync {
@@ -3386,7 +3416,7 @@ p {
 
 .schedule-layout {
   display: grid;
-  grid-template-columns: minmax(0, 640px) 300px;
+  grid-template-columns: minmax(0, 1fr) 300px;
   gap: 20px;
   align-items: start;
 }
@@ -3434,7 +3464,7 @@ p {
 
 .week-calendar-card__days {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -3472,10 +3502,11 @@ p {
 }
 
 .week-calendar-grid {
-  min-width: 580px;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 70px repeat(5, minmax(92px, 1fr));
-  grid-template-rows: 36px repeat(5, 76px);
+  grid-template-columns: 64px repeat(7, minmax(0, 1fr));
+  grid-template-rows: 36px;
+  grid-auto-rows: 76px;
   position: relative;
   border: 1px solid #edf0f5;
   border-radius: 22px;
@@ -14129,7 +14160,6 @@ p {
   .schedule-metrics,
   .messages-metrics,
   .favorites-stats,
-  .week-calendar-card__days,
   .messages-context-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -14171,7 +14201,7 @@ p {
   }
 
   .schedule-period {
-    justify-items: start;
+    justify-self: stretch;
   }
 
   .schedule-period strong {
@@ -14191,8 +14221,8 @@ p {
   }
 
   .week-calendar-grid {
-    min-width: 540px;
-    grid-template-columns: 62px repeat(5, 94px);
+    min-width: 760px;
+    grid-template-columns: 62px repeat(7, minmax(94px, 1fr));
   }
 
   .schedule-bottom-grid {

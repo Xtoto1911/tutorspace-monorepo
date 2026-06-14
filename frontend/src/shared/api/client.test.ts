@@ -48,6 +48,12 @@ describe('client live API', () => {
     expect(apiRequest).toHaveBeenCalledWith('/client/applications/application-1');
   });
 
+  it('loads a selected client schedule week', async () => {
+    await getClientSchedulePage('2026-06-15', '2026-06-21');
+
+    expect(apiRequest).toHaveBeenCalledWith('/client/schedule?from=2026-06-15&to=2026-06-21');
+  });
+
   it('loads a selected message thread without fallback data', async () => {
     await getClientMessagesPage('thread-2');
 

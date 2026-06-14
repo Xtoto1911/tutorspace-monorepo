@@ -24,6 +24,7 @@ import com.tutor.crmservice.view.ClientSettingsPageDto;
 import com.tutor.crmservice.settings.SettingsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
@@ -75,8 +78,21 @@ public class ClientCrmController {
     }
 
     @GetMapping("/schedule")
-    public ClientSchedulePageDto getSchedule(@AuthenticationPrincipal JwtPrincipal principal) {
-        return pageViewService.getClientSchedulePage(principal.userId());
+    public ClientSchedulePageDto getSchedule(
+            @AuthenticationPrincipal JwtPrincipal principal,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+    ) {
+        if (from == null && to == null) {
+            return pageViewService.getClientSchedulePage(principal.userId());
+        }
+        if (from == null || to == null) {
+            throw new IllegalArgumentException("Параметры from и to нужно передавать вместе.");
+        }
+        if (from.getDayOfWeek() != DayOfWeek.MONDAY || !to.equals(from.plusDays(6))) {
+            throw new IllegalArgumentException("Диапазон расписания должен идти с понедельника по воскресенье.");
+        }
+        return pageViewService.getClientSchedulePage(principal.userId(), from, to);
     }
 
     @GetMapping("/history")
