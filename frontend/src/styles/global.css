@@ -3874,16 +3874,14 @@ a.workspace-profile--link:hover,
   line-height: 1.5;
 }
 
-.client-messages__actions,
-.tutor-messages__actions {
+.client-messages__actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 12px;
 }
 
-.client-messages__actions .btn,
-.tutor-messages__actions .btn {
+.client-messages__actions .btn {
   min-height: 46px;
   border-radius: 14px;
   font-size: 15px;
@@ -14153,7 +14151,6 @@ a.workspace-profile--link:hover,
 
   .client-schedule__actions,
   .client-messages__actions,
-  .tutor-messages__actions,
   .tutor-settings__actions,
   .client-favorites__actions {
     justify-content: stretch;
@@ -14161,7 +14158,6 @@ a.workspace-profile--link:hover,
 
   .client-schedule__actions .btn,
   .client-messages__actions .btn,
-  .tutor-messages__actions .btn,
   .tutor-settings__actions .btn,
   .client-favorites__actions .btn {
     flex: 1 1 180px;

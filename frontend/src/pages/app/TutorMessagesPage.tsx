@@ -89,11 +89,6 @@ export function TutorMessagesPage() {
           <h1>Сообщения</h1>
           <p>Диалоги с родителями, учениками и поддержкой: заявки, занятия, материалы и быстрые действия рядом.</p>
         </div>
-
-        <div className="tutor-messages__actions">
-          <Button variant="ghost">Шаблоны ответов</Button>
-          <Button>Новый диалог</Button>
-        </div>
       </header>
 
       <section className="messages-metrics" aria-label="Сводка сообщений репетитора">
