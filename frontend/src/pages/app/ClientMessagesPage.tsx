@@ -115,14 +115,6 @@ export function ClientMessagesPage() {
             />
           </label>
 
-          <div className="messages-filter" role="tablist" aria-label="Фильтр диалогов">
-            {pageData.filters.map((filter, index) => (
-              <button key={filter} className={index === 0 ? 'is-active' : undefined} type="button">
-                {filter}
-              </button>
-            ))}
-          </div>
-
           <div className="conversation-list">
             {pageData.conversations.length > 0 ? (
               pageData.conversations.map((conversation) => (

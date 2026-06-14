@@ -3929,7 +3929,6 @@ a.workspace-profile--link:hover,
   color: var(--primary);
 }
 
-.tutor-messages .messages-filter button.is-active,
 .tutor-messages .messages-list-panel__top button,
 .tutor-messages .conversation-card__badge,
 .tutor-messages .chat-message.is-own .chat-message__bubble {
@@ -4093,34 +4092,6 @@ a.workspace-profile--link:hover,
   background: transparent;
   color: var(--ink);
   font-size: 13px;
-}
-
-.messages-filter {
-  display: flex;
-  gap: 4px;
-  padding: 5px;
-  border: 1px solid oklch(0.9 0.022 82);
-  border-radius: 14px;
-  background: var(--surface-muted);
-}
-
-.messages-filter button {
-  flex: 1;
-  min-height: 34px;
-  padding: 0 9px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background 160ms ease, color 160ms ease;
-}
-
-.messages-filter button.is-active {
-  background: var(--primary);
-  color: oklch(0.985 0.014 88);
 }
 
 .conversation-list {
@@ -14296,14 +14267,6 @@ a.workspace-profile--link:hover,
   .messages-list-panel,
   .messages-context-card {
     padding: 18px;
-  }
-
-  .messages-filter {
-    flex-wrap: wrap;
-  }
-
-  .messages-filter button {
-    flex: 1 1 92px;
   }
 
   .chat-header {

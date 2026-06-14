@@ -5,8 +5,6 @@ import { getTutorMessages, sendTutorMessage } from '../../shared/api/tutor';
 import { cn } from '../../shared/lib/cn';
 import type { TutorMessagesPageData } from '../../shared/types';
 
-const filters = ['Все', 'Заявки', 'Ученики', 'Архив'];
-
 export function TutorMessagesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageData, setPageData] = useState<TutorMessagesPageData | null>(null);
@@ -116,14 +114,6 @@ export function TutorMessagesPage() {
               placeholder="Поиск по родителям и ученикам"
             />
           </label>
-
-          <div className="messages-filter" role="tablist" aria-label="Фильтр диалогов">
-            {filters.map((filter, index) => (
-              <button key={filter} className={index === 0 ? 'is-active' : undefined} type="button">
-                {filter}
-              </button>
-            ))}
-          </div>
 
           <div className="conversation-list">
             {pageData.conversations.length > 0 ? (
