@@ -227,17 +227,6 @@ export function TutorMessagesPage() {
           </section>
 
           <section className="messages-context-card">
-            <h2>Быстрые действия</h2>
-            <div className="message-quick-actions">
-              {pageData.quickActions.map((action) => (
-                <button key={action} type="button">
-                  {action}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <section className="messages-context-card">
             <h2>Материалы</h2>
             <div className="message-attachments">
               {pageData.materials.map((material) => (

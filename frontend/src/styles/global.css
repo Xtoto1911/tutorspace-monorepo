@@ -3946,8 +3946,7 @@ a.workspace-profile--link:hover,
   color: var(--primary-strong);
 }
 
-.tutor-messages .message-composer button[type='button'],
-.tutor-messages .message-quick-actions button {
+.tutor-messages .message-composer button[type='button'] {
   color: var(--primary);
 }
 
@@ -4462,31 +4461,6 @@ a.workspace-profile--link:hover,
   font-size: 13px;
   font-weight: 800;
   text-align: right;
-}
-
-.message-quick-actions {
-  display: grid;
-  gap: 9px;
-}
-
-.message-quick-actions button {
-  min-height: 40px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
-  color: var(--primary);
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
-}
-
-.message-quick-actions button:hover,
-.message-quick-actions button:focus-visible {
-  border-color: var(--primary);
-  background: var(--primary-soft);
-  outline: 0;
-  transform: translateY(-1px);
 }
 
 .message-attachments {
