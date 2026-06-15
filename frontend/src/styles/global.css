@@ -315,7 +315,7 @@ p {
   min-height: 38px;
   padding: 0 16px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -2089,6 +2089,7 @@ a.workspace-profile--link:hover,
   gap: 10px;
   padding: 0 14px;
   border: 1px solid var(--border);
+  border-radius: 14px;
   background: #f9fafb;
 }
 
@@ -2112,6 +2113,7 @@ a.workspace-profile--link:hover,
   gap: 10px;
   padding: 0 14px;
   border: 1px solid var(--border);
+  border-radius: 14px;
   background: #f9fafb;
   color: #6b7280;
 }
@@ -2129,7 +2131,8 @@ a.workspace-profile--link:hover,
 .workspace-topbar__support {
   min-height: 40px;
   padding: 0 14px;
-  border-color: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 14px;
   color: #111827;
   background: #ffffff;
 }
@@ -2140,6 +2143,7 @@ a.workspace-profile--link:hover,
   justify-content: center;
   gap: 8px;
   border: 0;
+  border-radius: 14px;
   color: #ffffff;
   background: #4f46e5;
   font-size: 12px;
@@ -2313,7 +2317,7 @@ a.workspace-profile--link:hover,
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
   gap: 40px;
-  margin-top: 26px;
+  margin-top: 32px;
 }
 
 .workspace-sidebar {
@@ -2476,6 +2480,7 @@ a.workspace-profile--link:hover,
 
 .workspace-content {
   min-width: 0;
+  padding: 4px 4px 16px;
 }
 
 .workspace-footer {
