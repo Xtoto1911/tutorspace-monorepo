@@ -166,7 +166,7 @@ export function CatalogPage() {
     <div className="page-stack">
       <section className="catalog-layout">
         <Card className="filters-panel">
-          <SectionHeading eyebrow="Фильтры" title="Настроить подбор" description="Каталог обновляется по данным TutorSpace." />
+          <SectionHeading eyebrow="Фильтры" title="Настроить подбор" />
           <div className="filters-panel__quiet-note">
             <strong>Начните с предмета</strong>
             <span>Затем уточните город, формат и комфортную ставку.</span>
@@ -231,7 +231,6 @@ export function CatalogPage() {
           <SectionHeading
             eyebrow="Результаты"
             title={loading ? 'Подбираем репетиторов' : tutorsCountLabel}
-            description="Подборка обновляется после изменения фильтров."
           />
 
           <div className="subject-pills">
