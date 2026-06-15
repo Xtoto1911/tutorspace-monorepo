@@ -1,8 +1,9 @@
 package com.tutor.crmservice.lesson;
 
 import jakarta.persistence.LockModeType;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,4 +22,8 @@ public interface LessonRepository extends JpaRepository<Lesson, UUID> {
     Optional<Lesson> findByIdForUpdate(@Param("lessonId") UUID lessonId);
 
     List<Lesson> findByTutorUserIdAndStartsAtBetween(UUID tutorUserId, LocalDateTime from, LocalDateTime to);
+
+    @Modifying
+    @Query("UPDATE Lesson l SET l.tutorName = :newName WHERE l.tutorUserId = :userId AND l.tutorName <> :newName")
+    int updateTutorNameByTutorUserId(@Param("userId") UUID userId, @Param("newName") String newName);
 }

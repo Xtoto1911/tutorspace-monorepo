@@ -7,6 +7,9 @@ import {
   updateTutorSettings,
   updateTutorWorkspaceProfile,
 } from '../../shared/api/tutor';
+import { updateAuthProfile } from '../../shared/api/auth';
+import { updateSessionUserName } from '../../shared/auth/session';
+import { profileChangedEvent } from '../../components/layout-helpers';
 import { cn } from '../../shared/lib/cn';
 import type { TutorSettingsPageData, TutorWorkspaceProfilePageData } from '../../shared/types';
 import {
@@ -119,6 +122,10 @@ export function TutorWorkspaceProfilePage() {
     setSaving(true);
     setStatus('');
     try {
+      await updateAuthProfile({ name: profile.identity.name });
+      updateSessionUserName(profile.identity.name);
+      window.dispatchEvent(new Event(profileChangedEvent));
+
       const updated = await updateTutorWorkspaceProfile(profile);
       const settingsPayload = buildTutorSettingsFromWorkspaceProfile(updated, settings);
       const updatedSettings = await updateTutorSettings(settingsPayload);

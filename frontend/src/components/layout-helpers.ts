@@ -12,6 +12,7 @@ export type WorkspaceSidebarCardViewModel = {
 };
 
 export const tutorSidebarRefreshEvent = 'tutorspace:tutor-sidebar-refresh';
+export const profileChangedEvent = 'tutorspace:profile-changed';
 
 export function getWorkspaceNotificationButtonLabel(unreadCount: number) {
   return unreadCount > 0 ? `Уведомления ${unreadCount}` : 'Уведомления';
