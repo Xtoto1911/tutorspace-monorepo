@@ -826,7 +826,13 @@ p {
   margin: 0;
 }
 
-.filters-panel__cta,
+.filters-panel__cta {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .tutor-card__subjects {
   display: flex;
   gap: 10px;

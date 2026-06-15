@@ -135,10 +135,13 @@ describe('formatRating / formatPrice', () => {
     expect(formatRating(4.5)).toBe('4.5');
   });
 
-  it('returns empty string for 0 or undefined (so the filter is dropped)', () => {
-    expect(formatRating(0)).toBe('');
+  it('keeps 0 visible in the input (user intent preserved)', () => {
+    expect(formatRating(0)).toBe('0');
+    expect(formatPrice(0)).toBe('0');
+  });
+
+  it('returns empty string for undefined (filter is off, field is empty)', () => {
     expect(formatRating(undefined)).toBe('');
-    expect(formatPrice(0)).toBe('');
     expect(formatPrice(undefined)).toBe('');
   });
 

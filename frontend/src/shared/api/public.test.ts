@@ -254,6 +254,20 @@ describe('public catalog live mapping', () => {
     expect(calledPath).toContain('minPricePerHour=1500');
     expect(calledPath).toContain('maxPricePerHour=3000');
   });
+
+  it('drops 0 values from query params (zero means "no filter")', async () => {
+    apiRequest.mockResolvedValueOnce([]);
+
+    await listTutors({
+      minRating: 0,
+      maxRating: 0,
+      minPrice: 0,
+      maxPrice: 0,
+    });
+
+    const calledPath = vi.mocked(apiRequest).mock.calls[0]?.[0] as string;
+    expect(calledPath).toBe('/marketplace/tutors');
+  });
 });
 
 describe('public tutor inquiry', () => {
