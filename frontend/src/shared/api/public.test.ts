@@ -237,6 +237,23 @@ describe('public catalog live mapping', () => {
       tags: ['Онлайн', 'ЕГЭ'],
     });
   });
+
+  it('forwards rating and price range filters as query params to the backend', async () => {
+    apiRequest.mockResolvedValueOnce([]);
+
+    await listTutors({
+      minRating: 4.5,
+      maxRating: 4.9,
+      minPrice: 1500,
+      maxPrice: 3000,
+    });
+
+    const calledPath = vi.mocked(apiRequest).mock.calls[0]?.[0] as string;
+    expect(calledPath).toContain('minRating=4.5');
+    expect(calledPath).toContain('maxRating=4.9');
+    expect(calledPath).toContain('minPricePerHour=1500');
+    expect(calledPath).toContain('maxPricePerHour=3000');
+  });
 });
 
 describe('public tutor inquiry', () => {
