@@ -56,3 +56,22 @@ export function formatPrice(value: number | undefined): string {
   }
   return String(value);
 }
+
+const TUTOR_FORMS = ['репетитор', 'репетитора', 'репетиторов'] as const;
+
+export function pluralizeTutors(count: number | null | undefined): string {
+  const safe = Number.isFinite(count) && count !== null ? Math.max(0, Math.trunc(count as number)) : 0;
+  const mod100 = safe % 100;
+  const mod10 = safe % 10;
+  let form: (typeof TUTOR_FORMS)[number];
+  if (mod100 >= 11 && mod100 <= 14) {
+    form = TUTOR_FORMS[2];
+  } else if (mod10 === 1) {
+    form = TUTOR_FORMS[0];
+  } else if (mod10 >= 2 && mod10 <= 4) {
+    form = TUTOR_FORMS[1];
+  } else {
+    form = TUTOR_FORMS[2];
+  }
+  return `${safe} ${form}`;
+}

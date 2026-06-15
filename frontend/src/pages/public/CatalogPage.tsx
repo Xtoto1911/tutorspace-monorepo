@@ -20,6 +20,7 @@ import {
   formatRating,
   parsePrice,
   parseRating,
+  pluralizeTutors,
   sanitizePriceInput,
   sanitizeRatingInput,
 } from './catalog-filter-helpers';
@@ -131,7 +132,7 @@ export function CatalogPage() {
   }, [filters, reloadKey]);
 
   const selectedSubject = subjects.find((item) => item.slug === filters.subject);
-  const tutorsCountLabel = `${tutors.length} ${tutors.length === 1 ? 'репетитор' : tutors.length < 5 ? 'репетитора' : 'репетиторов'}`;
+  const tutorsCountLabel = pluralizeTutors(tutors.length);
 
   const handleToggleFavorite = async (tutor: TutorSummary) => {
     if (!canUseFavorites || favoriteBusyId) {
