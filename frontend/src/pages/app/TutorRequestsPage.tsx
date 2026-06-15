@@ -303,70 +303,78 @@ export function TutorRequestsPage() {
                     </div>
 
                     <div className="tutor-request-card__actions">
-                      {primaryAction.kind === 'schedule' && primaryAction.href ? (
-                        <LinkButton to={primaryAction.href}>{primaryAction.label}</LinkButton>
-                      ) : null}
-                      {primaryAction.kind === 'message' && primaryAction.href ? (
-                        <LinkButton to={primaryAction.href}>{primaryAction.label}</LinkButton>
-                      ) : null}
-                      {request.stage === 'NEW' ? (
-                        <Button
-                          variant="ghost"
-                          onClick={() => void handleStage(request.id, 'VIEWED')}
-                          disabled={loadingId === request.id}
-                        >
-                          {loadingId === request.id && loadingAction === 'VIEWED' ? '...' : 'Просмотрена'}
+                      {request.stage === 'ARCHIVED' ? (
+                        <Button variant="ghost" disabled>
+                          В архиве
                         </Button>
-                      ) : null}
-                      {canAcceptTutorRequest(request.status) ? (
+                      ) : (
                         <>
-                          <Button
-                            onClick={() => void handleAccept(request.id)}
-                            disabled={loadingId === request.id && loadingAction === 'accept'}
-                          >
-                            {loadingId === request.id && loadingAction === 'accept' ? '...' : 'Принять'}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            onClick={() => setRejectingId(request.id)}
-                            disabled={loadingId === request.id}
-                          >
-                            Отклонить
-                          </Button>
+                          {primaryAction.kind === 'schedule' && primaryAction.href ? (
+                            <LinkButton to={primaryAction.href}>{primaryAction.label}</LinkButton>
+                          ) : null}
+                          {primaryAction.kind === 'message' && primaryAction.href ? (
+                            <LinkButton to={primaryAction.href}>{primaryAction.label}</LinkButton>
+                          ) : null}
+                          {request.stage === 'NEW' ? (
+                            <Button
+                              variant="ghost"
+                              onClick={() => void handleStage(request.id, 'VIEWED')}
+                              disabled={loadingId === request.id}
+                            >
+                              {loadingId === request.id && loadingAction === 'VIEWED' ? '...' : 'Просмотрена'}
+                            </Button>
+                          ) : null}
+                          {canAcceptTutorRequest(request.status) ? (
+                            <>
+                              <Button
+                                onClick={() => void handleAccept(request.id)}
+                                disabled={loadingId === request.id && loadingAction === 'accept'}
+                              >
+                                {loadingId === request.id && loadingAction === 'accept' ? '...' : 'Принять'}
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                onClick={() => setRejectingId(request.id)}
+                                disabled={loadingId === request.id}
+                              >
+                                Отклонить
+                              </Button>
+                            </>
+                          ) : null}
+                          {request.stage === 'ACCEPTED' ? (
+                            <Button
+                              variant="ghost"
+                              onClick={() => void handleStage(request.id, 'CONTACT_ESTABLISHED')}
+                              disabled={loadingId === request.id}
+                            >
+                              {loadingId === request.id && loadingAction === 'CONTACT_ESTABLISHED' ? '...' : 'Контакт есть'}
+                            </Button>
+                          ) : null}
+                          {request.stage === 'TRIAL_SCHEDULED' ? (
+                            <Button
+                              variant="ghost"
+                              onClick={() => void handleStage(request.id, 'STUDENT')}
+                              disabled={loadingId === request.id}
+                            >
+                              {loadingId === request.id && loadingAction === 'STUDENT' ? '...' : 'Стал учеником'}
+                            </Button>
+                          ) : null}
+                          {request.stage && !['REJECTED', 'CANCELLED', 'ARCHIVED', 'STUDENT'].includes(request.stage) ? (
+                            <Button
+                              variant="ghost"
+                              onClick={() => void handleStage(request.id, 'ARCHIVED')}
+                              disabled={loadingId === request.id}
+                            >
+                              Архив
+                            </Button>
+                          ) : null}
+                          {primaryAction.kind !== 'message' ? (
+                            <LinkButton to={request.threadId ? `/app/tutor/messages?threadId=${encodeURIComponent(request.threadId)}` : '/app/tutor/messages'}>
+                              Написать
+                            </LinkButton>
+                          ) : null}
                         </>
-                      ) : null}
-                      {request.stage === 'ACCEPTED' ? (
-                        <Button
-                          variant="ghost"
-                          onClick={() => void handleStage(request.id, 'CONTACT_ESTABLISHED')}
-                          disabled={loadingId === request.id}
-                        >
-                          {loadingId === request.id && loadingAction === 'CONTACT_ESTABLISHED' ? '...' : 'Контакт есть'}
-                        </Button>
-                      ) : null}
-                      {request.stage === 'TRIAL_SCHEDULED' ? (
-                        <Button
-                          variant="ghost"
-                          onClick={() => void handleStage(request.id, 'STUDENT')}
-                          disabled={loadingId === request.id}
-                        >
-                          {loadingId === request.id && loadingAction === 'STUDENT' ? '...' : 'Стал учеником'}
-                        </Button>
-                      ) : null}
-                      {request.stage && !['REJECTED', 'CANCELLED', 'ARCHIVED', 'STUDENT'].includes(request.stage) ? (
-                        <Button
-                          variant="ghost"
-                          onClick={() => void handleStage(request.id, 'ARCHIVED')}
-                          disabled={loadingId === request.id}
-                        >
-                          Архив
-                        </Button>
-                      ) : null}
-                      {primaryAction.kind !== 'message' ? (
-                      <LinkButton to={request.threadId ? `/app/tutor/messages?threadId=${encodeURIComponent(request.threadId)}` : '/app/tutor/messages'}>
-                        Написать
-                      </LinkButton>
-                      ) : null}
+                      )}
                     </div>
                   </div>
                 </div>

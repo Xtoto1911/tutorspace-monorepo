@@ -23,7 +23,7 @@ import {
 import { TutorProfilePage } from './pages/public/TutorProfilePage';
 import { SectionPlaceholderPage } from './pages/sections/SectionPlaceholderPage';
 import { roadmapSections } from './shared/config/roadmap';
-import { AppEntryRedirect, RequireAuth } from './components/route-guards';
+import { AppEntryRedirect, RequireAuth, RequireGuest } from './components/route-guards';
 import { AdminAuditPage } from './pages/app/AdminAuditPage';
 import { AdminDashboardPage } from './pages/app/AdminDashboardPage';
 import { AdminSettingsPage } from './pages/app/AdminSettingsPage';
@@ -149,7 +149,7 @@ export function App() {
           <Route path="terms" element={<TermsPage />} />
         </Route>
 
-        <Route path="auth" element={<PublicLayout />}>
+        <Route path="auth" element={<RequireGuest><PublicLayout /></RequireGuest>}>
           <Route index element={<SignInPage />} />
           <Route path="sign-in" element={<SignInPage />} />
           <Route path="sign-up" element={<SignUpChoicePage />} />

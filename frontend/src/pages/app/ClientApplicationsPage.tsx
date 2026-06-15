@@ -1,13 +1,36 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, LinkButton } from '../../components/primitives';
 import { cancelClientApplication, getClientApplicationsPage } from '../../shared/api/client';
 import { cn } from '../../shared/lib/cn';
 import type { ClientApplicationsPageData } from '../../shared/types';
 
+const APPLICATION_TAB_STATUSES: Record<string, string[]> = {
+  'Все': [],
+  'Ожидают ответа': ['Ждет ответа', 'Репетитор откликнулся'],
+  'Запланированы': ['Занятие назначено', 'Заявка принята'],
+  'Завершены': ['Стал учеником', 'Отклонена', 'Отменена'],
+};
+
+const DEFAULT_TAB = 'Все';
+
+function matchesApplicationTab(application: { status: string }, tab: string): boolean {
+  const statuses = APPLICATION_TAB_STATUSES[tab];
+  if (!statuses) {
+    return true;
+  }
+  if (statuses.length === 0) {
+    return true;
+  }
+  return statuses.includes(application.status);
+}
+
 export function ClientApplicationsPage() {
   const [pageData, setPageData] = useState<ClientApplicationsPageData | null>(null);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [cancelModalId, setCancelModalId] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [activeTab, setActiveTab] = useState<string>(DEFAULT_TAB);
 
   const loadPage = async () => {
     setIsLoading(true);
@@ -22,19 +45,37 @@ export function ClientApplicationsPage() {
     }
   };
 
-  const handleCancel = async (applicationId: string) => {
-    if (!confirm('Отменить заявку? Это действие нельзя отменить.')) return;
+  const openCancelModal = (applicationId: string) => {
+    setCancelModalId(applicationId);
+    setError('');
+  };
+
+  const closeCancelModal = () => {
+    setCancelModalId(null);
+    setIsCancelling(false);
+  };
+
+  const handleCancel = async () => {
+    if (!cancelModalId) return;
+    setIsCancelling(true);
     try {
-      await cancelClientApplication(applicationId);
+      await cancelClientApplication(cancelModalId);
+      closeCancelModal();
       await loadPage();
     } catch {
       setError('Не удалось отменить заявку.');
+      setIsCancelling(false);
     }
   };
 
   useEffect(() => {
     void loadPage();
   }, []);
+
+  const filteredApplications = useMemo(() => {
+    const applications = pageData?.applications ?? [];
+    return applications.filter((application) => matchesApplicationTab(application, activeTab));
+  }, [pageData?.applications, activeTab]);
 
   if (isLoading) {
     return <div className="client-applications">Загрузка заявок...</div>;
@@ -56,7 +97,6 @@ export function ClientApplicationsPage() {
           <h1>Мои заявки</h1>
           <p>Отслеживайте ответы репетиторов, ближайшие занятия и историю обращений.</p>
         </div>
-        <Button className="client-applications__new">Новая заявка</Button>
       </header>
 
       <section className="client-applications__metrics" aria-label="Сводка по заявкам">
@@ -69,8 +109,14 @@ export function ClientApplicationsPage() {
       </section>
 
       <nav className="client-tabs" aria-label="Фильтр заявок">
-        {pageData.tabs.map((tab, index) => (
-          <button key={tab} className={cn('client-tabs__item', index === 0 && 'is-active')} type="button">
+        {pageData.tabs.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            className={cn('client-tabs__item', activeTab === tab && 'is-active')}
+            onClick={() => setActiveTab(tab)}
+            aria-pressed={activeTab === tab}
+          >
             {tab}
           </button>
         ))}
@@ -80,7 +126,9 @@ export function ClientApplicationsPage() {
         <section className="applications-list" aria-label="Список заявок">
           {pageData.applications.length === 0 ? (
             <p>Заявок пока нет. Выберите репетитора в каталоге и отправьте первую заявку.</p>
-          ) : pageData.applications.map((application) => (
+          ) : filteredApplications.length === 0 ? (
+            <p>В этой категории пока нет заявок.</p>
+          ) : filteredApplications.map((application) => (
             <article key={application.id} className="application-card">
               <div className="application-card__avatar">{application.initials}</div>
 
@@ -108,9 +156,8 @@ export function ClientApplicationsPage() {
                   Открыть
                 </LinkButton>
                 {(application.status === 'Ждет ответа' || application.status === 'Заявка принята' || application.status === 'Занятие назначено') && (
-                  <Button variant="ghost" onClick={() => void handleCancel(application.id)}>Отменить</Button>
+                  <Button variant="ghost" onClick={() => openCancelModal(application.id)}>Отменить</Button>
                 )}
-                <Button>{application.action}</Button>
               </div>
             </article>
           ))}
@@ -124,32 +171,25 @@ export function ClientApplicationsPage() {
             <p>{pageData.nextLesson.text}</p>
             <Button variant="ghost">Открыть урок</Button>
           </section>
-
-          <section className="client-side-card">
-            <h2>Подбор репетитора</h2>
-            <div className="match-progress">
-              {pageData.matchProgress.map((item) => (
-                <div key={item.label} className="match-progress__item">
-                  <div>
-                    <span>{item.label}</span>
-                    <strong>{item.value}%</strong>
-                  </div>
-                  <meter min="0" max="100" value={item.value} />
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="client-side-card">
-            <h2>Рекомендации</h2>
-            <ul className="client-recommendations">
-              {pageData.recommendations.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </section>
         </aside>
       </div>
+
+      {cancelModalId && (
+        <div className="modal-backdrop" onClick={closeCancelModal}>
+          <div className="modal" onClick={(event) => event.stopPropagation()}>
+            <h3>Отменить заявку?</h3>
+            <p className="modal-hint">Это действие нельзя отменить. Заявка будет закрыта, и репетитор увидит статус «Отменена».</p>
+            <div className="modal-actions">
+              <Button variant="ghost" onClick={closeCancelModal} disabled={isCancelling}>
+                Вернуться
+              </Button>
+              <Button onClick={() => void handleCancel()} disabled={isCancelling}>
+                {isCancelling ? 'Отмена...' : 'Отменить заявку'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

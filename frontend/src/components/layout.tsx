@@ -220,7 +220,7 @@ const sectionChrome: Record<
     subtitle: 'Кабинет клиента',
     profileName: 'Анна Родионова',
     profileInitials: 'АР',
-    profileRole: 'родитель / клиент',
+    profileRole: 'клиент',
     navTitle: 'Навигация клиента',
     primaryCardTitle: 'Расписание',
     primaryCardMeta: 'Live CRM',
@@ -286,7 +286,7 @@ const tutorNavLabelMap: Record<string, string> = {
 const tutorRouteOrder = ['requests', 'calendar', 'students', 'profile', 'messages', 'subscription'];
 
 const roleLabelMap: Record<Role, string> = {
-  parent: 'родитель',
+  parent: 'клиент',
   tutor: 'репетитор',
   admin: 'admin',
   moderator: 'moderator',
@@ -341,6 +341,22 @@ function getWorkspaceRouteLabel(sectionKey: keyof typeof sectionBasePaths, route
   }
 
   return route.title;
+}
+
+function getWorkspaceProfileLinkTarget(sectionKey: keyof typeof sectionBasePaths): string {
+  if (sectionKey === 'tutor') {
+    return '/app/tutor';
+  }
+  if (sectionKey === 'client') {
+    return '/app/client';
+  }
+  if (sectionKey === 'admin') {
+    return '/admin';
+  }
+  if (sectionKey === 'moderator') {
+    return '/moderator';
+  }
+  return '#';
 }
 
 export function SectionLayout({ sectionKey }: { sectionKey: keyof typeof sectionBasePaths }) {
@@ -652,13 +668,16 @@ export function SectionLayout({ sectionKey }: { sectionKey: keyof typeof section
             id={`workspace-sidebar-${sectionKey}`}
             className={cn('workspace-sidebar', navigationOpen && 'is-open')}
           >
-            <div className="workspace-profile">
+            <Link
+              to={getWorkspaceProfileLinkTarget(sectionKey)}
+              className="workspace-profile workspace-profile--link"
+            >
               <span className="workspace-profile__avatar">{workspaceUser.initials}</span>
               <span>
                 <strong>{workspaceUser.name}</strong>
                 <small>{workspaceUser.role}</small>
               </span>
-            </div>
+            </Link>
             <button className="workspace-sidebar__logout" type="button" onClick={handleLogout}>
               Выйти из аккаунта
             </button>

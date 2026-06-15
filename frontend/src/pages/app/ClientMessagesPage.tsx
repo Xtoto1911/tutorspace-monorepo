@@ -103,9 +103,6 @@ export function ClientMessagesPage() {
         <aside className="messages-list-panel" aria-label="Список диалогов">
           <div className="messages-list-panel__top">
             <h2>Диалоги</h2>
-            <button type="button" aria-label="Создать диалог">
-              +
-            </button>
           </div>
 
           <label className="messages-search">
@@ -117,14 +114,6 @@ export function ClientMessagesPage() {
               placeholder="Поиск по сообщениям"
             />
           </label>
-
-          <div className="messages-filter" role="tablist" aria-label="Фильтр диалогов">
-            {pageData.filters.map((filter, index) => (
-              <button key={filter} className={index === 0 ? 'is-active' : undefined} type="button">
-                {filter}
-              </button>
-            ))}
-          </div>
 
           <div className="conversation-list">
             {pageData.conversations.length > 0 ? (

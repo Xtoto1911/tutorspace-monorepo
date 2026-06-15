@@ -25,21 +25,6 @@ const workspaceRoutes = [
   },
 ];
 
-const trustItems = [
-  {
-    title: 'Без давления на выбор',
-    text: 'Показываем цену, формат, отзывы и ближайшие окна, чтобы решение было спокойным.',
-  },
-  {
-    title: 'Коммуникация в контексте',
-    text: 'Заявки, сообщения и расписание не распадаются по разным каналам.',
-  },
-  {
-    title: 'Честная модель оплаты',
-    text: 'TutorSpace берет деньги за подписку и CRM-возможности, не выступая гарантом оплаты уроков.',
-  },
-];
-
 const dashboardRows = [
   { label: 'Заявка', value: 'Анна, 9 класс', meta: 'математика, ЕГЭ' },
   { label: 'Окно', value: 'Сегодня 18:30', meta: 'пробный урок' },
@@ -257,54 +242,6 @@ export function HomePage() {
               <li>Оставьте заявку из профиля.</li>
             </ul>
           </aside>
-        </div>
-      </section>
-
-      <section className="home-flow" aria-labelledby="flow-title">
-        <div className="home-section-heading">
-          <span>Маршрут</span>
-          <h2 id="flow-title">Понятный путь без лишних экранов</h2>
-        </div>
-
-        <div className="home-flow__grid">
-          {content?.process.map((step, index) => (
-            <article key={step.title} className="home-flow-step">
-              <span>{String(index + 1).padStart(2, '0')}</span>
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-trust" aria-labelledby="trust-title">
-        <div className="home-section-heading">
-          <span>Доверие</span>
-          <h2 id="trust-title">Спокойный интерфейс для серьезных договоренностей</h2>
-        </div>
-
-        <div className="home-trust__grid">
-          {trustItems.map((item) => (
-            <article key={item.title} className="home-trust-card">
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="home-final">
-        <div>
-          <span>Готовы начать</span>
-          <h2>Выберите преподавателя сейчас, а организацию обучения оставьте TutorSpace</h2>
-        </div>
-        <div className="home-final__actions">
-          <LinkButton to="/catalog" variant="primary">
-            Найти репетитора
-          </LinkButton>
-          <LinkButton to="/auth/sign-up/tutor" variant="ghost">
-            Подключить CRM
-          </LinkButton>
         </div>
       </section>
     </div>

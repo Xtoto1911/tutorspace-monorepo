@@ -5,8 +5,6 @@ import { getTutorMessages, sendTutorMessage } from '../../shared/api/tutor';
 import { cn } from '../../shared/lib/cn';
 import type { TutorMessagesPageData } from '../../shared/types';
 
-const filters = ['Все', 'Заявки', 'Ученики', 'Архив'];
-
 export function TutorMessagesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [pageData, setPageData] = useState<TutorMessagesPageData | null>(null);
@@ -89,11 +87,6 @@ export function TutorMessagesPage() {
           <h1>Сообщения</h1>
           <p>Диалоги с родителями, учениками и поддержкой: заявки, занятия, материалы и быстрые действия рядом.</p>
         </div>
-
-        <div className="tutor-messages__actions">
-          <Button variant="ghost">Шаблоны ответов</Button>
-          <Button>Новый диалог</Button>
-        </div>
       </header>
 
       <section className="messages-metrics" aria-label="Сводка сообщений репетитора">
@@ -110,9 +103,6 @@ export function TutorMessagesPage() {
         <aside className="messages-list-panel" aria-label="Список диалогов">
           <div className="messages-list-panel__top">
             <h2>Диалоги</h2>
-            <button type="button" aria-label="Создать диалог">
-              +
-            </button>
           </div>
 
           <label className="messages-search">
@@ -124,14 +114,6 @@ export function TutorMessagesPage() {
               placeholder="Поиск по родителям и ученикам"
             />
           </label>
-
-          <div className="messages-filter" role="tablist" aria-label="Фильтр диалогов">
-            {filters.map((filter, index) => (
-              <button key={filter} className={index === 0 ? 'is-active' : undefined} type="button">
-                {filter}
-              </button>
-            ))}
-          </div>
 
           <div className="conversation-list">
             {pageData.conversations.length > 0 ? (

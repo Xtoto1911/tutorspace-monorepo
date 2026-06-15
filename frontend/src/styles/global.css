@@ -991,7 +991,7 @@ p {
 
 .tutor-profile__stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1326,6 +1326,72 @@ p {
 .tutor-profile__slot-option.is-active {
   border-color: var(--primary);
   background: var(--primary-soft);
+}
+
+.tutor-profile__slot-select {
+  display: grid;
+  gap: 8px;
+}
+
+.tutor-profile__slot-select span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tutor-profile__slot-select select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.tutor-profile__slot-select small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.tutor-profile__slot-stepper {
+  display: grid;
+  gap: 14px;
+}
+
+.tutor-profile__slot-stepper > small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.tutor-profile__slot-stepper-field {
+  display: grid;
+  gap: 8px;
+}
+
+.tutor-profile__slot-stepper-field > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tutor-profile__slot-stepper-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.tutor-profile__slot-stepper-field select:focus-visible {
+  outline: 2px solid var(--primary-soft);
+  border-color: var(--primary);
 }
 
 .tutor-profile__request-note {
@@ -1940,6 +2006,7 @@ p {
   border-radius: 22px;
   background: #ffffff;
   box-shadow: 0 24px 60px rgba(16, 24, 40, 0.05);
+  z-index: 5;
 }
 
 .workspace-logo,
@@ -1948,6 +2015,22 @@ p {
   align-items: center;
   gap: 12px;
   min-width: 0;
+}
+
+a.workspace-profile--link,
+.workspace-profile--link {
+  text-decoration: none;
+  color: inherit;
+  border-radius: 12px;
+  padding: 6px 10px;
+  margin: -6px -10px;
+  transition: background-color 120ms ease;
+  cursor: pointer;
+}
+
+a.workspace-profile--link:hover,
+.workspace-profile--link:hover {
+  background-color: rgba(79, 70, 229, 0.08);
 }
 
 .workspace-logo__mark,
@@ -2085,7 +2168,7 @@ p {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  z-index: 30;
+  z-index: 200;
   width: min(360px, calc(100vw - 32px));
   padding: 12px;
   border: 1px solid var(--border);
@@ -2456,13 +2539,6 @@ p {
   line-height: 1.5;
 }
 
-.client-applications__new {
-  min-width: 156px;
-  min-height: 46px;
-  border-radius: 14px;
-  font-size: 15px;
-}
-
 .client-applications__metrics {
   display: flex;
   align-items: flex-start;
@@ -2716,74 +2792,6 @@ p {
   color: #4338ca;
   font-size: 13px;
   font-weight: 600;
-}
-
-.match-progress {
-  display: grid;
-  gap: 14px;
-}
-
-.match-progress__item {
-  display: grid;
-  gap: 8px;
-}
-
-.match-progress__item div {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.match-progress__item span {
-  color: #374151;
-  font-size: 14px;
-}
-
-.match-progress__item strong {
-  color: #6b7280;
-  font-size: 13px;
-}
-
-.match-progress meter {
-  width: 100%;
-  height: 7px;
-}
-
-.match-progress meter::-webkit-meter-bar {
-  border: 0;
-  border-radius: 999px;
-  background: #eef2f7;
-}
-
-.match-progress meter::-webkit-meter-optimum-value {
-  border-radius: 999px;
-  background: #4f46e5;
-}
-
-.client-recommendations {
-  display: grid;
-  gap: 14px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.client-recommendations li {
-  position: relative;
-  padding-left: 20px;
-  color: #4b5563;
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.client-recommendations li::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  top: -2px;
-  color: #4f46e5;
-  font-size: 18px;
 }
 
 .application-details {
@@ -3311,6 +3319,14 @@ p {
 
 .schedule-period {
   display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  width: min(100%, 520px);
+}
+
+.schedule-period__copy {
+  display: grid;
   gap: 4px;
   justify-items: center;
 }
@@ -3331,6 +3347,28 @@ p {
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+}
+
+.schedule-period__nav {
+  width: 42px;
+  min-width: 42px;
+  padding-inline: 0;
+  font-size: 20px;
+}
+
+.schedule-period__today {
+  border: 0;
+  background: transparent;
+  color: #4f46e5;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.schedule-period__today:disabled {
+  color: var(--muted);
+  cursor: default;
 }
 
 .schedule-toolbar__sync {
@@ -3386,7 +3424,7 @@ p {
 
 .schedule-layout {
   display: grid;
-  grid-template-columns: minmax(0, 640px) 300px;
+  grid-template-columns: minmax(0, 1fr) 300px;
   gap: 20px;
   align-items: start;
 }
@@ -3434,7 +3472,7 @@ p {
 
 .week-calendar-card__days {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -3472,10 +3510,11 @@ p {
 }
 
 .week-calendar-grid {
-  min-width: 580px;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 70px repeat(5, minmax(92px, 1fr));
-  grid-template-rows: 36px repeat(5, 76px);
+  grid-template-columns: 64px repeat(7, minmax(0, 1fr));
+  grid-template-rows: 36px;
+  grid-auto-rows: 76px;
   position: relative;
   border: 1px solid #edf0f5;
   border-radius: 22px;
@@ -3873,16 +3912,14 @@ p {
   line-height: 1.5;
 }
 
-.client-messages__actions,
-.tutor-messages__actions {
+.client-messages__actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 12px;
 }
 
-.client-messages__actions .btn,
-.tutor-messages__actions .btn {
+.client-messages__actions .btn {
   min-height: 46px;
   border-radius: 14px;
   font-size: 15px;
@@ -3892,7 +3929,6 @@ p {
   color: var(--primary);
 }
 
-.tutor-messages .messages-filter button.is-active,
 .tutor-messages .messages-list-panel__top button,
 .tutor-messages .conversation-card__badge,
 .tutor-messages .chat-message.is-own .chat-message__bubble {
@@ -3976,6 +4012,7 @@ p {
 .messages-list-panel,
 .messages-chat-panel,
 .messages-context-card {
+  min-width: 0;
   border: 1px solid var(--border);
   background: var(--surface);
   box-shadow: none;
@@ -4057,34 +4094,6 @@ p {
   font-size: 13px;
 }
 
-.messages-filter {
-  display: flex;
-  gap: 4px;
-  padding: 5px;
-  border: 1px solid oklch(0.9 0.022 82);
-  border-radius: 14px;
-  background: var(--surface-muted);
-}
-
-.messages-filter button {
-  flex: 1;
-  min-height: 34px;
-  padding: 0 9px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background 160ms ease, color 160ms ease;
-}
-
-.messages-filter button.is-active {
-  background: var(--primary);
-  color: oklch(0.985 0.014 88);
-}
-
 .conversation-list {
   display: grid;
   gap: 8px;
@@ -4163,6 +4172,7 @@ p {
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .conversation-card__preview {
@@ -4306,6 +4316,8 @@ p {
   color: oklch(0.36 0.022 72);
   font-size: 14px;
   line-height: 1.5;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .chat-message.is-own strong,
@@ -4398,6 +4410,7 @@ p {
 }
 
 .messages-context-panel {
+  min-width: 0;
   display: grid;
   align-content: start;
   gap: 16px;
@@ -5624,11 +5637,19 @@ p {
 }
 
 .client-settings__header {
-  min-height: 104px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 28px;
+}
+
+.client-settings__header > div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.client-settings__header .btn {
+  flex-shrink: 0;
 }
 
 .client-settings__header h1 {
@@ -5651,6 +5672,25 @@ p {
   padding: 0 30px;
   border-radius: 14px;
   font-size: 15px;
+}
+
+.settings-notice {
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.settings-notice--success {
+  background: oklch(0.97 0.025 158);
+  color: oklch(0.4 0.12 158);
+  border: 1px solid oklch(0.85 0.06 158);
+}
+
+.settings-notice--error {
+  background: oklch(0.97 0.027 28);
+  color: oklch(0.45 0.12 28);
+  border: 1px solid oklch(0.85 0.06 28);
 }
 
 .settings-stats {
@@ -5726,9 +5766,9 @@ p {
 
 .settings-main-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 32px;
-  align-items: stretch;
+  align-items: start;
 }
 
 .settings-bottom-grid {
@@ -5746,10 +5786,13 @@ p {
 }
 
 .settings-profile-card,
-.settings-students-card,
-.settings-main-grid > .settings-card {
-  min-height: 420px;
+.settings-students-card {
   padding: 28px;
+}
+
+.settings-main-grid > .settings-account-card {
+  min-height: auto;
+  padding: 24px 28px;
 }
 
 .settings-bottom-grid .settings-card {
@@ -5802,6 +5845,14 @@ p {
   font: inherit;
   font-size: 15px;
   font-weight: 700;
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+}
+
+.settings-field input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
 .settings-students-list,
@@ -6015,21 +6066,49 @@ p {
 .settings-account-card {
   display: grid;
   align-content: center;
-  gap: 14px;
+  gap: 18px;
+}
+
+.settings-account-card h2 {
+  margin: 0;
 }
 
 .settings-account-card div {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
+  gap: 0;
+  grid-template-columns: 1fr;
+  border-top: 1px solid var(--border);
 }
 
 .settings-account-card .btn {
-  min-height: 46px;
-  border-radius: 14px;
+  min-height: 52px;
+  border-radius: 0;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  justify-content: flex-start;
+  font-size: 15px;
 }
 
 .settings-account-card__delete {
+  color: #ef4444;
+}
+
+.settings-account-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-right: 12px;
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.06);
+  font-size: 14px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.settings-account-card__delete .settings-account-card__icon {
+  background: rgba(239, 68, 68, 0.12);
   color: #ef4444;
 }
 
@@ -6607,6 +6686,12 @@ p {
   backdrop-filter: blur(4px);
 }
 
+.workspace-shell:has(.modal-backdrop) .workspace-topbar {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+
 .modal {
   width: min(460px, 100%);
   display: grid;
@@ -6873,7 +6958,7 @@ p {
 
 .tutor-calendar-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 32px;
   align-items: start;
 }
@@ -6888,6 +6973,7 @@ p {
 }
 
 .tutor-week-card {
+  min-width: 0;
   min-height: 738px;
   padding: 28px 24px;
 }
@@ -6943,8 +7029,13 @@ p {
 }
 
 .tutor-week-scroll {
-  overflow-x: auto;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  max-height: 720px;
+  overflow: auto;
   padding-bottom: 4px;
+  scrollbar-gutter: stable;
 }
 
 .tutor-calendar-empty {
@@ -6968,10 +7059,11 @@ p {
 }
 
 .tutor-week-grid {
-  min-width: 820px;
+  width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 62px repeat(7, minmax(92px, 1fr));
-  grid-template-rows: 58px repeat(6, 86px);
+  grid-template-columns: 56px repeat(7, minmax(0, 1fr));
+  grid-template-rows: 58px repeat(15, 76px);
 }
 
 .tutor-week-grid__corner,
@@ -6982,10 +7074,22 @@ p {
 }
 
 .tutor-week-grid__head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
   display: grid;
   place-items: center;
   align-content: center;
+  background: #ffffff;
   color: #6b7280;
+}
+
+.tutor-week-grid__corner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  background: #ffffff;
 }
 
 .tutor-week-grid__head span {
@@ -7004,10 +7108,14 @@ p {
 }
 
 .tutor-week-grid__time {
+  position: sticky;
+  left: 0;
+  z-index: 2;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
   padding: 9px 14px 0 0;
+  background: #ffffff;
   color: #8aa0bd;
   font-size: 13px;
 }
@@ -7051,31 +7159,46 @@ p {
 
 .tutor-week-event {
   z-index: 1;
-  align-self: center;
+  align-self: stretch;
   justify-self: center;
   width: calc(100% - 16px);
-  min-height: 68px;
+  min-height: 0;
   display: grid;
   align-content: center;
   gap: 6px;
+  margin: 6px 0;
   padding: 12px;
   border: 1px solid;
   border-radius: 14px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, z-index 0s;
 }
 
-.tutor-week-event strong,
+.tutor-week-event strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  word-break: break-word;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
 .tutor-week-event span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.tutor-week-event strong {
-  font-size: 14px;
-}
-
-.tutor-week-event span {
   font-size: 12px;
+}
+
+.tutor-week-event:hover,
+.tutor-week-event:focus-visible {
+  z-index: 5;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
 }
 
 .tutor-week-event--indigo {
@@ -7095,7 +7218,7 @@ p {
   background: #f8fafc;
   color: #64748b;
   cursor: pointer;
-  transition: background 150ms ease, border-color 150ms ease;
+  transition: background 150ms ease, border-color 150ms ease, transform 120ms ease, box-shadow 120ms ease, z-index 0s;
 }
 
 .tutor-week-event--slate:hover {
@@ -7111,6 +7234,7 @@ p {
 
 .tutor-calendar-side {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 26px;
 }
 
@@ -7204,6 +7328,10 @@ p {
   min-height: 42px;
   margin-top: 18px;
   border-radius: 14px;
+}
+
+.tutor-calendar-event-row .btn {
+  grid-column: 2 / -1;
 }
 
 .tutor-calendar-automation {
@@ -14052,7 +14180,7 @@ p {
   }
 
   .tutor-calendar-side {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .tutor-student-profile-card {
@@ -14112,7 +14240,6 @@ p {
 
   .client-schedule__actions,
   .client-messages__actions,
-  .tutor-messages__actions,
   .tutor-settings__actions,
   .client-favorites__actions {
     justify-content: stretch;
@@ -14120,7 +14247,6 @@ p {
 
   .client-schedule__actions .btn,
   .client-messages__actions .btn,
-  .tutor-messages__actions .btn,
   .tutor-settings__actions .btn,
   .client-favorites__actions .btn {
     flex: 1 1 180px;
@@ -14129,7 +14255,6 @@ p {
   .schedule-metrics,
   .messages-metrics,
   .favorites-stats,
-  .week-calendar-card__days,
   .messages-context-panel {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -14171,7 +14296,7 @@ p {
   }
 
   .schedule-period {
-    justify-items: start;
+    justify-self: stretch;
   }
 
   .schedule-period strong {
@@ -14191,8 +14316,8 @@ p {
   }
 
   .week-calendar-grid {
-    min-width: 540px;
-    grid-template-columns: 62px repeat(5, 94px);
+    min-width: 760px;
+    grid-template-columns: 62px repeat(7, minmax(94px, 1fr));
   }
 
   .schedule-bottom-grid {
@@ -14208,14 +14333,6 @@ p {
   .messages-list-panel,
   .messages-context-card {
     padding: 18px;
-  }
-
-  .messages-filter {
-    flex-wrap: wrap;
-  }
-
-  .messages-filter button {
-    flex: 1 1 92px;
   }
 
   .chat-header {
@@ -16332,6 +16449,17 @@ p {
   align-items: center;
 }
 
+.home-desk-card--profile > div:nth-child(2) {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.home-desk-card--profile > div:nth-child(2) > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .home-desk-card--board {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   background: var(--primary-soft);
@@ -16596,13 +16724,37 @@ p {
 }
 
 .home-subject-grid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
   gap: 14px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(17, 24, 39, 0.2) transparent;
+}
+
+.home-subject-grid::-webkit-scrollbar {
+  height: 6px;
+}
+
+.home-subject-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.home-subject-grid::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.18);
 }
 
 .home-subject {
   min-height: 210px;
+  flex: 1 0 240px;
   display: grid !important;
   grid-template-columns: auto minmax(0, 1fr);
   align-content: stretch;
@@ -16614,6 +16766,7 @@ p {
   text-align: left;
   min-width: 0;
   white-space: normal;
+  scroll-snap-align: start;
 }
 
 .home-subject__index {
@@ -16687,10 +16840,6 @@ p {
     justify-self: end;
   }
 
-  .home-subject-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .home-subject {
     min-height: 156px;
   }
@@ -16706,10 +16855,6 @@ p {
     grid-column: auto;
     grid-row: auto;
     justify-self: start;
-  }
-
-  .home-subject-grid {
-    grid-template-columns: 1fr;
   }
 
   .home-subject {
@@ -16852,7 +16997,6 @@ p {
     grid-template-columns: 1fr 1fr;
   }
 
-  .home-subject-grid,
   .home-featured__cards {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -16901,7 +17045,6 @@ p {
     justify-content: flex-start;
   }
 
-  .home-subject-grid,
   .home-featured__cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -17022,7 +17165,6 @@ p {
 }
 
 @media (max-width: 640px) {
-  .home-subject-grid,
   .home-featured__cards {
     grid-template-columns: 1fr;
   }
@@ -17296,17 +17438,6 @@ p {
 .tutor-week-grid__cell:focus-visible {
   outline: 2px solid #4f46e5;
   outline-offset: -2px;
-}
-
-/* Clickable events */
-.tutor-week-event {
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-
-.tutor-week-event:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Modal overlay */

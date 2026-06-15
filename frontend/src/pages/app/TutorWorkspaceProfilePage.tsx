@@ -344,82 +344,11 @@ export function TutorWorkspaceProfilePage() {
                   </article>
                 ))}
               </div>
-              <p className="tutor-settings-privacy">Контакты показываются только после отклика или активной заявки.</p>
-            </section>
-          ) : null}
-
-          <section className="tutor-profile-preview-card">
-            <span>{profile.publicCard.subtitle}</span>
-            <h2>{profile.publicCard.title}</h2>
-            <div className="tutor-profile-preview-card__avatar">{profile.identity.avatarInitials}</div>
-            <h3>{profile.identity.name}</h3>
-            <p>{profile.identity.role}</p>
-
-            <div className="tutor-profile-preview-card__chips">
-              {profile.publicCard.chips.map((chip) => (
-                <strong key={chip}>{chip}</strong>
-              ))}
-            </div>
-
-            <div className="tutor-profile-preview-card__facts">
-              <span>{profile.publicCard.rating}</span>
-              <span>{profile.publicCard.price}</span>
-              <span>{profile.publicCard.response}</span>
-              <span>{profile.publicCard.views}</span>
-            </div>
-
-            <Button variant="ghost">Обновить превью</Button>
+            <p className="tutor-settings-privacy">Контакты показываются только после отклика или активной заявки.</p>
           </section>
+        ) : null}
 
-          {settings ? (
-            <section className="tutor-settings-card">
-              <div className="tutor-settings-card__heading">
-                <h2>Уведомления</h2>
-              </div>
-              <div className="tutor-settings-toggle-list">
-                {settings.notifications.map((item, index) => (
-                  <article key={item.title} className="tutor-settings-toggle">
-                    <div>
-                      <strong>{item.title}</strong>
-                      <p>{item.description}</p>
-                    </div>
-                    <button
-                      className={cn('settings-switch', item.enabled && 'is-on')}
-                      type="button"
-                      aria-pressed={item.enabled}
-                      onClick={() => handleToggle('notifications', index)}
-                    />
-                  </article>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {settings ? (
-            <section className="tutor-settings-card tutor-settings-moderation">
-              <div className="tutor-settings-card__heading tutor-settings-card__heading--row">
-                <h2>Модерация</h2>
-                <span>{settings.moderation.status}</span>
-              </div>
-              <p>{settings.moderation.description}</p>
-            </section>
-          ) : null}
-
-          <section className="tutor-profile-checklist-card">
-            <h2>Что улучшить</h2>
-            <div className="tutor-profile-checklist">
-              {profile.checklist.map((item) => (
-                <article key={item.title} className={cn('tutor-profile-check', item.done && 'is-done')}>
-                  <span>{item.done ? '✓' : '!'}</span>
-                  <div>
-                    <strong>{item.title}</strong>
-                    <p>{item.text}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-        </aside>
+      </aside>
       </div>
 
       <section className="tutor-profile-note" aria-label="Подсказка по профилю">

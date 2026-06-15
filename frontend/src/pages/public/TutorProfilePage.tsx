@@ -14,7 +14,7 @@ import {
 import { readAuthSession } from '../../shared/auth/session';
 import { formatCurrency, formatRating } from '../../shared/lib/format';
 import type { ReviewEligibility, TutorProfile, TutorSummary } from '../../shared/types';
-import { buildTutorSlotOptions } from './tutor-profile-request-helpers';
+import { buildTutorSlotOptions, groupTutorSlotsByDay } from './tutor-profile-request-helpers';
 
 type RequestMode = 'slot' | 'quick';
 
@@ -83,6 +83,7 @@ export function TutorProfilePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<RequestMode>('slot');
   const [selectedSlotId, setSelectedSlotId] = useState('');
+  const [selectedSlotDayKey, setSelectedSlotDayKey] = useState('');
   const [similarTutors, setSimilarTutors] = useState<TutorSummary[]>([]);
   const [isFavorite, setIsFavorite] = useState(false);
   const [favoriteBusy, setFavoriteBusy] = useState(false);
@@ -240,13 +241,45 @@ export function TutorProfilePage() {
   }, [profile]);
 
   const slotOptions = useMemo(() => (profile ? buildTutorSlotOptions(profile.schedule) : []), [profile]);
-  const selectedSlot = slotOptions.find((slot) => slot.id === selectedSlotId) ?? slotOptions[0] ?? null;
+  const slotDayGroups = useMemo(() => groupTutorSlotsByDay(slotOptions), [slotOptions]);
+  const selectedSlotDay = useMemo(
+    () => slotDayGroups.find((group) => group.dayKey === selectedSlotDayKey) ?? slotDayGroups[0] ?? null,
+    [slotDayGroups, selectedSlotDayKey],
+  );
+  const selectedSlot = useMemo(
+    () =>
+      slotOptions.find((slot) => slot.id === selectedSlotId) ??
+      selectedSlotDay?.slots[0] ??
+      slotOptions[0] ??
+      null,
+    [slotOptions, selectedSlotId, selectedSlotDay],
+  );
 
   useEffect(() => {
     if (profile && slotOptions.length === 0) {
       setSelectedRequest('quick');
     }
   }, [profile, slotOptions.length]);
+
+  useEffect(() => {
+    if (!selectedSlotDay) {
+      if (selectedSlotDayKey !== '') {
+        setSelectedSlotDayKey('');
+      }
+      return;
+    }
+    if (selectedSlotDayKey !== selectedSlotDay.dayKey) {
+      const firstSlot = selectedSlotDay.slots[0];
+      setSelectedSlotId(firstSlot ? firstSlot.id : '');
+    }
+  }, [selectedSlotDay, selectedSlotDayKey]);
+
+  const handleSlotDayChange = (dayKey: string) => {
+    setSelectedSlotDayKey(dayKey);
+    const group = slotDayGroups.find((item) => item.dayKey === dayKey);
+    const firstSlot = group?.slots[0];
+    setSelectedSlotId(firstSlot ? firstSlot.id : '');
+  };
 
   const handleQuickSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -459,8 +492,6 @@ export function TutorProfilePage() {
 
   const statTiles = [
     { label: 'отзывов', value: `${profile.stats.reviews}` },
-    { label: 'успешных заявок', value: profile.stats.successRate },
-    { label: 'учеников сейчас', value: profile.stats.activeStudents == null ? 'Нет данных' : `${profile.stats.activeStudents}` },
     { label: 'средняя оценка', value: formatRating(profile.stats.averageRating) },
   ];
 
@@ -539,9 +570,6 @@ export function TutorProfilePage() {
                 {isFavorite ? '♥ В избранном' : '♡ В избранное'}
               </Button>
             ) : null}
-            <LinkButton to="/auth/sign-up" variant="ghost">
-              Написать репетитору
-            </LinkButton>
             {canReportProfile ? (
               <Button type="button" variant="ghost" disabled={profileReportBusy} onClick={handleReportProfile}>
                 Пожаловаться
@@ -626,23 +654,76 @@ export function TutorProfilePage() {
               </div>
 
               {selectedRequest === 'slot' && slotOptions.length > 0 ? (
-                <div className="tutor-profile__slot-picker" aria-label="Свободные слоты репетитора">
-                  {slotOptions.map((slot) => {
-                    const active = selectedSlot?.id === slot.id;
-
-                    return (
-                      <button
-                        key={slot.id}
-                        type="button"
-                        className={`tutor-profile__schedule-item tutor-profile__slot-option${active ? ' is-active' : ''}`}
-                        onClick={() => setSelectedSlotId(slot.id)}
+                slotOptions.length > 8 && slotDayGroups.length > 1 ? (
+                  <div className="tutor-profile__slot-stepper" aria-label="Свободные слоты репетитора">
+                    <label className="tutor-profile__slot-stepper-field">
+                      <span>День</span>
+                      <select
+                        value={selectedSlotDay?.dayKey ?? ''}
+                        onChange={(event) => handleSlotDayChange(event.target.value)}
+                        aria-label="День занятия"
                       >
-                        <strong>{slot.label}</strong>
-                        <span>Запрос попадет репетитору с этим временем</span>
-                      </button>
-                    );
-                  })}
-                </div>
+                        {slotDayGroups.map((group) => (
+                          <option key={group.dayKey} value={group.dayKey}>
+                            {group.dayLabel}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    {selectedSlotDay && selectedSlotDay.slots.length <= 8 ? (
+                      <div className="tutor-profile__slot-picker" aria-label="Время занятия">
+                        {selectedSlotDay.slots.map((slot) => {
+                          const active = selectedSlot?.id === slot.id;
+                          return (
+                            <button
+                              key={slot.id}
+                              type="button"
+                              className={`tutor-profile__schedule-item tutor-profile__slot-option${active ? ' is-active' : ''}`}
+                              onClick={() => setSelectedSlotId(slot.id)}
+                            >
+                              <strong>{slot.label.split(', ')[2] ?? slot.label}</strong>
+                              <span>Запрос попадет репетитору с этим временем</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <label className="tutor-profile__slot-stepper-field">
+                        <span>Время</span>
+                        <select
+                          value={selectedSlotId}
+                          onChange={(event) => setSelectedSlotId(event.target.value)}
+                          aria-label="Время занятия"
+                        >
+                          {selectedSlotDay?.slots.map((slot) => (
+                            <option key={slot.id} value={slot.id}>
+                              {slot.label.split(', ')[2] ?? slot.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
+                    <small>Запрос попадет репетитору с выбранным днём и временем.</small>
+                  </div>
+                ) : (
+                  <div className="tutor-profile__slot-picker" aria-label="Свободные слоты репетитора">
+                    {slotOptions.map((slot) => {
+                      const active = selectedSlot?.id === slot.id;
+
+                      return (
+                        <button
+                          key={slot.id}
+                          type="button"
+                          className={`tutor-profile__schedule-item tutor-profile__slot-option${active ? ' is-active' : ''}`}
+                          onClick={() => setSelectedSlotId(slot.id)}
+                        >
+                          <strong>{slot.label}</strong>
+                          <span>Запрос попадет репетитору с этим временем</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )
               ) : (
                 <p className="tutor-profile__request-note">
                   Быстрая заявка не бронирует календарь. Если репетитор ее примет, ученик появится в списке кандидатов, и преподаватель сам назначит урок.

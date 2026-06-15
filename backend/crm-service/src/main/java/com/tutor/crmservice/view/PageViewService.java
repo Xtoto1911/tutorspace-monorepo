@@ -251,10 +251,15 @@ public class PageViewService {
 
     @Transactional(readOnly = true)
     public ClientSchedulePageDto getClientSchedulePage(UUID clientUserId) {
+        return getClientSchedulePage(clientUserId, null, null);
+    }
+
+    @Transactional(readOnly = true)
+    public ClientSchedulePageDto getClientSchedulePage(UUID clientUserId, LocalDate requestedFrom, LocalDate requestedTo) {
         List<Lesson> lessons = lessonRepository.findByClientUserIdOrderByStartsAtAsc(clientUserId);
         List<LessonRescheduleRequest> requests = lessonRescheduleRequestRepository.findByClientUserIdOrderByCreatedAtDesc(clientUserId);
-        LocalDate weekStart = resolveClientWeekStart(lessons);
-        LocalDate weekEnd = weekStart.plusDays(4);
+        LocalDate weekStart = requestedFrom == null ? resolveClientWeekStart(lessons) : requestedFrom;
+        LocalDate weekEnd = requestedTo == null ? weekStart.plusDays(6) : requestedTo;
         LocalDate today = currentDate();
 
         List<Lesson> weekLessons = lessons.stream()
@@ -274,7 +279,7 @@ public class PageViewService {
                             ? null
                             : messageThreadRepository.findByApplicationId(lesson.getApplicationId()).orElse(null);
                     LocalDateTime endsAt = lessonEndsAt(lesson);
-                    int dayIndex = Math.max(0, Math.min(4, lesson.getStartsAt().getDayOfWeek().getValue() - 1));
+                    int dayIndex = Math.max(0, Math.min(6, lesson.getStartsAt().getDayOfWeek().getValue() - 1));
                     int row = timeSlotRows.getOrDefault(TIME_FORMAT.format(lesson.getStartsAt()), 0);
                     boolean canJoin = canJoinLesson(lesson);
                     boolean canReschedule = canRescheduleLesson(lesson);
@@ -349,7 +354,7 @@ public class PageViewService {
                         new ClientSchedulePageDto.MetricDto("↗", String.valueOf(upcomingWeekLessons), "Впереди", "в расписании", "amber"),
                         new ClientSchedulePageDto.MetricDto("↺", String.valueOf(pendingReschedules), "Переносы", pendingReschedules == 0 ? "запросов" : "ожидают", pendingReschedules == 0 ? "emerald" : "orange")
                 ),
-                new ClientSchedulePageDto.PeriodDto(weekStart.toString(), weekStart.plusDays(4).toString(), weekStart.format(DAY_FORMAT) + "-" + weekStart.plusDays(4).format(DAY_FORMAT)),
+                new ClientSchedulePageDto.PeriodDto(weekStart.toString(), weekEnd.toString(), weekStart.format(DAY_FORMAT) + "-" + weekEnd.format(DAY_FORMAT)),
                 buildClientWeekDays(weekStart),
                 timeSlots,
                 events,
@@ -681,11 +686,16 @@ public class PageViewService {
             throw new IllegalArgumentException("'from' date must not be after 'to' date");
         }
         LocalDate weekStart = fromDate.with(DayOfWeek.MONDAY);
+        List<Lesson> visibleLessons = lessons.stream()
+                .filter(lesson -> isWithinDisplayedWeek(lesson.getStartsAt().toLocalDate(), fromDate, toDate))
+                .toList();
         List<TutorCalendarPageDto.EventDto> events = new ArrayList<>();
 
-        for (Lesson lesson : lessons) {
+        for (Lesson lesson : visibleLessons) {
             int column = Math.max(1, Math.min(7, lesson.getStartsAt().getDayOfWeek().getValue()));
-            int row = Math.max(0, Math.min(4, (lesson.getStartsAt().getHour() - 12) / 2));
+            int startMinutes = lesson.getStartsAt().getHour() * 60 + lesson.getStartsAt().getMinute();
+            int row = Math.max(0, Math.min(14, (startMinutes - 8 * 60) / 60));
+            int rows = Math.max(1, Math.min(15 - row, (lesson.getDurationMinutes() + 59) / 60));
             events.add(new TutorCalendarPageDto.EventDto(
                     lesson.getId().toString(),
                     lesson.getSubjectName(),
@@ -693,7 +703,7 @@ public class PageViewService {
                     "indigo",
                     column,
                     row,
-                    1,
+                    rows,
                     lesson.getStartsAt().toString(),
                     lesson.getSeriesId() == null ? null : lesson.getSeriesId().toString(),
                     lesson.getSeriesId() == null ? "одноразовый урок" : "еженедельная серия",
@@ -722,7 +732,9 @@ public class PageViewService {
                         new TutorCalendarPageDto.StatDto("CRM", "sync", "Связано", "заявки, ученики, сообщения", "amber")
                 ),
                 buildTutorWeekDays(weekStart),
-                List.of("12:00", "14:00", "16:00", "18:00", "20:00"),
+                java.util.stream.IntStream.rangeClosed(8, 22)
+                        .mapToObj(hour -> String.format("%02d:00", hour))
+                        .toList(),
                 events,
                 nextLesson == null
                         ? new TutorCalendarPageDto.NextLessonDto("Пока пусто", "Назначьте первый урок", "После принятия заявки создайте занятие.")
@@ -887,7 +899,9 @@ public class PageViewService {
                 new ClientSchedulePageDto.WeekDayDto("Вт", DAY_FORMAT.format(weekStart.plusDays(1)), weekStart.plusDays(1).equals(today)),
                 new ClientSchedulePageDto.WeekDayDto("Ср", DAY_FORMAT.format(weekStart.plusDays(2)), weekStart.plusDays(2).equals(today)),
                 new ClientSchedulePageDto.WeekDayDto("Чт", DAY_FORMAT.format(weekStart.plusDays(3)), weekStart.plusDays(3).equals(today)),
-                new ClientSchedulePageDto.WeekDayDto("Пт", DAY_FORMAT.format(weekStart.plusDays(4)), weekStart.plusDays(4).equals(today))
+                new ClientSchedulePageDto.WeekDayDto("Пт", DAY_FORMAT.format(weekStart.plusDays(4)), weekStart.plusDays(4).equals(today)),
+                new ClientSchedulePageDto.WeekDayDto("Сб", DAY_FORMAT.format(weekStart.plusDays(5)), weekStart.plusDays(5).equals(today)),
+                new ClientSchedulePageDto.WeekDayDto("Вс", DAY_FORMAT.format(weekStart.plusDays(6)), weekStart.plusDays(6).equals(today))
         );
     }
 

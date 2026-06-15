@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button, LinkButton } from '../../components/primitives';
+import { useDialog } from '../../components/dialog';
 import {
   createTutorAvailabilitySchedule,
   createTutorLesson,
@@ -23,6 +24,7 @@ import {
   buildSlotLessonPayload,
   formatLessonRequestStartTime,
   getLessonModalDefaults,
+  getTutorCalendarGridPosition,
   getTutorCalendarDisplayStats,
   isCalendarCellInPast,
   type LessonRescheduleScope,
@@ -67,22 +69,6 @@ function formatPeriod(weekStart: Date): string {
     : `${weekStart.getDate()} ${months[weekStart.getMonth()]} ${weekStart.getFullYear()} – ${weekEnd.getDate()} ${months[weekEnd.getMonth()]} ${weekEnd.getFullYear()}`;
 }
 
-function timeToRow(time: string, timeSlots: string[]): number {
-  const [h, m] = time.split(':').map(Number);
-  const slotMinutes = h * 60 + m;
-  let bestRow = 0;
-  let bestDiff = Infinity;
-  timeSlots.forEach((slot, i) => {
-    const [sh, sm] = slot.split(':').map(Number);
-    const diff = Math.abs(slotMinutes - (sh * 60 + sm));
-    if (diff < bestDiff) {
-      bestDiff = diff;
-      bestRow = i;
-    }
-  });
-  return bestRow;
-}
-
 const legend = [
   { label: 'Занятие', tone: 'indigo' },
   { label: 'Пробный', tone: 'emerald' },
@@ -91,6 +77,7 @@ const legend = [
 
 export function TutorCalendarPage() {
   const [searchParams] = useSearchParams();
+  const dialog = useDialog();
   const [pageData, setPageData] = useState<TutorCalendarPageData | null>(null);
   const [viewMode, setViewMode] = useState<'lessons' | 'availability'>('lessons');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
@@ -347,7 +334,7 @@ export function TutorCalendarPage() {
       closeLessonModal();
       await loadCalendarData(currentWeekStart);
     } catch (err) {
-      alert('Не удалось создать занятие: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось создать занятие: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -380,7 +367,7 @@ export function TutorCalendarPage() {
     const createdScheduleIds: string[] = [];
 
     if (days.length === 0) {
-      alert('Выберите хотя бы один день недели.');
+      await dialog.alert('Выберите хотя бы один день недели.');
       return;
     }
 
@@ -402,17 +389,17 @@ export function TutorCalendarPage() {
       form.reset();
     } catch (err) {
       await Promise.allSettled(createdScheduleIds.map((id) => deleteTutorAvailabilitySchedule(id)));
-      alert('Не удалось сохранить правило: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось сохранить правило: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
   const handleDeleteSchedule = async (id: string) => {
-    if (!confirm('Удалить это правило?')) return;
+    if (!(await dialog.confirm('Удалить это правило?'))) return;
     try {
       await deleteTutorAvailabilitySchedule(id);
       await loadAvailabilityData(currentWeekStart);
     } catch (err) {
-      alert('Не удалось удалить: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось удалить: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -435,7 +422,7 @@ export function TutorCalendarPage() {
       setEditingSchedule(null);
       await loadAvailabilityData();
     } catch (err) {
-      alert('Не удалось обновить: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось обновить: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -456,7 +443,7 @@ export function TutorCalendarPage() {
       setShowCreateSlotModal(false);
       await handleSync();
     } catch (err) {
-      alert('Не удалось создать окно: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось создать окно: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -486,7 +473,7 @@ export function TutorCalendarPage() {
       setSelectedSlot(null);
       await handleSync();
     } catch (err) {
-      alert('Не удалось записать ученика: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось записать ученика: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -506,7 +493,7 @@ export function TutorCalendarPage() {
       setSelectedLesson(null);
       await handleSync();
     } catch (err) {
-      alert('Не удалось перенести урок: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось перенести урок: ' + (err instanceof Error ? err.message : 'Unknown error'));
     }
   };
 
@@ -571,7 +558,7 @@ export function TutorCalendarPage() {
     return acc;
   }, {});
   const calendarWeekDays = buildCalendarWeekDays(currentWeekStart, calendarNow);
-  const displayStats = getTutorCalendarDisplayStats(pageData);
+  const displayStats = getTutorCalendarDisplayStats(pageData).filter((stat) => stat.tone !== 'amber');
 
   return (
     <div className="tutor-calendar-page">
@@ -728,7 +715,8 @@ export function TutorCalendarPage() {
                     const slotDate = new Date(slot.date + 'T00:00:00');
                     const dayDiff = Math.round((slotDate.getTime() - currentWeekStart.getTime()) / (24 * 60 * 60 * 1000));
                     const column = dayDiff + 1;
-                    const row = timeToRow(slot.startTime, pageData.timeSlots);
+                    const position = getTutorCalendarGridPosition(slot.startTime, slot.endTime);
+                    const row = position.row;
                     if (column < 1 || column > calendarWeekDays.length || row < 0 || row >= pageData.timeSlots.length) return null;
                     return (
                       <article
@@ -736,7 +724,7 @@ export function TutorCalendarPage() {
                         className="tutor-week-event tutor-week-event--slate"
                         style={{
                           gridColumn: String(column + 1),
-                          gridRow: `${row + 2} / span 1`,
+                          gridRow: `${row + 2} / span ${position.rowSpan}`,
                         }}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -753,16 +741,16 @@ export function TutorCalendarPage() {
                     );
                   })}
               </div>
-              {calendarEmptyState ? (
-                <div className="tutor-calendar-empty">
-                  <strong>{calendarEmptyState.title}</strong>
-                  <p>{calendarEmptyState.text}</p>
-                  <Button type="button" variant="ghost" onClick={() => openLessonModalForApplication()}>
-                    {calendarEmptyState.action}
-                  </Button>
-                </div>
-              ) : null}
             </div>
+            {calendarEmptyState ? (
+              <div className="tutor-calendar-empty">
+                <strong>{calendarEmptyState.title}</strong>
+                <p>{calendarEmptyState.text}</p>
+                <Button type="button" variant="ghost" onClick={() => openLessonModalForApplication()}>
+                  {calendarEmptyState.action}
+                </Button>
+              </div>
+            ) : null}
           </section>
         )}
 

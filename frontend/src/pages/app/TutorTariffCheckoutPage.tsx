@@ -5,7 +5,6 @@ import {
   refreshTutorSubscriptionPayment,
   type TutorCheckoutPageResponse,
 } from '../../shared/api/tutor';
-import { cn } from '../../shared/lib/cn';
 
 const checkoutStorageKey = 'tutorspace.subscription.checkout';
 
@@ -106,12 +105,6 @@ export function TutorTariffCheckoutPage() {
   const qrImageUrl = checkoutPage.confirmationUrl
     ? `https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=14&data=${encodeURIComponent(checkoutPage.confirmationUrl)}`
     : null;
-  const summary = [
-    { icon: '₽', value: tariffPrice, label: 'к оплате', tone: 'indigo' },
-    { icon: 'CRM', value: checkoutPage.tariffName, label: 'тариф', tone: 'emerald' },
-    { icon: 'Т', value: checkoutPage.testMode ? 'Sandbox' : 'Недоступно', label: 'режим', tone: 'amber' },
-  ] as const;
-
   function openYooKassa() {
     if (!checkoutPage.confirmationUrl) {
       setMessage('Ссылка оплаты отсутствует. Создайте новый checkout.');
@@ -131,15 +124,6 @@ export function TutorTariffCheckoutPage() {
       </header>
 
       {message ? <p className="tutor-checkout-alert" role="status">{message}</p> : null}
-
-      <section className="tutor-checkout-summary" aria-label="Сводка оплаты">
-        {summary.map((item) => (
-          <article key={item.label} className={cn('tutor-checkout-kpi', `tutor-checkout-kpi--${item.tone}`)}>
-            <span>{item.icon}</span>
-            <div><strong>{item.value}</strong><p>{item.label}</p></div>
-          </article>
-        ))}
-      </section>
 
       <div className="tutor-checkout-layout">
         <main className="tutor-checkout-main" aria-label="Оплата">
