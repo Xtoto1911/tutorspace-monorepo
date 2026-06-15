@@ -1,6 +1,9 @@
 package com.tutor.crmservice.request;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,4 +19,8 @@ public interface CrmApplicationRepository extends JpaRepository<CrmApplication, 
     boolean existsByClientUserIdAndTutorProfileIdAndStatusIn(UUID clientUserId,
                                                              UUID tutorProfileId,
                                                              Collection<ApplicationStatus> statuses);
+
+    @Modifying
+    @Query("UPDATE CrmApplication a SET a.tutorName = :newName WHERE a.tutorUserId = :userId AND a.tutorName <> :newName")
+    int updateTutorNameByTutorUserId(@Param("userId") UUID userId, @Param("newName") String newName);
 }
