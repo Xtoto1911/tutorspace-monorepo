@@ -92,6 +92,8 @@ export type TutorFilters = {
   city?: string;
   subject?: string;
   minRating?: number;
+  maxRating?: number;
+  minPrice?: number;
   maxPrice?: number;
   onlineOnly?: boolean;
 };

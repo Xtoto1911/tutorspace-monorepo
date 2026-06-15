@@ -802,6 +802,30 @@ p {
   color: var(--muted);
 }
 
+.range-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.range-input > span {
+  color: var(--muted);
+  font-size: 14px;
+  user-select: none;
+}
+
+.range-input input[type='number'] {
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.range-input input[type='number']::-webkit-outer-spin-button,
+.range-input input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .filters-panel__cta,
 .tutor-card__subjects {
   display: flex;

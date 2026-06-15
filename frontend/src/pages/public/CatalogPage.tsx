@@ -6,7 +6,6 @@ import {
   EmptyState,
   FormField,
   LinkButton,
-  SelectInput,
   SectionHeading,
   TextInput,
   TutorCard,
@@ -185,40 +184,81 @@ export function CatalogPage() {
             </FormField>
 
             <FormField label="Рейтинг">
-              <SelectInput
-                name="minRating"
-                value={filters.minRating ? String(filters.minRating) : ''}
-                onChange={(event) =>
-                  setFilters((current) => ({
-                    ...current,
-                    minRating: event.target.value ? Number(event.target.value) : undefined,
-                  }))
-                }
-              >
-                <option value="">Любой</option>
-                <option value="4.5">4,5+</option>
-                <option value="4.8">4,8+</option>
-                <option value="4.9">4,9+</option>
-              </SelectInput>
+              <div className="range-input">
+                <TextInput
+                  type="number"
+                  name="minRating"
+                  min={0}
+                  max={5}
+                  step={0.1}
+                  inputMode="decimal"
+                  placeholder="от"
+                  aria-label="Минимальный рейтинг"
+                  value={filters.minRating ?? ''}
+                  onChange={(event) =>
+                    setFilters((current) => {
+                      const value = event.target.value === '' ? undefined : Math.max(0, Number(event.target.value));
+                      return { ...current, minRating: Number.isFinite(value) ? value : undefined };
+                    })
+                  }
+                />
+                <span aria-hidden>—</span>
+                <TextInput
+                  type="number"
+                  name="maxRating"
+                  min={0}
+                  max={5}
+                  step={0.1}
+                  inputMode="decimal"
+                  placeholder="до"
+                  aria-label="Максимальный рейтинг"
+                  value={filters.maxRating ?? ''}
+                  onChange={(event) =>
+                    setFilters((current) => {
+                      const value = event.target.value === '' ? undefined : Math.max(0, Number(event.target.value));
+                      return { ...current, maxRating: Number.isFinite(value) ? value : undefined };
+                    })
+                  }
+                />
+              </div>
             </FormField>
 
-            <FormField label="Максимальная ставка">
-              <SelectInput
-                name="maxPrice"
-                value={filters.maxPrice ? String(filters.maxPrice) : ''}
-                onChange={(event) =>
-                  setFilters((current) => ({
-                    ...current,
-                    maxPrice: event.target.value ? Number(event.target.value) : undefined,
-                  }))
-                }
-              >
-                <option value="">Без ограничений</option>
-                <option value="1500">до 1 500 ₽</option>
-                <option value="2000">до 2 000 ₽</option>
-                <option value="2500">до 2 500 ₽</option>
-                <option value="3000">до 3 000 ₽</option>
-              </SelectInput>
+            <FormField label="Ставка, ₽/ч">
+              <div className="range-input">
+                <TextInput
+                  type="number"
+                  name="minPrice"
+                  min={0}
+                  step={100}
+                  inputMode="numeric"
+                  placeholder="от"
+                  aria-label="Минимальная ставка"
+                  value={filters.minPrice ?? ''}
+                  onChange={(event) =>
+                    setFilters((current) => {
+                      const value = event.target.value === '' ? undefined : Math.max(0, Number(event.target.value));
+                      return { ...current, minPrice: Number.isFinite(value) ? value : undefined };
+                    })
+                  }
+                />
+                <span aria-hidden>—</span>
+                <TextInput
+                  type="number"
+                  name="maxPrice"
+                  min={0}
+                  step={100}
+                  inputMode="numeric"
+                  placeholder="до"
+                  aria-label="Максимальная ставка"
+                  value={filters.maxPrice ?? ''}
+                  onChange={(event) =>
+                    setFilters((current) => {
+                      const value = event.target.value === '' ? undefined : Math.max(0, Number(event.target.value));
+                      return { ...current, maxPrice: Number.isFinite(value) ? value : undefined };
+                    })
+                  }
+                />
+              </div>
             </FormField>
           </div>
 

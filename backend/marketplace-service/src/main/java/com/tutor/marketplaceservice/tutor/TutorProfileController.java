@@ -25,8 +25,11 @@ public class TutorProfileController {
     @GetMapping
     public List<TutorProfileDto> search(@RequestParam(required = false) String subject,
                                         @RequestParam(required = false) Integer minExperienceYears,
-                                        @RequestParam(required = false) BigDecimal maxPricePerHour) {
-        return tutorProfileService.search(subject, minExperienceYears, maxPricePerHour);
+                                        @RequestParam(required = false) BigDecimal minPricePerHour,
+                                        @RequestParam(required = false) BigDecimal maxPricePerHour,
+                                        @RequestParam(required = false) Double minRating,
+                                        @RequestParam(required = false) Double maxRating) {
+        return tutorProfileService.search(subject, minExperienceYears, minPricePerHour, maxPricePerHour, minRating, maxRating);
     }
 
     @GetMapping("/{idOrSlug}")

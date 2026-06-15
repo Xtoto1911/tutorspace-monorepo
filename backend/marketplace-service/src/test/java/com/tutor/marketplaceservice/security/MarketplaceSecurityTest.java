@@ -61,7 +61,7 @@ class MarketplaceSecurityTest {
 
     @Test
     void publicCatalogReadDoesNotRequireToken() throws Exception {
-        when(tutorProfileService.search(null, null, null)).thenReturn(List.of());
+        when(tutorProfileService.search(null, null, null, null, null, null)).thenReturn(List.of());
 
         mockMvc.perform(get("/api/marketplace/tutors"))
                 .andExpect(status().isOk());
