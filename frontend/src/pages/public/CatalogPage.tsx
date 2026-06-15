@@ -15,12 +15,22 @@ import { listSubjects, listTutors } from '../../shared/api/public';
 import { readAuthSession } from '../../shared/auth/session';
 import { formatCurrency } from '../../shared/lib/format';
 import type { Subject, TutorFilters, TutorSummary } from '../../shared/types';
+import {
+  formatPrice,
+  formatRating,
+  parsePrice,
+  parseRating,
+  sanitizePriceInput,
+  sanitizeRatingInput,
+} from './catalog-filter-helpers';
 
 const defaultFilters: TutorFilters = {
   query: '',
   city: '',
   subject: '',
   minRating: undefined,
+  maxRating: undefined,
+  minPrice: undefined,
   maxPrice: undefined,
   onlineOnly: false,
 };
@@ -184,81 +194,23 @@ export function CatalogPage() {
             </FormField>
 
             <FormField label="Рейтинг">
-              <div className="range-input">
-                <TextInput
-                  type="number"
-                  name="minRating"
-                  min={0}
-                  max={5}
-                  step={0.1}
-                  inputMode="decimal"
-                  placeholder="от"
-                  aria-label="Минимальный рейтинг"
-                  value={filters.minRating ?? ''}
-                  onChange={(event) =>
-                    setFilters((current) => {
-                      const value = event.target.value === '' ? undefined : Math.max(0, Number(event.target.value));
-                      return { ...current, minRating: Number.isFinite(value) ? value : undefined };
-                    })
-                  }
-                />
-                <span aria-hidden>—</span>
-                <TextInput
-                  type="number"
-                  name="maxRating"
-                  min={0}
-                  max={5}
-                  step={0.1}
-                  inputMode="decimal"
-                  placeholder="до"
-                  aria-label="Максимальный рейтинг"
-                  value={filters.maxRating ?? ''}
-                  onChange={(event) =>
-                    setFilters((current) => {
-                      const value = event.target.value === '' ? undefined : Math.max(0, Number(event.target.value));
-                      return { ...current, maxRating: Number.isFinite(value) ? value : undefined };
-                    })
-                  }
-                />
-              </div>
+              <RatingRangeField
+                min={filters.minRating}
+                max={filters.maxRating}
+                onChange={(minRating, maxRating) =>
+                  setFilters((current) => swapRating({ ...current, minRating, maxRating }))
+                }
+              />
             </FormField>
 
             <FormField label="Ставка, ₽/ч">
-              <div className="range-input">
-                <TextInput
-                  type="number"
-                  name="minPrice"
-                  min={0}
-                  step={100}
-                  inputMode="numeric"
-                  placeholder="от"
-                  aria-label="Минимальная ставка"
-                  value={filters.minPrice ?? ''}
-                  onChange={(event) =>
-                    setFilters((current) => {
-                      const value = event.target.value === '' ? undefined : Math.max(0, Number(event.target.value));
-                      return { ...current, minPrice: Number.isFinite(value) ? value : undefined };
-                    })
-                  }
-                />
-                <span aria-hidden>—</span>
-                <TextInput
-                  type="number"
-                  name="maxPrice"
-                  min={0}
-                  step={100}
-                  inputMode="numeric"
-                  placeholder="до"
-                  aria-label="Максимальная ставка"
-                  value={filters.maxPrice ?? ''}
-                  onChange={(event) =>
-                    setFilters((current) => {
-                      const value = event.target.value === '' ? undefined : Math.max(0, Number(event.target.value));
-                      return { ...current, maxPrice: Number.isFinite(value) ? value : undefined };
-                    })
-                  }
-                />
-              </div>
+              <PriceRangeField
+                min={filters.minPrice}
+                max={filters.maxPrice}
+                onChange={(minPrice, maxPrice) =>
+                  setFilters((current) => swapPrice({ ...current, minPrice, maxPrice }))
+                }
+              />
             </FormField>
           </div>
 
@@ -355,6 +307,132 @@ export function CatalogPage() {
           </Card>
         </div>
       </section>
+    </div>
+  );
+}
+
+type RangeFieldProps = {
+  min: number | undefined;
+  max: number | undefined;
+  onChange: (min: number | undefined, max: number | undefined) => void;
+};
+
+function swapRating(next: TutorFilters): TutorFilters {
+  if (
+    next.minRating !== undefined &&
+    next.maxRating !== undefined &&
+    next.minRating > next.maxRating
+  ) {
+    return { ...next, minRating: next.maxRating, maxRating: next.minRating };
+  }
+  return next;
+}
+
+function swapPrice(next: TutorFilters): TutorFilters {
+  if (
+    next.minPrice !== undefined &&
+    next.maxPrice !== undefined &&
+    next.minPrice > next.maxPrice
+  ) {
+    return { ...next, minPrice: next.maxPrice, maxPrice: next.minPrice };
+  }
+  return next;
+}
+
+function RatingRangeField({ min, max, onChange }: RangeFieldProps) {
+  const [minStr, setMinStr] = useState(formatRating(min));
+  const [maxStr, setMaxStr] = useState(formatRating(max));
+
+  useEffect(() => {
+    setMinStr(formatRating(min));
+  }, [min]);
+  useEffect(() => {
+    setMaxStr(formatRating(max));
+  }, [max]);
+
+  const commitMin = () => {
+    onChange(parseRating(minStr), max);
+    setMinStr(formatRating(parseRating(minStr)));
+  };
+  const commitMax = () => {
+    onChange(min, parseRating(maxStr));
+    setMaxStr(formatRating(parseRating(maxStr)));
+  };
+
+  return (
+    <div className="range-input">
+      <TextInput
+        type="text"
+        name="minRating"
+        inputMode="decimal"
+        maxLength={4}
+        placeholder="от"
+        aria-label="Минимальный рейтинг"
+        value={minStr}
+        onChange={(event) => setMinStr(sanitizeRatingInput(event.target.value))}
+        onBlur={commitMin}
+      />
+      <span aria-hidden>—</span>
+      <TextInput
+        type="text"
+        name="maxRating"
+        inputMode="decimal"
+        maxLength={4}
+        placeholder="до"
+        aria-label="Максимальный рейтинг"
+        value={maxStr}
+        onChange={(event) => setMaxStr(sanitizeRatingInput(event.target.value))}
+        onBlur={commitMax}
+      />
+    </div>
+  );
+}
+
+function PriceRangeField({ min, max, onChange }: RangeFieldProps) {
+  const [minStr, setMinStr] = useState(formatPrice(min));
+  const [maxStr, setMaxStr] = useState(formatPrice(max));
+
+  useEffect(() => {
+    setMinStr(formatPrice(min));
+  }, [min]);
+  useEffect(() => {
+    setMaxStr(formatPrice(max));
+  }, [max]);
+
+  const commitMin = () => {
+    onChange(parsePrice(minStr), max);
+    setMinStr(formatPrice(parsePrice(minStr)));
+  };
+  const commitMax = () => {
+    onChange(min, parsePrice(maxStr));
+    setMaxStr(formatPrice(parsePrice(maxStr)));
+  };
+
+  return (
+    <div className="range-input">
+      <TextInput
+        type="text"
+        name="minPrice"
+        inputMode="numeric"
+        maxLength={5}
+        placeholder="от"
+        aria-label="Минимальная ставка"
+        value={minStr}
+        onChange={(event) => setMinStr(sanitizePriceInput(event.target.value))}
+        onBlur={commitMin}
+      />
+      <span aria-hidden>—</span>
+      <TextInput
+        type="text"
+        name="maxPrice"
+        inputMode="numeric"
+        maxLength={5}
+        placeholder="до"
+        aria-label="Максимальная ставка"
+        value={maxStr}
+        onChange={(event) => setMaxStr(sanitizePriceInput(event.target.value))}
+        onBlur={commitMax}
+      />
     </div>
   );
 }
