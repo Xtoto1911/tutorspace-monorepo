@@ -2,7 +2,7 @@
 
 ## Working rules
 - Trust executable config over prose. `ARCHITECTURE.md` and `frontend/FRONTEND_BACKEND_CONTRACT.md` are useful, but some current-state sections lag the repo.
-- Repo-local OpenCode guidance lives at `.opencode/agens/build_norm.md` if you need to adjust it; the path is easy to mistype.
+- Repo-local OpenCode agents live in `.opencode/agens/`. Primary is `build_norm.md` (MiniMax M3, planning + edits); code-writing subagent is `coder.md` (kimi k2.6, dispatched via Task tool with a brief). The path is easy to mistype.
 - Require evidence for changes. There is no CI here, so run the narrowest relevant local check and report it.
 
 ## Canonical references
