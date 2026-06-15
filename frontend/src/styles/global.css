@@ -2483,6 +2483,25 @@ a.workspace-profile--link:hover,
   padding: 4px 4px 16px;
 }
 
+/* Prevent page-level headers from clipping their right-side action
+   buttons. Each page has a `__header` flex container with a title
+   block and an actions block; without these rules the title pushes
+   the actions off the right edge. */
+.workspace-content > [class$="__header"] {
+  min-width: 0;
+}
+
+.workspace-content > [class$="__header"] > div:first-child {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.workspace-content > [class$="__header"] > div:last-child,
+.workspace-content > [class$="__header"] > .btn,
+.workspace-content > [class$="__header"] > a {
+  flex-shrink: 0;
+}
+
 .workspace-footer {
   min-height: 46px;
   display: grid;
