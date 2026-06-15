@@ -99,6 +99,7 @@ export function TutorCalendarPage() {
   const [lessonMode, setLessonMode] = useState<'platform' | 'manual'>('manual');
   const [studentInputMode, setStudentInputMode] = useState<'existing' | 'new'>('existing');
   const [selectedApplicationId, setSelectedApplicationId] = useState('');
+  const [deletingScheduleId, setDeletingScheduleId] = useState<string | null>(null);
   const loadRequestIdRef = useRef(0);
   const requestedApplicationId = searchParams.get('applicationId') ?? '';
   const lessonRequestOptions = useMemo(() => [
@@ -394,12 +395,22 @@ export function TutorCalendarPage() {
   };
 
   const handleDeleteSchedule = async (id: string) => {
+    if (deletingScheduleId) return;
     if (!(await dialog.confirm('Удалить это правило?'))) return;
+    setDeletingScheduleId(id);
     try {
       await deleteTutorAvailabilitySchedule(id);
       await loadAvailabilityData(currentWeekStart);
     } catch (err) {
-      await dialog.alert('Не удалось удалить: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      const msg = err instanceof Error ? err.message : '';
+      if (/not found|404/i.test(msg)) {
+        await loadAvailabilityData(currentWeekStart);
+        await dialog.alert('Уже удалено');
+        return;
+      }
+      await dialog.alert('Не удалось удалить: ' + (msg || 'Unknown error'));
+    } finally {
+      setDeletingScheduleId(null);
     }
   };
 
@@ -779,7 +790,13 @@ export function TutorCalendarPage() {
                     </div>
                     <div className="availability-schedule-actions">
                       <Button variant="ghost" onClick={() => setEditingSchedule(schedule)}>Редактировать</Button>
-                      <Button variant="ghost" onClick={() => void handleDeleteSchedule(schedule.id)}>Удалить</Button>
+                       <Button
+                         variant="ghost"
+                         onClick={() => void handleDeleteSchedule(schedule.id)}
+                         disabled={deletingScheduleId === schedule.id}
+                       >
+                         Удалить
+                       </Button>
                     </div>
                   </div>
                 ))}

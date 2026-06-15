@@ -315,7 +315,7 @@ p {
   min-height: 38px;
   padding: 0 16px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 12px;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -1957,7 +1957,7 @@ p {
   position: relative;
   min-height: 100vh;
   overflow: hidden;
-  padding: 40px 48px 48px;
+  padding: 48px 56px 56px;
   background: #f9fafb;
   color: #111827;
 }
@@ -2089,6 +2089,7 @@ a.workspace-profile--link:hover,
   gap: 10px;
   padding: 0 14px;
   border: 1px solid var(--border);
+  border-radius: 14px;
   background: #f9fafb;
 }
 
@@ -2112,6 +2113,7 @@ a.workspace-profile--link:hover,
   gap: 10px;
   padding: 0 14px;
   border: 1px solid var(--border);
+  border-radius: 14px;
   background: #f9fafb;
   color: #6b7280;
 }
@@ -2129,7 +2131,8 @@ a.workspace-profile--link:hover,
 .workspace-topbar__support {
   min-height: 40px;
   padding: 0 14px;
-  border-color: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 14px;
   color: #111827;
   background: #ffffff;
 }
@@ -2140,6 +2143,7 @@ a.workspace-profile--link:hover,
   justify-content: center;
   gap: 8px;
   border: 0;
+  border-radius: 14px;
   color: #ffffff;
   background: #4f46e5;
   font-size: 12px;
@@ -2313,7 +2317,7 @@ a.workspace-profile--link:hover,
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
   gap: 40px;
-  margin-top: 26px;
+  margin-top: 40px;
 }
 
 .workspace-sidebar {
@@ -2476,6 +2480,7 @@ a.workspace-profile--link:hover,
 
 .workspace-content {
   min-width: 0;
+  padding: 8px 8px 24px;
 }
 
 .workspace-footer {
@@ -2546,14 +2551,14 @@ a.workspace-profile--link:hover,
 }
 
 .client-metric {
-  width: 176px;
+  min-width: 0;
   min-height: 90px;
   display: grid;
   align-content: center;
-  gap: 4px;
-  padding: 16px 18px;
+  gap: 6px;
+  padding: 20px 22px;
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 22px;
   background: #ffffff;
 }
 
@@ -2614,7 +2619,7 @@ a.workspace-profile--link:hover,
 
 .client-applications__grid {
   display: grid;
-  grid-template-columns: minmax(0, 620px) 276px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 276px);
   gap: 20px;
   align-items: start;
 }
@@ -2949,7 +2954,7 @@ a.workspace-profile--link:hover,
 
 .application-details__grid {
   display: grid;
-  grid-template-columns: minmax(0, 596px) 300px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
   gap: 20px;
   align-items: start;
 }
@@ -3232,7 +3237,7 @@ a.workspace-profile--link:hover,
   column-gap: 14px;
   align-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 24px;
   border: 1px solid var(--border);
   border-radius: 24px;
   background: #ffffff;
@@ -3245,10 +3250,17 @@ a.workspace-profile--link:hover,
   height: 42px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
+  border-radius: 16px;
   color: #ffffff;
   font-size: 15px;
   font-weight: 800;
+  flex-shrink: 0;
+}
+
+.schedule-metric strong,
+.schedule-metric > span {
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .schedule-metric strong {
@@ -3285,7 +3297,7 @@ a.workspace-profile--link:hover,
   grid-template-columns: auto minmax(260px, 1fr) auto;
   gap: 18px;
   align-items: center;
-  padding: 12px;
+  padding: 18px 20px;
   border: 1px solid var(--border);
   border-radius: 24px;
   background: #ffffff;
@@ -3946,8 +3958,7 @@ a.workspace-profile--link:hover,
   color: var(--primary-strong);
 }
 
-.tutor-messages .message-composer button[type='button'],
-.tutor-messages .message-quick-actions button {
+.tutor-messages .message-composer button[type='button'] {
   color: var(--primary);
 }
 
@@ -4462,31 +4473,6 @@ a.workspace-profile--link:hover,
   font-size: 13px;
   font-weight: 800;
   text-align: right;
-}
-
-.message-quick-actions {
-  display: grid;
-  gap: 9px;
-}
-
-.message-quick-actions button {
-  min-height: 40px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
-  color: var(--primary);
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
-}
-
-.message-quick-actions button:hover,
-.message-quick-actions button:focus-visible {
-  border-color: var(--primary);
-  background: var(--primary-soft);
-  outline: 0;
-  transform: translateY(-1px);
 }
 
 .message-attachments {
@@ -13848,7 +13834,7 @@ a.workspace-profile--link:hover,
   }
 
   .workspace-shell {
-    padding: 24px 24px 36px;
+    padding: 32px 28px 40px;
   }
 
   .workspace-topbar {

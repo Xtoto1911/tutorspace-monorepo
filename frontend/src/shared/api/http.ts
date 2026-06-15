@@ -150,7 +150,11 @@ async function request<T>(
     return undefined as T;
   }
 
-  return (await response.json()) as T;
+  try {
+    return (await response.json()) as T;
+  } catch {
+    return undefined as T;
+  }
 }
 
 export function apiRequest<T>(path: string, init?: RequestInit) {
