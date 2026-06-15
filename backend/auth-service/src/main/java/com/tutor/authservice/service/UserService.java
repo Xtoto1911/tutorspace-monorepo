@@ -17,6 +17,7 @@ import com.tutor.authservice.exception.EmailAlreadyExistsException;
 import com.tutor.authservice.exception.InvalidPasswordResetTokenException;
 import com.tutor.authservice.exception.InvalidRoleRegistrationException;
 import com.tutor.authservice.exception.UserNotFoundException;
+import com.tutor.authservice.kafka.UserProfileEventPublisher;
 import com.tutor.authservice.repository.PasswordResetTokenRepository;
 import com.tutor.authservice.repository.UserRepository;
 import com.tutor.authservice.repository.UserSessionRepository;
@@ -51,6 +52,8 @@ public class UserService {
 
     private static final Duration PASSWORD_RESET_TOKEN_TTL = Duration.ofMinutes(30);
     private static final Duration PASSWORD_RESET_COOLDOWN = Duration.ofMinutes(2);
+    private static final int PROFILE_NAME_MIN = 2;
+    private static final int PROFILE_NAME_MAX = 100;
 
     private final UserRepository userRepository;
     private final UserSessionRepository userSessionRepository;
@@ -59,6 +62,7 @@ public class UserService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PasswordResetProperties passwordResetProperties;
+    private final UserProfileEventPublisher userProfileEventPublisher;
 
 
     @Transactional
@@ -309,5 +313,29 @@ public class UserService {
         } catch (NoSuchAlgorithmException ex) {
             throw new IllegalStateException("SHA-256 is not available", ex);
         }
+    }
+
+    @Transactional
+    public User updateProfileName(UUID userId, String rawName) {
+        if (rawName == null) {
+            throw new IllegalArgumentException("ФИО обязательно для заполнения.");
+        }
+        String normalized = normalizeProfileName(rawName);
+        if (normalized.length() < PROFILE_NAME_MIN || normalized.length() > PROFILE_NAME_MAX) {
+            throw new IllegalArgumentException(
+                    "ФИО должно содержать от " + PROFILE_NAME_MIN + " до " + PROFILE_NAME_MAX + " символов.");
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        user.setName(normalized);
+        User saved = userRepository.save(user);
+        log.info("Updated profile name for user {}", userId);
+        userProfileEventPublisher.publish(userId, normalized, Instant.now());
+        return saved;
+    }
+
+    private String normalizeProfileName(String raw) {
+        return raw.trim().replaceAll("\\s+", " ");
     }
 }
