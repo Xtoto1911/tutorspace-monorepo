@@ -57,3 +57,14 @@ export function getAppRouteForRole(role: Role) {
       return '/app/client';
   }
 }
+
+export function updateSessionUserName(name: string) {
+  const current = readAuthSession();
+  if (!current) {
+    return;
+  }
+  writeAuthSession({
+    ...current,
+    user: { ...current.user, name },
+  });
+}
