@@ -44,14 +44,14 @@ export function parsePrice(raw: string): number | undefined {
 }
 
 export function formatRating(value: number | undefined): string {
-  if (value === undefined || value === 0) {
+  if (value === undefined) {
     return '';
   }
   return Number.isInteger(value) ? String(value) : String(value);
 }
 
 export function formatPrice(value: number | undefined): string {
-  if (value === undefined || value === 0) {
+  if (value === undefined) {
     return '';
   }
   return String(value);

@@ -224,9 +224,6 @@ export function CatalogPage() {
             <Button type="button" variant="secondary" onClick={() => setFilters(defaultFilters)}>
               Сбросить
             </Button>
-            <LinkButton to="/how-it-works" variant="ghost">
-              Как это работает
-            </LinkButton>
           </div>
         </Card>
 
