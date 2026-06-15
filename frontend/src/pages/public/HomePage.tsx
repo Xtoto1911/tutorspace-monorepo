@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Badge, Button, FormField, LinkButton, TextInput, TutorCard } from '../../components/primitives';
 import { getHomeContent, listSubjects, listTutors } from '../../shared/api/public';
 import type { HomeContent, Subject, TutorSummary } from '../../shared/types';
+import { pluralizeTutors } from './catalog-filter-helpers';
 
 const popularSearches = ['ЕГЭ', 'ОГЭ', 'Начальная школа', 'Разговорный английский', 'Онлайн сегодня'];
 
@@ -208,7 +209,7 @@ export function HomePage() {
               <span className="home-subject__swatch" style={{ background: subject.accent }} />
               <strong>{subject.title}</strong>
               <small>{subject.description}</small>
-              <b>{subject.tutorCount == null ? 'Количество уточняется' : `${subject.tutorCount} репетиторов`}</b>
+              <b>{subject.tutorCount == null ? 'Количество уточняется' : pluralizeTutors(subject.tutorCount)}</b>
             </LinkButton>
           ))}
         </div>

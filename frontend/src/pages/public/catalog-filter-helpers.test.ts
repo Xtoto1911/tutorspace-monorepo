@@ -4,6 +4,7 @@ import {
   formatRating,
   parsePrice,
   parseRating,
+  pluralizeTutors,
   PRICE_MAX_LEN,
   PRICE_MAX_VALUE,
   RATING_MAX,
@@ -147,5 +148,49 @@ describe('formatRating / formatPrice', () => {
 
   it('renders price as plain integer', () => {
     expect(formatPrice(1500)).toBe('1500');
+  });
+});
+
+describe('pluralizeTutors', () => {
+  it('uses singular form for 1', () => {
+    expect(pluralizeTutors(1)).toBe('1 репетитор');
+  });
+
+  it('uses genitive singular for 2, 3, 4', () => {
+    expect(pluralizeTutors(2)).toBe('2 репетитора');
+    expect(pluralizeTutors(3)).toBe('3 репетитора');
+    expect(pluralizeTutors(4)).toBe('4 репетитора');
+  });
+
+  it('uses genitive plural for 0, 5..20', () => {
+    expect(pluralizeTutors(0)).toBe('0 репетиторов');
+    expect(pluralizeTutors(5)).toBe('5 репетиторов');
+    expect(pluralizeTutors(10)).toBe('10 репетиторов');
+    expect(pluralizeTutors(11)).toBe('11 репетиторов');
+    expect(pluralizeTutors(12)).toBe('12 репетиторов');
+    expect(pluralizeTutors(13)).toBe('13 репетиторов');
+    expect(pluralizeTutors(14)).toBe('14 репетиторов');
+    expect(pluralizeTutors(15)).toBe('15 репетиторов');
+    expect(pluralizeTutors(20)).toBe('20 репетиторов');
+  });
+
+  it('keeps correct form across hundreds', () => {
+    expect(pluralizeTutors(101)).toBe('101 репетитор');
+    expect(pluralizeTutors(102)).toBe('102 репетитора');
+    expect(pluralizeTutors(105)).toBe('105 репетиторов');
+    expect(pluralizeTutors(111)).toBe('111 репетиторов');
+    expect(pluralizeTutors(121)).toBe('121 репетитор');
+    expect(pluralizeTutors(122)).toBe('122 репетитора');
+  });
+
+  it('falls back to 0 form for null / undefined / NaN / negative', () => {
+    expect(pluralizeTutors(null)).toBe('0 репетиторов');
+    expect(pluralizeTutors(undefined)).toBe('0 репетиторов');
+    expect(pluralizeTutors(Number.NaN)).toBe('0 репетиторов');
+    expect(pluralizeTutors(-3)).toBe('0 репетиторов');
+  });
+
+  it('truncates fractional input', () => {
+    expect(pluralizeTutors(2.9)).toBe('2 репетитора');
   });
 });
