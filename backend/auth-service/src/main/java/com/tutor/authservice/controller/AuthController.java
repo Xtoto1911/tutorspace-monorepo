@@ -1,17 +1,22 @@
 package com.tutor.authservice.controller;
 
+import com.tutor.authservice.domain.User;
 import com.tutor.authservice.dto.JwtAuthenticationDto;
 import com.tutor.authservice.dto.PasswordResetConfirmDto;
 import com.tutor.authservice.dto.PasswordResetRequestDto;
 import com.tutor.authservice.dto.PasswordResetResponseDto;
 import com.tutor.authservice.dto.RefreshTokenDto;
 import com.tutor.authservice.dto.RegisterRequestDto;
+import com.tutor.authservice.dto.UpdateProfileNameRequest;
 import com.tutor.authservice.dto.UserCredentialsDto;
+import com.tutor.authservice.dto.UserPublicDto;
 import com.tutor.authservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,5 +65,11 @@ public class AuthController {
             @Valid @RequestBody PasswordResetConfirmDto dto
     ) {
         return ResponseEntity.ok(userService.confirmPasswordReset(dto));
+    }
+
+    @PatchMapping("/me")
+    public UserPublicDto updateMe(@AuthenticationPrincipal User principal,
+                                  @Valid @RequestBody UpdateProfileNameRequest request) {
+        return UserPublicDto.from(userService.updateProfileName(principal.getId(), request.name()));
     }
 }
