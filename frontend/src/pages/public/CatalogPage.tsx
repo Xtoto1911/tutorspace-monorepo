@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import {
-  Badge,
   Button,
   Card,
   EmptyState,
@@ -158,30 +157,6 @@ export function CatalogPage() {
 
   return (
     <div className="page-stack">
-      <section className="page-intro">
-        <div>
-          <Badge tone="indigo">Каталог</Badge>
-          <h1>Каталог репетиторов</h1>
-          <p>
-            Сравните преподавателей по предмету, рейтингу, цене и формату занятий.
-          </p>
-          <div className="page-intro__proof">
-            <span>Проверенные анкеты</span>
-            <span>Фильтры без перегруза</span>
-            <span>Заявки в кабинете</span>
-          </div>
-        </div>
-
-        <div className="page-intro__actions">
-          <LinkButton to="/auth/sign-up" variant="secondary">
-            Создать аккаунт
-          </LinkButton>
-          <LinkButton to="/auth/sign-up/tutor" variant="ghost">
-            Добавить анкету
-          </LinkButton>
-        </div>
-      </section>
-
       <section className="catalog-layout">
         <Card className="filters-panel">
           <SectionHeading eyebrow="Фильтры" title="Настроить подбор" description="Каталог обновляется по данным TutorSpace." />
