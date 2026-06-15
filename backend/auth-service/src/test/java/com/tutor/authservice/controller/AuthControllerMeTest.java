@@ -106,6 +106,22 @@ class AuthControllerMeTest {
         verifyNoInteractions(userService);
     }
 
+    @Test
+    void patchMeReturns400WhenServiceThrowsIllegalArgument() throws Exception {
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+        when(userService.updateProfileName(eq(userId), eq("А ")))
+                .thenThrow(new IllegalArgumentException("ФИО должно содержать от 2 до 100 символов."));
+        authenticateAs(user);
+
+        mockMvc.perform(patch("/api/auth/me")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"А \"}"))
+                .andExpect(status().isBadRequest());
+    }
+
     private void authenticateAs(User user) {
         var auth = new UsernamePasswordAuthenticationToken(user, null, List.of());
         SecurityContextHolder.getContext().setAuthentication(auth);
