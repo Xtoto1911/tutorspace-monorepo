@@ -32,7 +32,6 @@ const defaultFilters: TutorFilters = {
   maxRating: undefined,
   minPrice: undefined,
   maxPrice: undefined,
-  onlineOnly: false,
 };
 
 export function CatalogPage() {
@@ -47,7 +46,6 @@ export function CatalogPage() {
     subject: subjectSlug ?? '',
     query: searchParams.get('query') ?? '',
     city: searchParams.get('city') ?? '',
-    onlineOnly: searchParams.get('online') === '1',
   }));
   const [loading, setLoading] = useState(true);
   const [subjectsError, setSubjectsError] = useState('');
@@ -213,15 +211,6 @@ export function CatalogPage() {
               />
             </FormField>
           </div>
-
-          <label className="checkbox-row">
-            <input
-              type="checkbox"
-              checked={filters.onlineOnly ?? false}
-              onChange={(event) => setFilters((current) => ({ ...current, onlineOnly: event.target.checked }))}
-            />
-            <span>Показывать только онлайн-формат</span>
-          </label>
 
           {selectedSubject ? (
             <div className="filters-panel__summary">

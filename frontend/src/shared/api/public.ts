@@ -291,8 +291,7 @@ export function listTutors(filters: TutorFilters = {}): Promise<TutorSummary[]> 
           matchesQuery(tutor.city, query) ||
           tutor.subjects.some((value) => matchesQuery(value, query)) ||
           matchesQuery(tutor.about, query);
-        const onlineMatches = !filters.onlineOnly || tutor.tags.some((tag) => tag.toLowerCase().includes('онлайн'));
-        return queryMatches && cityMatches && onlineMatches;
+        return queryMatches && cityMatches;
       }),
   );
 }
