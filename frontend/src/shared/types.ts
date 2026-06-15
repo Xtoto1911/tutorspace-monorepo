@@ -95,7 +95,6 @@ export type TutorFilters = {
   maxRating?: number;
   minPrice?: number;
   maxPrice?: number;
-  onlineOnly?: boolean;
 };
 
 export type SignInInput = {
