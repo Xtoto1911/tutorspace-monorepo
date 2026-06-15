@@ -2619,7 +2619,7 @@ a.workspace-profile--link:hover,
 
 .client-applications__grid {
   display: grid;
-  grid-template-columns: minmax(0, 620px) 276px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 276px);
   gap: 20px;
   align-items: start;
 }
@@ -2954,7 +2954,7 @@ a.workspace-profile--link:hover,
 
 .application-details__grid {
   display: grid;
-  grid-template-columns: minmax(0, 596px) 300px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
   gap: 20px;
   align-items: start;
 }
