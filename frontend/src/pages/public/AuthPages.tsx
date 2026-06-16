@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Badge, Button, EmptyState, FormField, LinkButton, TextArea, TextInput } from '../../components/primitives';
+import { Badge, Button, EmptyState, FormField, LinkButton, PasswordInput, TextArea, TextInput } from '../../components/primitives';
 import { completePasswordReset, listSubjects, registerParent, registerTutor, requestPasswordReset, signIn } from '../../shared/api/public';
 import { getAppRouteForRole, writeAuthSession } from '../../shared/auth/session';
 
@@ -148,9 +148,8 @@ export function SignInPage() {
           />
         </FormField>
         <FormField label="Пароль">
-          <TextInput
+          <PasswordInput
             name="password"
-            type="password"
             value={form.password}
             onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
             placeholder="Введите пароль"
@@ -519,9 +518,8 @@ export function ResetPasswordPage() {
     >
       <form className="auth-form" onSubmit={handleSubmit}>
         <FormField label="Новый пароль">
-          <TextInput
+          <PasswordInput
             name="password"
-            type="password"
             value={form.password}
             onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
             minLength={8}
@@ -529,9 +527,8 @@ export function ResetPasswordPage() {
           />
         </FormField>
         <FormField label="Повторите пароль">
-          <TextInput
+          <PasswordInput
             name="confirmPassword"
-            type="password"
             value={form.confirmPassword}
             onChange={(event) => setForm((current) => ({ ...current, confirmPassword: event.target.value }))}
             minLength={8}
