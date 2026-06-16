@@ -44,7 +44,7 @@ Two related changes inside the existing auth and marketplace services plus the s
 ### Resulting Counts
 
 - `AdminSeedConfig`: still 25 tutors (1 admin + 25 tutors) and 25 clients.
-- `MarketplaceSeedConfig`: still 8 subjects, 25 tutor profiles, 26 published reviews (one per tutor plus the extra one carried over from the original seed), all UUIDs in the `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaNN` range stay unique.
+- `MarketplaceSeedConfig`: still 8 subjects, 25 tutor profiles, 25 published reviews (exactly one per tutor, since removing Irina's review and adding Lazareva's keeps the one-to-one mapping), all UUIDs in the `aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaNN` range stay unique.
 
 ## Friendly Error Messages
 
