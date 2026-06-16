@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button, LinkButton } from '../../components/primitives';
 import { getClientSchedulePage, requestClientLessonReschedule } from '../../shared/api/client';
 import { cn } from '../../shared/lib/cn';
@@ -13,6 +14,7 @@ import {
 } from './client-schedule-helpers';
 
 export function ClientSchedulePage() {
+  const navigate = useNavigate();
   const [selectedWeekStart, setSelectedWeekStart] = useState(() => getClientScheduleWeekRange(new Date()).from);
   const [pageData, setPageData] = useState<ClientSchedulePageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -251,6 +253,15 @@ export function ClientSchedulePage() {
                       key={event.id}
                       className={cn('schedule-event', `schedule-event--${event.tone}`)}
                       style={{ gridColumn: String(event.column + 1), gridRow: String(event.row + 2) }}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => navigate(getClientSchedulePrimaryLink(event))}
+                      onKeyDown={(eventKey) => {
+                        if (eventKey.key === 'Enter' || eventKey.key === ' ') {
+                          eventKey.preventDefault();
+                          navigate(getClientSchedulePrimaryLink(event));
+                        }
+                      }}
                     >
                       <strong>{event.title}</strong>
                       <span>{event.meta}</span>
