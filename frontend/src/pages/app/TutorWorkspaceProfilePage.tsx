@@ -17,7 +17,6 @@ import {
   setTutorHidden,
   setWorkspaceProfileField,
   shouldShowTutorProfileOnboarding,
-  toggleTutorSettingItem,
   toggleTutorSubject,
 } from './tutor-profile-settings-helpers';
 
@@ -80,11 +79,6 @@ export function TutorWorkspaceProfilePage() {
     setProfile((current) => (current ? setWorkspaceProfileField(current, fieldId, value) : current));
     setStatus('');
     setErrors((current) => ({ ...current, [fieldId]: undefined }));
-  };
-
-  const handleToggle = (section: 'visibility' | 'notifications', index: number) => {
-    setSettings((current) => (current ? toggleTutorSettingItem(current, section, index) : current));
-    setStatus('');
   };
 
   const handleSubjectToggle = (subject: string) => {
@@ -336,21 +330,7 @@ export function TutorWorkspaceProfilePage() {
                     onClick={handleHiddenToggle}
                   />
                 </article>
-                <article className="tutor-settings-toggle">
-                  <div>
-                    <strong>{settings.visibility[0]?.title ?? 'Разрешить быстрые заявки'}</strong>
-                    <p>{settings.visibility[0]?.description ?? 'Клиенты смогут отправить заявку без предварительного чата.'}</p>
-                  </div>
-                  <button
-                    className={cn('settings-switch', settings.visibility[0]?.enabled && 'is-on')}
-                    type="button"
-                    aria-pressed={settings.visibility[0]?.enabled ?? false}
-                    disabled={saving}
-                    onClick={() => handleToggle('visibility', 0)}
-                  />
-                </article>
               </div>
-            <p className="tutor-settings-privacy">Контакты показываются только после отклика или активной заявки.</p>
           </section>
         ) : null}
 
