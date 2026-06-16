@@ -336,20 +336,19 @@ export function TutorWorkspaceProfilePage() {
                     onClick={handleHiddenToggle}
                   />
                 </article>
-                {settings.visibility.map((item, index) => (
-                  <article key={item.title} className="tutor-settings-toggle">
-                    <div>
-                      <strong>{item.title}</strong>
-                      <p>{item.description}</p>
-                    </div>
-                    <button
-                      className={cn('settings-switch', item.enabled && 'is-on')}
-                      type="button"
-                      aria-pressed={item.enabled}
-                      onClick={() => handleToggle('visibility', index)}
-                    />
-                  </article>
-                ))}
+                <article className="tutor-settings-toggle">
+                  <div>
+                    <strong>{settings.visibility[0]?.title ?? 'Разрешить быстрые заявки'}</strong>
+                    <p>{settings.visibility[0]?.description ?? 'Клиенты смогут отправить заявку без предварительного чата.'}</p>
+                  </div>
+                  <button
+                    className={cn('settings-switch', settings.visibility[0]?.enabled && 'is-on')}
+                    type="button"
+                    aria-pressed={settings.visibility[0]?.enabled ?? false}
+                    disabled={saving}
+                    onClick={() => handleToggle('visibility', 0)}
+                  />
+                </article>
               </div>
             <p className="tutor-settings-privacy">Контакты показываются только после отклика или активной заявки.</p>
           </section>
@@ -357,12 +356,6 @@ export function TutorWorkspaceProfilePage() {
 
       </aside>
       </div>
-
-      <section className="tutor-profile-note" aria-label="Подсказка по профилю">
-        <strong>Подсказка</strong>
-        <p>После сохранения профиль синхронизируется с marketplace-service и обновится в каталоге.</p>
-        <Button>Отправить на проверку</Button>
-      </section>
     </div>
   );
 }
