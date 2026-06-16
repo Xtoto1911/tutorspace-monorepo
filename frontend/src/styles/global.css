@@ -14,6 +14,10 @@
   --accent-clay: oklch(0.62 0.112 55);
   --accent-clay-soft: oklch(0.91 0.052 58);
   --accent-sky-soft: oklch(0.91 0.04 228);
+  --danger: oklch(0.52 0.14 25);
+  --danger-soft: oklch(0.93 0.04 25);
+  --success: oklch(0.55 0.11 155);
+  --success-soft: oklch(0.93 0.05 155);
   --ink: oklch(0.18 0.018 67);
   --shadow-soft: 0 18px 48px oklch(0.31 0.045 70 / 0.11);
   --shadow-tiny: 0 8px 24px oklch(0.31 0.045 70 / 0.07);
@@ -300,6 +304,67 @@ p {
 .control:focus {
   outline: 2px solid var(--primary-soft);
   border-color: var(--primary);
+}
+
+.password-input {
+  position: relative;
+  display: block;
+}
+
+.password-input .control {
+  padding-right: 40px;
+}
+
+.password-input__toggle {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.password-input__toggle:hover {
+  color: var(--text);
+  background: var(--surface-muted);
+}
+
+.password-input__toggle:focus-visible {
+  outline: 2px solid var(--primary-soft);
+  outline-offset: 1px;
+}
+
+.control--error,
+.form-field.is-invalid .control {
+  border-color: var(--danger);
+}
+
+.control--error:focus,
+.form-field.is-invalid .control:focus {
+  outline-color: var(--danger-soft);
+  border-color: var(--danger);
+}
+
+.control--success,
+.form-field.is-valid .control {
+  border-color: var(--success);
+}
+
+.form-field.is-invalid .form-label {
+  color: var(--danger);
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 12px;
 }
 
 .control-textarea {
