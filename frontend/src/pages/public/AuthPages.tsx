@@ -221,6 +221,11 @@ export function ParentRegistrationPage() {
     email: false,
     password: false,
   });
+  const [focused, setFocused] = useState<Record<keyof typeof form, boolean>>({
+    name: false,
+    email: false,
+    password: false,
+  });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -248,11 +253,11 @@ export function ParentRegistrationPage() {
     }
   };
 
-  const nameError = touched.name ? validateName(form.name).message : null;
-  const emailError = touched.email ? validateEmail(form.email).message : null;
-  const passwordError = touched.password ? validatePassword(form.password, 6).message : null;
-  const emailValid = touched.email && !emailError;
-  const passwordValid = touched.password && !passwordError;
+  const nameError = touched.name && !focused.name ? validateName(form.name).message : null;
+  const emailError = touched.email && !focused.email ? validateEmail(form.email).message : null;
+  const passwordError = touched.password && !focused.password ? validatePassword(form.password, 6).message : null;
+  const emailValid = touched.email && !focused.email && !emailError;
+  const passwordValid = touched.password && !focused.password && !passwordError;
 
   return (
     <AuthShell
@@ -271,7 +276,11 @@ export function ParentRegistrationPage() {
             name="name"
             value={form.name}
             onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-            onBlur={() => setTouched((current) => ({ ...current, name: true }))}
+            onFocus={() => setFocused((current) => ({ ...current, name: true }))}
+            onBlur={() => {
+              setFocused((current) => ({ ...current, name: false }));
+              setTouched((current) => ({ ...current, name: true }));
+            }}
             className={nameError ? 'control--error' : undefined}
             required
           />
@@ -282,7 +291,11 @@ export function ParentRegistrationPage() {
             type="email"
             value={form.email}
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-            onBlur={() => setTouched((current) => ({ ...current, email: true }))}
+            onFocus={() => setFocused((current) => ({ ...current, email: true }))}
+            onBlur={() => {
+              setFocused((current) => ({ ...current, email: false }));
+              setTouched((current) => ({ ...current, email: true }));
+            }}
             className={emailError ? 'control--error' : emailValid ? 'control--success' : undefined}
             required
           />
@@ -292,7 +305,11 @@ export function ParentRegistrationPage() {
             name="password"
             value={form.password}
             onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-            onBlur={() => setTouched((current) => ({ ...current, password: true }))}
+            onFocus={() => setFocused((current) => ({ ...current, password: true }))}
+            onBlur={() => {
+              setFocused((current) => ({ ...current, password: false }));
+              setTouched((current) => ({ ...current, password: true }));
+            }}
             className={passwordError ? 'is-invalid' : passwordValid ? 'is-valid' : undefined}
             minLength={6}
             required
@@ -323,6 +340,12 @@ export function TutorRegistrationPage() {
     about: '',
   });
   const [touched, setTouched] = useState<{ name: boolean; email: boolean; password: boolean; subjects: boolean }>({
+    name: false,
+    email: false,
+    password: false,
+    subjects: false,
+  });
+  const [focused, setFocused] = useState<{ name: boolean; email: boolean; password: boolean; subjects: boolean }>({
     name: false,
     email: false,
     password: false,
@@ -393,12 +416,12 @@ export function TutorRegistrationPage() {
     }
   };
 
-  const nameError = touched.name ? validateName(form.name).message : null;
-  const emailError = touched.email ? validateEmail(form.email).message : null;
-  const passwordError = touched.password ? validatePassword(form.password, 6).message : null;
+  const nameError = touched.name && !focused.name ? validateName(form.name).message : null;
+  const emailError = touched.email && !focused.email ? validateEmail(form.email).message : null;
+  const passwordError = touched.password && !focused.password ? validatePassword(form.password, 6).message : null;
   const subjectsValidation = touched.subjects ? validateSubjects(form.subjects).message : null;
-  const emailValid = touched.email && !emailError;
-  const passwordValid = touched.password && !passwordError;
+  const emailValid = touched.email && !focused.email && !emailError;
+  const passwordValid = touched.password && !focused.password && !passwordError;
 
   return (
     <AuthShell
@@ -417,7 +440,11 @@ export function TutorRegistrationPage() {
             name="name"
             value={form.name}
             onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
-            onBlur={() => setTouched((current) => ({ ...current, name: true }))}
+            onFocus={() => setFocused((current) => ({ ...current, name: true }))}
+            onBlur={() => {
+              setFocused((current) => ({ ...current, name: false }));
+              setTouched((current) => ({ ...current, name: true }));
+            }}
             className={nameError ? 'control--error' : undefined}
             required
           />
@@ -428,7 +455,11 @@ export function TutorRegistrationPage() {
             type="email"
             value={form.email}
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-            onBlur={() => setTouched((current) => ({ ...current, email: true }))}
+            onFocus={() => setFocused((current) => ({ ...current, email: true }))}
+            onBlur={() => {
+              setFocused((current) => ({ ...current, email: false }));
+              setTouched((current) => ({ ...current, email: true }));
+            }}
             className={emailError ? 'control--error' : emailValid ? 'control--success' : undefined}
             required
           />
@@ -438,7 +469,11 @@ export function TutorRegistrationPage() {
             name="password"
             value={form.password}
             onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
-            onBlur={() => setTouched((current) => ({ ...current, password: true }))}
+            onFocus={() => setFocused((current) => ({ ...current, password: true }))}
+            onBlur={() => {
+              setFocused((current) => ({ ...current, password: false }));
+              setTouched((current) => ({ ...current, password: true }));
+            }}
             className={passwordError ? 'is-invalid' : passwordValid ? 'is-valid' : undefined}
             minLength={6}
             required

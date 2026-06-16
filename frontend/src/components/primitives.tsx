@@ -95,8 +95,9 @@ export function FormField({
     <label className={cn('form-field', modifiers.length > 0 ? modifiers.join(' ') : undefined)}>
       <span className="form-label">{label}</span>
       {children}
-      {error ? <span className="form-error">{error}</span> : null}
-      {!error && hint ? <span className="form-hint">{hint}</span> : null}
+      <span className={error ? 'form-error' : 'form-hint'} aria-live="polite">
+        {error || hint || ''}
+      </span>
     </label>
   );
 }

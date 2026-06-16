@@ -285,6 +285,9 @@ p {
 .form-hint {
   color: var(--muted);
   font-size: 12px;
+  display: block;
+  min-height: 1.2em;
+  line-height: 1.2;
 }
 
 .control {
@@ -365,6 +368,9 @@ p {
 .form-error {
   color: var(--danger);
   font-size: 12px;
+  display: block;
+  min-height: 1.2em;
+  line-height: 1.2;
 }
 
 .control-textarea {
