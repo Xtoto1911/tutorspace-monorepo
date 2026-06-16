@@ -258,7 +258,7 @@ public Lesson rescheduleTutorLesson(UUID tutorUserId, UUID lessonId, RescheduleL
 - **Добавить**:
   - `createLesson_applicationDesiredStartInPast_throwsConflict` — путь (c), приложение с просроченным `desiredStartTime`
   - `rescheduleLesson_toPast_throwsConflict` — путь (2)
-- **Бампнуть** fixture: `createLesson_nonOverlapping_ok` использует `2026, 5, 1, 14, 0` — может потребоваться перевод на 2027 (если today > 2026-05-01). Сегодня 2026-06-16 — да, бамп нужен.
+- **Бампнуть fixture-даты в `LessonServiceTest`:** 23 строки в файле используют `LocalDateTime.of(2026, ...)` для fixture-дат (старт-тайм урока, desiredStartTime приложения, новый startTime в reschedule-тестах). Все эти даты в прошлом (сегодня 2026-06-16), новая общая проверка бросит `ConflictException` вместо ожидаемого исхода. Bulk replace `LocalDateTime.of(2026` → `LocalDateTime.of(2027` через `replaceAll: true` затрагивает 7 тестов: `createLesson_overlappingTime_throwsConflict`, `createLesson_nonOverlapping_ok`, `createLesson_forManualStudent_createsStudentCardAndLinksLesson`, `rescheduleLesson_singleKeepsOtherSeriesLessonsInPlace`, `rescheduleLesson_closesPendingClientRescheduleRequest`, `createLesson_fromApplicationKeepsTutorNameForClientSchedule`, `rescheduleLesson_seriesMovesSelectedAndFutureSeriesLessons`. Безопасно потому что `createLesson_withWeeklyRecurrenceForExistingStudent_createsSeries` уже был бампнут на 2027 в предыдущем фиксе (`3c0cb5f`), а новые тесты используют `LocalDateTime.now().minusDays(1)` (negative case) — совпадений с `2026` там нет.
 
 Итого по тестам `LessonServiceTest`:
 - 12 текущих тестов
