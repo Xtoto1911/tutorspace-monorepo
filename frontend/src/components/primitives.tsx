@@ -102,15 +102,15 @@ export function FormField({
 }
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn('control', props.className)} {...props} />;
+  return <input {...props} className={cn('control', props.className)} />;
 }
 
 export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={cn('control', 'control-textarea', props.className)} {...props} />;
+  return <textarea {...props} className={cn('control', 'control-textarea', props.className)} />;
 }
 
 export function SelectInput(props: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={cn('control', props.className)} {...props} />;
+  return <select {...props} className={cn('control', props.className)} />;
 }
 
 export function MetricCard({
