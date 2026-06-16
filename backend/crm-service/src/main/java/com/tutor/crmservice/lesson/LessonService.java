@@ -64,11 +64,7 @@ public class LessonService {
                 if (!available) {
                     throw new ConflictException("Выбранный слот недоступен или уже забронирован.");
                 }
-                LocalDateTime slotStart = request.slot().date().atTime(request.slot().startTime());
-                if (slotStart.isBefore(LocalDateTime.now())) {
-                    throw new ConflictException("Нельзя записать ученика на прошедшее время.");
-                }
-                startTime = slotStart;
+                startTime = request.slot().date().atTime(request.slot().startTime());
                 duration = request.slot().durationMinutes();
             } else {
                 startTime = request.startsAt() == null ? application.getDesiredStartTime() : request.startsAt();
@@ -113,11 +109,12 @@ public class LessonService {
         Lesson firstSaved = null;
         LocalDateTime now = LocalDateTime.now();
 
+        if (startTime.isBefore(now)) {
+            throw new ConflictException("Нельзя создать урок в прошлом.");
+        }
+
         for (int index = 0; index < occurrences; index++) {
             LocalDateTime lessonStart = startTime.plusWeeks(index);
-            if (occurrences > 1 && lessonStart.isBefore(now)) {
-                throw new ConflictException("Нельзя создать серию уроков в прошлом.");
-            }
             ensureNoOverlap(tutorUserId, lessonStart, duration, Set.of());
             Lesson saved = lessonRepository.save(buildLesson(
                     applicationId,
@@ -161,6 +158,9 @@ public class LessonService {
     public Lesson rescheduleTutorLesson(UUID tutorUserId, UUID lessonId, RescheduleLessonRequest request) {
         if (request == null || request.startsAt() == null) {
             throw new IllegalArgumentException("Новое время урока обязательно.");
+        }
+        if (request.startsAt().isBefore(LocalDateTime.now())) {
+            throw new ConflictException("Нельзя перенести урок в прошлое.");
         }
         Lesson lesson = lessonRepository.findByIdForUpdate(lessonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Урок не найден."));
