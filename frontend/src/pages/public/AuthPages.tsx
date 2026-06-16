@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Badge, Button, EmptyState, FormField, LinkButton, PasswordInput, TextArea, TextInput } from '../../components/primitives';
 import { completePasswordReset, listSubjects, registerParent, registerTutor, requestPasswordReset, signIn } from '../../shared/api/public';
 import { getAppRouteForRole, writeAuthSession } from '../../shared/auth/session';
+import { cn } from '../../shared/lib/cn';
 import { runRegistrationValidations, validateEmail, validateName, validatePassword, validateSubjects } from './auth-helpers';
 
 function SubjectPicker({
@@ -321,6 +322,12 @@ export function TutorRegistrationPage() {
     city: 'Москва',
     about: '',
   });
+  const [touched, setTouched] = useState<{ name: boolean; email: boolean; password: boolean; subjects: boolean }>({
+    name: false,
+    email: false,
+    password: false,
+    subjects: false,
+  });
 
   useEffect(() => {
     let active = true;
@@ -362,9 +369,16 @@ export function TutorRegistrationPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setTouched({ name: true, email: true, password: true, subjects: true });
 
-    if (form.subjects.length === 0) {
-      setStatus('Выберите хотя бы один предмет из списка.');
+    const errors = runRegistrationValidations({
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      subjects: form.subjects,
+    });
+    if (errors.name || errors.email || errors.password || errors.subjects) {
+      setStatus('Проверьте правильность заполнения полей.');
       return;
     }
 
@@ -379,6 +393,13 @@ export function TutorRegistrationPage() {
     }
   };
 
+  const nameError = touched.name ? validateName(form.name).message : null;
+  const emailError = touched.email ? validateEmail(form.email).message : null;
+  const passwordError = touched.password ? validatePassword(form.password, 6).message : null;
+  const subjectsValidation = touched.subjects ? validateSubjects(form.subjects).message : null;
+  const emailValid = touched.email && !emailError;
+  const passwordValid = touched.password && !passwordError;
+
   return (
     <AuthShell
       eyebrow="Для репетиторов"
@@ -391,29 +412,39 @@ export function TutorRegistrationPage() {
       backLinkLabel="Выбор роли"
     >
       <form className="auth-form auth-form--grid" onSubmit={handleSubmit}>
-        <FormField label="ФИО">
-          <TextInput name="name" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} required />
+        <FormField label="ФИО" error={nameError ?? undefined}>
+          <TextInput
+            name="name"
+            value={form.name}
+            onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+            onBlur={() => setTouched((current) => ({ ...current, name: true }))}
+            className={nameError ? 'control--error' : undefined}
+            required
+          />
         </FormField>
-        <FormField label="Email">
+        <FormField label="Email" error={emailError ?? undefined} valid={emailValid}>
           <TextInput
             name="email"
             type="email"
             value={form.email}
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+            onBlur={() => setTouched((current) => ({ ...current, email: true }))}
+            className={emailError ? 'control--error' : emailValid ? 'control--success' : undefined}
             required
           />
         </FormField>
-        <FormField label="Пароль">
-          <TextInput
+        <FormField label="Пароль" error={passwordError ?? undefined} valid={passwordValid}>
+          <PasswordInput
             name="password"
-            type="password"
             value={form.password}
             onChange={(event) => setForm((current) => ({ ...current, password: event.target.value }))}
+            onBlur={() => setTouched((current) => ({ ...current, password: true }))}
+            className={passwordError ? 'is-invalid' : passwordValid ? 'is-valid' : undefined}
             minLength={6}
             required
           />
         </FormField>
-        <div className="form-field form-field--wide">
+        <div className={cn('form-field form-field--wide', subjectsValidation ? 'is-invalid' : undefined)}>
           <span className="form-label">Преподаваемые предметы</span>
           {subjectsLoading ? <div className="loading-panel">Загружаем предметы...</div> : null}
           {!subjectsLoading && subjectsError ? (
@@ -436,7 +467,11 @@ export function TutorRegistrationPage() {
               onToggleSubject={handleSubjectToggle}
             />
           ) : null}
-          <span className="form-hint">Нажмите на предмет, чтобы добавить или убрать его из итогового списка.</span>
+          {subjectsValidation ? (
+            <span className="form-error">{subjectsValidation}</span>
+          ) : (
+            <span className="form-hint">Нажмите на предмет, чтобы добавить или убрать его из итогового списка.</span>
+          )}
         </div>
         <FormField label="Опыт, лет">
           <TextInput
