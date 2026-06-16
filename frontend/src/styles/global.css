@@ -4210,6 +4210,7 @@ a.workspace-profile--link:hover,
 }
 
 .messages-search {
+  position: relative;
   min-height: 42px;
   display: flex;
   align-items: center;
@@ -4220,6 +4221,23 @@ a.workspace-profile--link:hover,
   background: var(--surface-muted);
   color: var(--muted);
   transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.messages-search__clear {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.messages-search__clear:hover {
+  background: rgba(17, 24, 39, 0.08);
+  color: var(--ink);
 }
 
 .messages-search:focus-within {
@@ -4351,6 +4369,24 @@ a.workspace-profile--link:hover,
 .conversation-list__empty strong {
   color: var(--ink);
   font-size: 14px;
+}
+
+.conversation-list__reset {
+  justify-self: center;
+  margin-top: 6px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.conversation-list__reset:hover {
+  background: var(--primary-soft, rgba(79, 70, 229, 0.08));
 }
 
 .messages-chat-panel {
@@ -7523,12 +7559,56 @@ a.workspace-profile--link:hover,
 .tutor-student-search input {
   width: 100%;
   min-height: 46px;
-  padding: 0 18px;
+  padding: 0 40px 0 18px;
   border: 1px solid var(--border);
   border-radius: 14px;
   background: #f9fafb;
   color: #111827;
   font: inherit;
+}
+
+.tutor-student-search {
+  position: relative;
+}
+
+.tutor-student-search__clear {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.08);
+  color: #111827;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+
+.tutor-student-search__clear:hover {
+  background: rgba(17, 24, 39, 0.16);
+}
+
+.tutor-student-empty {
+  display: grid;
+  gap: 10px;
+  padding: 28px 24px;
+  border: 1px dashed var(--border);
+  border-radius: 18px;
+  background: var(--surface-muted, #f9fafb);
+  color: #111827;
+  text-align: center;
+}
+
+.tutor-student-empty p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .tutor-student-toolbar .btn {

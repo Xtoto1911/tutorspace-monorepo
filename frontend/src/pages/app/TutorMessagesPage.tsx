@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Button, LinkButton } from '../../components/primitives';
 import { getTutorMessages, sendTutorMessage } from '../../shared/api/tutor';
@@ -12,6 +12,7 @@ export function TutorMessagesPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const selectedThreadId = searchParams.get('threadId');
 
   const loadMessages = async (threadId?: string | null) => {
@@ -30,6 +31,27 @@ export function TutorMessagesPage() {
   useEffect(() => {
     void loadMessages(selectedThreadId);
   }, [selectedThreadId]);
+
+  const filteredConversations = useMemo(() => {
+    const conversations = pageData?.conversations ?? [];
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) {
+      return conversations;
+    }
+    return conversations.filter((conversation) =>
+      conversation.name.toLowerCase().includes(query)
+      || conversation.subject.toLowerCase().includes(query)
+      || conversation.preview.toLowerCase().includes(query),
+    );
+  }, [pageData?.conversations, searchQuery]);
+
+  useEffect(() => {
+    if (!selectedThreadId) return;
+    if (filteredConversations.some((conversation) => conversation.id === selectedThreadId)) return;
+    const next = new URLSearchParams(searchParams);
+    next.delete('threadId');
+    setSearchParams(next, { replace: true });
+  }, [filteredConversations, selectedThreadId, searchParams, setSearchParams]);
 
   const dialog = pageData?.activeDialog;
   const activeConversation = pageData?.conversations.find((conversation) => conversation.active) ?? pageData?.conversations[0];
@@ -112,12 +134,41 @@ export function TutorMessagesPage() {
               name="tutor-message-search"
               aria-label="Поиск по сообщениям"
               placeholder="Поиск по родителям и ученикам"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
             />
+            {searchQuery ? (
+              <button
+                type="button"
+                className="messages-search__clear"
+                onClick={() => setSearchQuery('')}
+                aria-label="Очистить поиск"
+              >
+                ×
+              </button>
+            ) : null}
           </label>
 
           <div className="conversation-list">
-            {pageData.conversations.length > 0 ? (
-              pageData.conversations.map((conversation) => (
+            {pageData.conversations.length === 0 ? (
+              <div className="conversation-list__empty">
+                <strong>Пока пусто</strong>
+                <span>Диалоги появятся после первой заявки.</span>
+              </div>
+            ) : filteredConversations.length === 0 ? (
+              <div className="conversation-list__empty">
+                <strong>Диалогов не найдено</strong>
+                <span>Попробуйте изменить запрос.</span>
+                <button
+                  type="button"
+                  className="conversation-list__reset"
+                  onClick={() => setSearchQuery('')}
+                >
+                  Очистить поиск
+                </button>
+              </div>
+            ) : (
+              filteredConversations.map((conversation) => (
                 <button
                   key={conversation.id}
                   className={cn('conversation-card', conversation.active && 'is-active')}
@@ -137,11 +188,6 @@ export function TutorMessagesPage() {
                   {conversation.unread ? <span className="conversation-card__badge">{conversation.unread}</span> : null}
                 </button>
               ))
-            ) : (
-              <div className="conversation-list__empty">
-                <strong>Пока пусто</strong>
-                <span>Диалоги появятся после первой заявки.</span>
-              </div>
             )}
           </div>
         </aside>
