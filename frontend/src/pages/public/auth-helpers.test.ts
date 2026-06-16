@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   runRegistrationValidations,
+  validateCity,
   validateEmail,
   validateName,
   validatePassword,
@@ -120,17 +121,33 @@ describe('validateSubjects', () => {
   });
 });
 
+describe('validateCity', () => {
+  it('rejects an empty city', () => {
+    expect(validateCity('')).toEqual({ valid: false, message: 'Укажите город' });
+  });
+
+  it('rejects a whitespace-only city', () => {
+    expect(validateCity('   ')).toEqual({ valid: false, message: 'Укажите город' });
+  });
+
+  it('accepts a non-empty city', () => {
+    expect(validateCity('Москва')).toEqual({ valid: true, message: null });
+  });
+});
+
 describe('runRegistrationValidations', () => {
   it('reports errors for all invalid fields and leaves valid fields empty', () => {
     const result = runRegistrationValidations({
       name: 'A',
       email: 'broken',
       password: '12345',
+      city: '',
       subjects: [],
     });
     expect(result.name).toBeTruthy();
     expect(result.email).toBeTruthy();
     expect(result.password).toBeTruthy();
+    expect(result.city).toBeTruthy();
     expect(result.subjects).toBeTruthy();
   });
 
@@ -139,8 +156,15 @@ describe('runRegistrationValidations', () => {
       name: 'Иван',
       email: 'i@example.com',
       password: '123456',
+      city: 'Москва',
       subjects: ['Математика'],
     });
-    expect(result).toEqual({ name: null, email: null, password: null, subjects: null });
+    expect(result).toEqual({
+      name: null,
+      email: null,
+      password: null,
+      city: null,
+      subjects: null,
+    });
   });
 });

@@ -55,10 +55,19 @@ export function validateSubjects(subjects: readonly string[]): FieldValidation {
   return { valid: true, message: null };
 }
 
+export function validateCity(city: string): FieldValidation {
+  const trimmed = city.trim();
+  if (trimmed.length === 0) {
+    return { valid: false, message: 'Укажите город' };
+  }
+  return { valid: true, message: null };
+}
+
 export type RegistrationValues = {
   name: string;
   email: string;
   password: string;
+  city: string;
   subjects: readonly string[];
 };
 
@@ -69,6 +78,7 @@ export function runRegistrationValidations(values: RegistrationValues): Registra
     name: validateName(values.name).message,
     email: validateEmail(values.email).message,
     password: validatePassword(values.password, 6).message,
+    city: validateCity(values.city).message,
     subjects: validateSubjects(values.subjects).message,
   };
 }

@@ -4,7 +4,7 @@ import { Badge, Button, EmptyState, FormField, LinkButton, PasswordInput, TextAr
 import { completePasswordReset, listSubjects, registerParent, registerTutor, requestPasswordReset, signIn } from '../../shared/api/public';
 import { getAppRouteForRole, writeAuthSession } from '../../shared/auth/session';
 import { cn } from '../../shared/lib/cn';
-import { runRegistrationValidations, validateEmail, validateName, validatePassword, validateSubjects } from './auth-helpers';
+import { runRegistrationValidations, validateCity, validateEmail, validateName, validatePassword, validateSubjects } from './auth-helpers';
 
 function SubjectPicker({
   availableSubjects,
@@ -235,6 +235,7 @@ export function ParentRegistrationPage() {
       name: form.name,
       email: form.email,
       password: form.password,
+      city: '',
       subjects: [],
     });
     if (errors.name || errors.email || errors.password) {
@@ -339,16 +340,18 @@ export function TutorRegistrationPage() {
     city: 'Москва',
     about: '',
   });
-  const [touched, setTouched] = useState<{ name: boolean; email: boolean; password: boolean; subjects: boolean }>({
+  const [touched, setTouched] = useState<{ name: boolean; email: boolean; password: boolean; city: boolean; subjects: boolean }>({
     name: false,
     email: false,
     password: false,
+    city: false,
     subjects: false,
   });
-  const [focused, setFocused] = useState<{ name: boolean; email: boolean; password: boolean; subjects: boolean }>({
+  const [focused, setFocused] = useState<{ name: boolean; email: boolean; password: boolean; city: boolean; subjects: boolean }>({
     name: false,
     email: false,
     password: false,
+    city: false,
     subjects: false,
   });
 
@@ -392,15 +395,16 @@ export function TutorRegistrationPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setTouched({ name: true, email: true, password: true, subjects: true });
+    setTouched({ name: true, email: true, password: true, city: true, subjects: true });
 
     const errors = runRegistrationValidations({
       name: form.name,
       email: form.email,
       password: form.password,
+      city: form.city,
       subjects: form.subjects,
     });
-    if (errors.name || errors.email || errors.password || errors.subjects) {
+    if (errors.name || errors.email || errors.password || errors.city || errors.subjects) {
       setStatus('Проверьте правильность заполнения полей.');
       return;
     }
@@ -419,6 +423,7 @@ export function TutorRegistrationPage() {
   const nameError = touched.name && !focused.name ? validateName(form.name).message : null;
   const emailError = touched.email && !focused.email ? validateEmail(form.email).message : null;
   const passwordError = touched.password && !focused.password ? validatePassword(form.password, 6).message : null;
+  const cityError = touched.city && !focused.city ? validateCity(form.city).message : null;
   const subjectsValidation = touched.subjects ? validateSubjects(form.subjects).message : null;
   const emailValid = touched.email && !focused.email && !emailError;
   const passwordValid = touched.password && !focused.password && !passwordError;
@@ -517,8 +522,19 @@ export function TutorRegistrationPage() {
             min="0"
           />
         </FormField>
-        <FormField label="Город">
-          <TextInput name="city" value={form.city} onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))} />
+        <FormField label="Город" error={cityError ?? undefined}>
+          <TextInput
+            name="city"
+            value={form.city}
+            onChange={(event) => setForm((current) => ({ ...current, city: event.target.value }))}
+            onFocus={() => setFocused((current) => ({ ...current, city: true }))}
+            onBlur={() => {
+              setFocused((current) => ({ ...current, city: false }));
+              setTouched((current) => ({ ...current, city: true }));
+            }}
+            className={cityError ? 'control--error' : undefined}
+            required
+          />
         </FormField>
         <FormField label="О себе">
           <TextArea name="about" rows={4} value={form.about} onChange={(event) => setForm((current) => ({ ...current, about: event.target.value }))} />
