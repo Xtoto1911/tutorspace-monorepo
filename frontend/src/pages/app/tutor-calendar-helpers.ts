@@ -284,3 +284,24 @@ export function formatLessonRequestStartTime(value: string) {
   const [, month, day] = parsed.date.split('-');
   return `${day}.${month}, ${parsed.time}`;
 }
+
+export type LessonStartKind = 'create' | 'recurrence' | 'reschedule';
+
+export function getLessonStartValidationError(
+  date: string,
+  time: string,
+  kind: LessonStartKind,
+  now: Date = new Date(),
+): string | null {
+  if (!isCalendarCellInPast(date, time, now)) {
+    return null;
+  }
+  switch (kind) {
+    case 'recurrence':
+      return 'Нельзя назначить серию уроков в прошлое. Выберите будущую дату и время.';
+    case 'reschedule':
+      return 'Нельзя перенести урок в прошлое. Выберите будущую дату и время.';
+    case 'create':
+      return 'Нельзя назначить урок в прошлое. Выберите будущую дату и время.';
+  }
+}
