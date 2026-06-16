@@ -146,21 +146,6 @@ export function isCalendarCellInPast(date: string, time: string, now = new Date(
   return new Date(`${date}T${time}:00`).getTime() < now.getTime();
 }
 
-export function getRecurrenceValidationError(
-  date: string,
-  time: string,
-  recurrenceType: string,
-  now: Date = new Date(),
-): string | null {
-  if (recurrenceType !== 'WEEKLY') {
-    return null;
-  }
-  if (isCalendarCellInPast(date, time, now)) {
-    return 'Нельзя назначить серию уроков в прошлое. Выберите будущую дату и время.';
-  }
-  return null;
-}
-
 function normalizeOptionalText(value: string) {
   const trimmed = value.trim();
   return trimmed.length === 0 ? undefined : trimmed;

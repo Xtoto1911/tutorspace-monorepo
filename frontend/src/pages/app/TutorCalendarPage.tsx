@@ -24,11 +24,12 @@ import {
   buildSlotLessonPayload,
   formatLessonRequestStartTime,
   getLessonModalDefaults,
-  getRecurrenceValidationError,
+  getLessonStartValidationError,
   getTutorCalendarGridPosition,
   getTutorCalendarDisplayStats,
   isCalendarCellInPast,
   type LessonRescheduleScope,
+  type LessonStartKind,
 } from './tutor-calendar-helpers';
 import { getCalendarWorkdayEmptyState } from './tutor-workday-helpers';
 
@@ -316,7 +317,8 @@ export function TutorCalendarPage() {
     const recurrenceType = String(formData.get('recurrenceType'));
     const date = String(formData.get('date'));
     const time = String(formData.get('time'));
-    const recurrenceError = getRecurrenceValidationError(date, time, recurrenceType);
+    const lessonStartKind: LessonStartKind = recurrenceType === 'WEEKLY' ? 'recurrence' : 'create';
+    const recurrenceError = getLessonStartValidationError(date, time, lessonStartKind);
     if (recurrenceError) {
       await dialog.alert(recurrenceError);
       return;
@@ -474,7 +476,8 @@ export function TutorCalendarPage() {
     const recurrenceType = String(formData.get('recurrenceType'));
     const slotDate = selectedSlot.date;
     const slotTime = selectedSlot.startTime.slice(0, 5);
-    const recurrenceError = getRecurrenceValidationError(slotDate, slotTime, recurrenceType);
+    const lessonStartKind: LessonStartKind = recurrenceType === 'WEEKLY' ? 'recurrence' : 'create';
+    const recurrenceError = getLessonStartValidationError(slotDate, slotTime, lessonStartKind);
     if (recurrenceError) {
       await dialog.alert(recurrenceError);
       return;
@@ -507,6 +510,15 @@ export function TutorCalendarPage() {
     e.preventDefault();
     if (!selectedLesson) return;
     const formData = new FormData(e.currentTarget);
+    const rescheduleError = getLessonStartValidationError(
+      String(formData.get('date')),
+      String(formData.get('time')),
+      'reschedule',
+    );
+    if (rescheduleError) {
+      await dialog.alert(rescheduleError);
+      return;
+    }
     const scope = String(formData.get('scope') ?? 'SINGLE') as LessonRescheduleScope;
     const payload = buildLessonReschedulePayload(
       String(formData.get('date')),
