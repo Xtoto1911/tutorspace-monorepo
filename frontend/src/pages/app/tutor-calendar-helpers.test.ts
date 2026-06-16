@@ -8,6 +8,7 @@ import {
   buildTutorCalendarTimeSlots,
   formatLessonRequestStartTime,
   getLessonModalDefaults,
+  getRecurrenceValidationError,
   getTutorCalendarGridPosition,
   getTutorCalendarDisplayStats,
   isCalendarCellInPast,
@@ -236,5 +237,33 @@ describe('tutor calendar helpers', () => {
   it('formats request start time without exposing raw ISO text', () => {
     expect(formatLessonRequestStartTime('2026-05-29T18:00')).toBe('29.05, 18:00');
     expect(formatLessonRequestStartTime('18:00')).toBe('18:00');
+  });
+
+  describe('getRecurrenceValidationError', () => {
+    const now = new Date('2026-05-14T12:30:00');
+
+    it('returns null for non-weekly recurrence even when start is in the past', () => {
+      expect(getRecurrenceValidationError('2026-05-13', '20:00', 'NONE', now)).toBeNull();
+    });
+
+    it('returns null for weekly recurrence starting in the future', () => {
+      expect(getRecurrenceValidationError('2026-05-15', '09:00', 'WEEKLY', now)).toBeNull();
+    });
+
+    it('returns null for weekly recurrence starting today in the future', () => {
+      expect(getRecurrenceValidationError('2026-05-14', '18:00', 'WEEKLY', now)).toBeNull();
+    });
+
+    it('returns an error message for weekly recurrence starting in the past', () => {
+      const error = getRecurrenceValidationError('2026-05-13', '20:00', 'WEEKLY', now);
+      expect(error).not.toBeNull();
+      expect(error).toMatch(/прошлое/);
+    });
+
+    it('returns an error message for weekly recurrence with today + past time', () => {
+      const error = getRecurrenceValidationError('2026-05-14', '09:00', 'WEEKLY', now);
+      expect(error).not.toBeNull();
+      expect(error).toMatch(/прошлое/);
+    });
   });
 });
