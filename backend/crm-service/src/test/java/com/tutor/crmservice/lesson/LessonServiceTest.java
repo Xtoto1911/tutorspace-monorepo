@@ -116,7 +116,7 @@ class LessonServiceTest {
         service.createTutorLesson(tutorId, new CreateLessonRequest(
                 null,
                 studentId,
-                LocalDateTime.of(2026, 5, 4, 18, 0),
+                LocalDateTime.of(2027, 5, 4, 18, 0),
                 60,
                 null,
                 null,
@@ -131,10 +131,98 @@ class LessonServiceTest {
 
         assertNotNull(savedLessons.getFirst().getSeriesId());
         assertEquals(savedLessons.getFirst().getSeriesId(), savedLessons.get(3).getSeriesId());
-        assertEquals(LocalDateTime.of(2026, 5, 4, 18, 0), savedLessons.get(0).getStartsAt());
-        assertEquals(LocalDateTime.of(2026, 5, 11, 18, 0), savedLessons.get(1).getStartsAt());
-        assertEquals(LocalDateTime.of(2026, 5, 25, 18, 0), savedLessons.get(3).getStartsAt());
+        assertEquals(LocalDateTime.of(2027, 5, 4, 18, 0), savedLessons.get(0).getStartsAt());
+        assertEquals(LocalDateTime.of(2027, 5, 11, 18, 0), savedLessons.get(1).getStartsAt());
+        assertEquals(LocalDateTime.of(2027, 5, 25, 18, 0), savedLessons.get(3).getStartsAt());
         assertEquals(studentId, savedLessons.getFirst().getStudentId());
+    }
+
+    @Test
+    void createLesson_withWeeklyRecurrenceStartingInPast_throwsConflict() {
+        UUID tutorId = UUID.randomUUID();
+        UUID studentId = UUID.randomUUID();
+        StudentCard card = new StudentCard();
+        card.setId(studentId);
+        card.setTutorUserId(tutorId);
+        card.setName("Мария");
+        card.setSubject("Математика");
+
+        when(studentCardRepository.findByIdAndTutorUserId(studentId, tutorId)).thenReturn(Optional.of(card));
+
+        LocalDateTime pastStart = LocalDateTime.now().minusDays(1);
+
+        assertThrows(ConflictException.class, () ->
+                service.createTutorLesson(tutorId, new CreateLessonRequest(
+                        null,
+                        studentId,
+                        pastStart,
+                        60,
+                        null,
+                        null,
+                        "Математика",
+                        "Онлайн",
+                        new CreateLessonRequest.RecurrenceRequest(CreateLessonRequest.RecurrenceType.WEEKLY, 4)
+                )));
+    }
+
+    @Test
+    void createLesson_singleLessonInPast_doesNotThrow() {
+        UUID tutorId = UUID.randomUUID();
+        UUID studentId = UUID.randomUUID();
+        StudentCard card = new StudentCard();
+        card.setId(studentId);
+        card.setTutorUserId(tutorId);
+        card.setName("Мария");
+        card.setSubject("Математика");
+
+        when(studentCardRepository.findByIdAndTutorUserId(studentId, tutorId)).thenReturn(Optional.of(card));
+        when(lessonRepository.findByTutorUserIdOrderByStartsAtAsc(tutorId)).thenReturn(List.of());
+        when(lessonRepository.save(any(Lesson.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        LocalDateTime pastStart = LocalDateTime.now().minusDays(1);
+
+        assertDoesNotThrow(() ->
+                service.createTutorLesson(tutorId, new CreateLessonRequest(
+                        null,
+                        studentId,
+                        pastStart,
+                        60,
+                        null,
+                        null,
+                        "Математика",
+                        "Онлайн",
+                        null
+                )));
+    }
+
+    @Test
+    void createLesson_weeklyRecurrenceStartingInFuture_doesNotThrow() {
+        UUID tutorId = UUID.randomUUID();
+        UUID studentId = UUID.randomUUID();
+        StudentCard card = new StudentCard();
+        card.setId(studentId);
+        card.setTutorUserId(tutorId);
+        card.setName("Мария");
+        card.setSubject("Математика");
+
+        when(studentCardRepository.findByIdAndTutorUserId(studentId, tutorId)).thenReturn(Optional.of(card));
+        when(lessonRepository.findByTutorUserIdOrderByStartsAtAsc(tutorId)).thenReturn(List.of());
+        when(lessonRepository.save(any(Lesson.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        LocalDateTime futureStart = LocalDateTime.now().plusSeconds(1);
+
+        assertDoesNotThrow(() ->
+                service.createTutorLesson(tutorId, new CreateLessonRequest(
+                        null,
+                        studentId,
+                        futureStart,
+                        60,
+                        null,
+                        null,
+                        "Математика",
+                        "Онлайн",
+                        new CreateLessonRequest.RecurrenceRequest(CreateLessonRequest.RecurrenceType.WEEKLY, 4)
+                )));
     }
 
     @Test

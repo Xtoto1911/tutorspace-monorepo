@@ -107,9 +107,13 @@ public class LessonService {
         int occurrences = recurrenceOccurrences(request.recurrence());
         UUID seriesId = occurrences > 1 ? UUID.randomUUID() : null;
         Lesson firstSaved = null;
+        LocalDateTime now = LocalDateTime.now();
 
         for (int index = 0; index < occurrences; index++) {
             LocalDateTime lessonStart = startTime.plusWeeks(index);
+            if (occurrences > 1 && lessonStart.isBefore(now)) {
+                throw new ConflictException("Нельзя создать серию уроков в прошлом.");
+            }
             ensureNoOverlap(tutorUserId, lessonStart, duration, Set.of());
             Lesson saved = lessonRepository.save(buildLesson(
                     applicationId,
