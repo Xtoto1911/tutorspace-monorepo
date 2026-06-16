@@ -8,6 +8,7 @@ import {
   buildTutorCalendarTimeSlots,
   formatLessonRequestStartTime,
   getLessonModalDefaults,
+  getLessonStartValidationError,
   getTutorCalendarGridPosition,
   getTutorCalendarDisplayStats,
   isCalendarCellInPast,
@@ -236,5 +237,49 @@ describe('tutor calendar helpers', () => {
   it('formats request start time without exposing raw ISO text', () => {
     expect(formatLessonRequestStartTime('2026-05-29T18:00')).toBe('29.05, 18:00');
     expect(formatLessonRequestStartTime('18:00')).toBe('18:00');
+  });
+
+  describe('getLessonStartValidationError', () => {
+    const now = new Date('2026-05-14T12:30:00');
+
+    it('returns null for create kind when start is in the future', () => {
+      expect(getLessonStartValidationError('2026-05-15', '09:00', 'create', now)).toBeNull();
+    });
+
+    it('returns null for create kind when start is today in the future', () => {
+      expect(getLessonStartValidationError('2026-05-14', '18:00', 'create', now)).toBeNull();
+    });
+
+    it('returns null for recurrence kind when start is in the future', () => {
+      expect(getLessonStartValidationError('2026-05-15', '09:00', 'recurrence', now)).toBeNull();
+    });
+
+    it('returns null for reschedule kind when start is in the future', () => {
+      expect(getLessonStartValidationError('2026-05-15', '09:00', 'reschedule', now)).toBeNull();
+    });
+
+    it('returns create-specific error message for create kind in the past', () => {
+      const error = getLessonStartValidationError('2026-05-13', '20:00', 'create', now);
+      expect(error).not.toBeNull();
+      expect(error).toMatch(/назначить урок/);
+    });
+
+    it('returns recurrence-specific error message for recurrence kind in the past', () => {
+      const error = getLessonStartValidationError('2026-05-13', '20:00', 'recurrence', now);
+      expect(error).not.toBeNull();
+      expect(error).toMatch(/серию уроков/);
+    });
+
+    it('returns reschedule-specific error message for reschedule kind in the past', () => {
+      const error = getLessonStartValidationError('2026-05-13', '20:00', 'reschedule', now);
+      expect(error).not.toBeNull();
+      expect(error).toMatch(/перенести урок/);
+    });
+
+    it('returns create error for create kind with today + past time', () => {
+      const error = getLessonStartValidationError('2026-05-14', '09:00', 'create', now);
+      expect(error).not.toBeNull();
+      expect(error).toMatch(/назначить урок/);
+    });
   });
 });

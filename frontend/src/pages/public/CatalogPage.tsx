@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import {
-  Badge,
   Button,
   Card,
   EmptyState,
   FormField,
   LinkButton,
-  SelectInput,
   SectionHeading,
   TextInput,
   TutorCard,
@@ -17,14 +15,24 @@ import { listSubjects, listTutors } from '../../shared/api/public';
 import { readAuthSession } from '../../shared/auth/session';
 import { formatCurrency } from '../../shared/lib/format';
 import type { Subject, TutorFilters, TutorSummary } from '../../shared/types';
+import {
+  formatPrice,
+  formatRating,
+  parsePrice,
+  parseRating,
+  pluralizeTutors,
+  sanitizePriceInput,
+  sanitizeRatingInput,
+} from './catalog-filter-helpers';
 
 const defaultFilters: TutorFilters = {
   query: '',
   city: '',
   subject: '',
   minRating: undefined,
+  maxRating: undefined,
+  minPrice: undefined,
   maxPrice: undefined,
-  onlineOnly: false,
 };
 
 export function CatalogPage() {
@@ -39,7 +47,6 @@ export function CatalogPage() {
     subject: subjectSlug ?? '',
     query: searchParams.get('query') ?? '',
     city: searchParams.get('city') ?? '',
-    onlineOnly: searchParams.get('online') === '1',
   }));
   const [loading, setLoading] = useState(true);
   const [subjectsError, setSubjectsError] = useState('');
@@ -125,7 +132,7 @@ export function CatalogPage() {
   }, [filters, reloadKey]);
 
   const selectedSubject = subjects.find((item) => item.slug === filters.subject);
-  const tutorsCountLabel = `${tutors.length} ${tutors.length === 1 ? 'репетитор' : tutors.length < 5 ? 'репетитора' : 'репетиторов'}`;
+  const tutorsCountLabel = pluralizeTutors(tutors.length);
 
   const handleToggleFavorite = async (tutor: TutorSummary) => {
     if (!canUseFavorites || favoriteBusyId) {
@@ -158,33 +165,9 @@ export function CatalogPage() {
 
   return (
     <div className="page-stack">
-      <section className="page-intro">
-        <div>
-          <Badge tone="indigo">Каталог</Badge>
-          <h1>Каталог репетиторов</h1>
-          <p>
-            Сравните преподавателей по предмету, рейтингу, цене и формату занятий.
-          </p>
-          <div className="page-intro__proof">
-            <span>Проверенные анкеты</span>
-            <span>Фильтры без перегруза</span>
-            <span>Заявки в кабинете</span>
-          </div>
-        </div>
-
-        <div className="page-intro__actions">
-          <LinkButton to="/auth/sign-up" variant="secondary">
-            Создать аккаунт
-          </LinkButton>
-          <LinkButton to="/auth/sign-up/tutor" variant="ghost">
-            Добавить анкету
-          </LinkButton>
-        </div>
-      </section>
-
       <section className="catalog-layout">
         <Card className="filters-panel">
-          <SectionHeading eyebrow="Фильтры" title="Настроить подбор" description="Каталог обновляется по данным TutorSpace." />
+          <SectionHeading eyebrow="Фильтры" title="Настроить подбор" />
           <div className="filters-panel__quiet-note">
             <strong>Начните с предмета</strong>
             <span>Затем уточните город, формат и комфортную ставку.</span>
@@ -210,51 +193,25 @@ export function CatalogPage() {
             </FormField>
 
             <FormField label="Рейтинг">
-              <SelectInput
-                name="minRating"
-                value={filters.minRating ? String(filters.minRating) : ''}
-                onChange={(event) =>
-                  setFilters((current) => ({
-                    ...current,
-                    minRating: event.target.value ? Number(event.target.value) : undefined,
-                  }))
+              <RatingRangeField
+                min={filters.minRating}
+                max={filters.maxRating}
+                onChange={(minRating, maxRating) =>
+                  setFilters((current) => swapRating({ ...current, minRating, maxRating }))
                 }
-              >
-                <option value="">Любой</option>
-                <option value="4.5">4,5+</option>
-                <option value="4.8">4,8+</option>
-                <option value="4.9">4,9+</option>
-              </SelectInput>
+              />
             </FormField>
 
-            <FormField label="Максимальная ставка">
-              <SelectInput
-                name="maxPrice"
-                value={filters.maxPrice ? String(filters.maxPrice) : ''}
-                onChange={(event) =>
-                  setFilters((current) => ({
-                    ...current,
-                    maxPrice: event.target.value ? Number(event.target.value) : undefined,
-                  }))
+            <FormField label="Ставка, ₽/ч">
+              <PriceRangeField
+                min={filters.minPrice}
+                max={filters.maxPrice}
+                onChange={(minPrice, maxPrice) =>
+                  setFilters((current) => swapPrice({ ...current, minPrice, maxPrice }))
                 }
-              >
-                <option value="">Без ограничений</option>
-                <option value="1500">до 1 500 ₽</option>
-                <option value="2000">до 2 000 ₽</option>
-                <option value="2500">до 2 500 ₽</option>
-                <option value="3000">до 3 000 ₽</option>
-              </SelectInput>
+              />
             </FormField>
           </div>
-
-          <label className="checkbox-row">
-            <input
-              type="checkbox"
-              checked={filters.onlineOnly ?? false}
-              onChange={(event) => setFilters((current) => ({ ...current, onlineOnly: event.target.checked }))}
-            />
-            <span>Показывать только онлайн-формат</span>
-          </label>
 
           {selectedSubject ? (
             <div className="filters-panel__summary">
@@ -268,9 +225,6 @@ export function CatalogPage() {
             <Button type="button" variant="secondary" onClick={() => setFilters(defaultFilters)}>
               Сбросить
             </Button>
-            <LinkButton to="/how-it-works" variant="ghost">
-              Как это работает
-            </LinkButton>
           </div>
         </Card>
 
@@ -278,7 +232,6 @@ export function CatalogPage() {
           <SectionHeading
             eyebrow="Результаты"
             title={loading ? 'Подбираем репетиторов' : tutorsCountLabel}
-            description="Подборка обновляется после изменения фильтров."
           />
 
           <div className="subject-pills">
@@ -340,6 +293,132 @@ export function CatalogPage() {
           </Card>
         </div>
       </section>
+    </div>
+  );
+}
+
+type RangeFieldProps = {
+  min: number | undefined;
+  max: number | undefined;
+  onChange: (min: number | undefined, max: number | undefined) => void;
+};
+
+function swapRating(next: TutorFilters): TutorFilters {
+  if (
+    next.minRating !== undefined &&
+    next.maxRating !== undefined &&
+    next.minRating > next.maxRating
+  ) {
+    return { ...next, minRating: next.maxRating, maxRating: next.minRating };
+  }
+  return next;
+}
+
+function swapPrice(next: TutorFilters): TutorFilters {
+  if (
+    next.minPrice !== undefined &&
+    next.maxPrice !== undefined &&
+    next.minPrice > next.maxPrice
+  ) {
+    return { ...next, minPrice: next.maxPrice, maxPrice: next.minPrice };
+  }
+  return next;
+}
+
+function RatingRangeField({ min, max, onChange }: RangeFieldProps) {
+  const [minStr, setMinStr] = useState(formatRating(min));
+  const [maxStr, setMaxStr] = useState(formatRating(max));
+
+  useEffect(() => {
+    setMinStr(formatRating(min));
+  }, [min]);
+  useEffect(() => {
+    setMaxStr(formatRating(max));
+  }, [max]);
+
+  const commitMin = () => {
+    onChange(parseRating(minStr), max);
+    setMinStr(formatRating(parseRating(minStr)));
+  };
+  const commitMax = () => {
+    onChange(min, parseRating(maxStr));
+    setMaxStr(formatRating(parseRating(maxStr)));
+  };
+
+  return (
+    <div className="range-input">
+      <TextInput
+        type="text"
+        name="minRating"
+        inputMode="decimal"
+        maxLength={4}
+        placeholder="от"
+        aria-label="Минимальный рейтинг"
+        value={minStr}
+        onChange={(event) => setMinStr(sanitizeRatingInput(event.target.value))}
+        onBlur={commitMin}
+      />
+      <span aria-hidden>—</span>
+      <TextInput
+        type="text"
+        name="maxRating"
+        inputMode="decimal"
+        maxLength={4}
+        placeholder="до"
+        aria-label="Максимальный рейтинг"
+        value={maxStr}
+        onChange={(event) => setMaxStr(sanitizeRatingInput(event.target.value))}
+        onBlur={commitMax}
+      />
+    </div>
+  );
+}
+
+function PriceRangeField({ min, max, onChange }: RangeFieldProps) {
+  const [minStr, setMinStr] = useState(formatPrice(min));
+  const [maxStr, setMaxStr] = useState(formatPrice(max));
+
+  useEffect(() => {
+    setMinStr(formatPrice(min));
+  }, [min]);
+  useEffect(() => {
+    setMaxStr(formatPrice(max));
+  }, [max]);
+
+  const commitMin = () => {
+    onChange(parsePrice(minStr), max);
+    setMinStr(formatPrice(parsePrice(minStr)));
+  };
+  const commitMax = () => {
+    onChange(min, parsePrice(maxStr));
+    setMaxStr(formatPrice(parsePrice(maxStr)));
+  };
+
+  return (
+    <div className="range-input">
+      <TextInput
+        type="text"
+        name="minPrice"
+        inputMode="numeric"
+        maxLength={5}
+        placeholder="от"
+        aria-label="Минимальная ставка"
+        value={minStr}
+        onChange={(event) => setMinStr(sanitizePriceInput(event.target.value))}
+        onBlur={commitMin}
+      />
+      <span aria-hidden>—</span>
+      <TextInput
+        type="text"
+        name="maxPrice"
+        inputMode="numeric"
+        maxLength={5}
+        placeholder="до"
+        aria-label="Максимальная ставка"
+        value={maxStr}
+        onChange={(event) => setMaxStr(sanitizePriceInput(event.target.value))}
+        onBlur={commitMax}
+      />
     </div>
   );
 }

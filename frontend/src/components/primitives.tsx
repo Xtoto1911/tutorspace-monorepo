@@ -1,10 +1,13 @@
-import type {
-  ButtonHTMLAttributes,
-  ComponentProps,
-  InputHTMLAttributes,
-  ReactNode,
-  SelectHTMLAttributes,
-  TextareaHTMLAttributes,
+import {
+  forwardRef,
+  useState,
+  type ButtonHTMLAttributes,
+  type ComponentProps,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type SelectHTMLAttributes,
+  type SVGProps,
+  type TextareaHTMLAttributes,
 } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../shared/lib/cn';
@@ -75,31 +78,40 @@ export function SectionHeading({
 export function FormField({
   label,
   hint,
+  error,
+  valid,
   children,
 }: {
   label: string;
   hint?: string;
+  error?: string;
+  valid?: boolean;
   children: ReactNode;
 }) {
+  const modifiers: string[] = [];
+  if (error) modifiers.push('is-invalid');
+  if (valid && !error) modifiers.push('is-valid');
   return (
-    <label className="form-field">
+    <label className={cn('form-field', modifiers.length > 0 ? modifiers.join(' ') : undefined)}>
       <span className="form-label">{label}</span>
       {children}
-      {hint ? <span className="form-hint">{hint}</span> : null}
+      <span className={error ? 'form-error' : 'form-hint'} aria-live="polite">
+        {error || hint || ''}
+      </span>
     </label>
   );
 }
 
 export function TextInput(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn('control', props.className)} {...props} />;
+  return <input {...props} className={cn('control', props.className)} />;
 }
 
 export function TextArea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={cn('control', 'control-textarea', props.className)} {...props} />;
+  return <textarea {...props} className={cn('control', 'control-textarea', props.className)} />;
 }
 
 export function SelectInput(props: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={cn('control', props.className)} {...props} />;
+  return <select {...props} className={cn('control', props.className)} />;
 }
 
 export function MetricCard({
@@ -261,3 +273,47 @@ export function ReviewCard({
     </Card>
   );
 }
+
+function EyeIcon({ open, ...props }: { open: boolean } & SVGProps<SVGSVGElement>) {
+  if (open) {
+    return (
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>
+      <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-6.5 0-10-7-10-7a18.45 18.45 0 0 1 4.22-5.39" />
+      <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19" />
+      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
+      <line x1="2" y1="2" x2="22" y2="22" />
+    </svg>
+  );
+}
+
+export const PasswordInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
+  function PasswordInput({ className, type, ...props }, ref) {
+    const [visible, setVisible] = useState(false);
+    return (
+      <span className={cn('password-input', className)}>
+        <input
+          {...props}
+          ref={ref}
+          type={visible ? 'text' : 'password'}
+          className="control"
+        />
+        <button
+          type="button"
+          className="password-input__toggle"
+          aria-label={visible ? 'Скрыть пароль' : 'Показать пароль'}
+          aria-pressed={visible}
+          onClick={() => setVisible((value) => !value)}
+        >
+          <EyeIcon open={visible} />
+        </button>
+      </span>
+    );
+  }
+);

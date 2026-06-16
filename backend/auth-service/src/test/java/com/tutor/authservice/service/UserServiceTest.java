@@ -15,6 +15,7 @@ import com.tutor.authservice.dto.RegisterRequestDto;
 import com.tutor.authservice.exception.InvalidRoleRegistrationException;
 import com.tutor.authservice.exception.InvalidPasswordResetTokenException;
 import com.tutor.authservice.exception.UserNotFoundException;
+import com.tutor.authservice.kafka.UserProfileEventPublisher;
 import com.tutor.authservice.repository.PasswordResetTokenRepository;
 import com.tutor.authservice.repository.UserRepository;
 import com.tutor.authservice.repository.UserSessionRepository;
@@ -41,9 +42,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -69,6 +72,9 @@ class UserServiceTest {
 
     @Mock
     private PasswordResetProperties passwordResetProperties;
+
+    @Mock
+    private UserProfileEventPublisher userProfileEventPublisher;
 
     @InjectMocks
     private UserService userService;
@@ -511,5 +517,64 @@ class UserServiceTest {
         } catch (NoSuchAlgorithmException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+
+    @Test
+    void updateProfileNamePersistsNormalizedNameAndPublishesEvent() {
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+        user.setEmail("tutor@example.com");
+        user.setName("Иван");
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User result = userService.updateProfileName(userId, "  Пётр   Сергеев ");
+
+        assertThat(result.getName()).isEqualTo("Пётр Сергеев");
+        verify(userRepository).save(user);
+        verify(userProfileEventPublisher).publish(eq(userId), eq("Пётр Сергеев"), any(Instant.class));
+    }
+
+    @Test
+    void updateProfileNameRejectsBlankValue() {
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+        lenient().when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        assertThatThrownBy(() -> userService.updateProfileName(userId, "   "))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("ФИО");
+
+        verify(userRepository, never()).save(any());
+        verifyNoInteractions(userProfileEventPublisher);
+    }
+
+    @Test
+    void updateProfileNameRejectsTooLongValue() {
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        user.setId(userId);
+        lenient().when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        String longName = "А".repeat(101);
+
+        assertThatThrownBy(() -> userService.updateProfileName(userId, longName))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("100");
+
+        verify(userRepository, never()).save(any());
+        verifyNoInteractions(userProfileEventPublisher);
+    }
+
+    @Test
+    void updateProfileNameThrowsWhenUserMissing() {
+        UUID userId = UUID.randomUUID();
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.updateProfileName(userId, "Пётр"))
+                .isInstanceOf(UserNotFoundException.class);
+
+        verifyNoInteractions(userProfileEventPublisher);
     }
 }

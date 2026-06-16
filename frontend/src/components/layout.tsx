@@ -22,6 +22,7 @@ import {
   getPublicHeaderViewModel,
   getTutorNextRequestSidebarCard,
   getTutorSubscriptionSidebarCard,
+  profileChangedEvent,
   tutorSidebarRefreshEvent,
 } from './layout-helpers';
 
@@ -363,7 +364,7 @@ export function SectionLayout({ sectionKey }: { sectionKey: keyof typeof section
   const section = roadmapSections.find((item) => item.key === sectionKey);
   const location = useLocation();
   const navigate = useNavigate();
-  const session = readAuthSession();
+  const [session, setSession] = useState<AuthSession | null>(() => readAuthSession());
   const [tutorRequestsSummary, setTutorRequestsSummary] = useState<TutorRequestsPageData | null>(null);
   const [tutorSubscriptionSummary, setTutorSubscriptionSummary] = useState<TutorSubscriptionPageData | null>(null);
   const [notifications, setNotifications] = useState<WorkspaceNotification[]>([]);
@@ -402,6 +403,14 @@ export function SectionLayout({ sectionKey }: { sectionKey: keyof typeof section
       window.removeEventListener(tutorSidebarRefreshEvent, loadTutorSidebarSummary);
     };
   }, [sectionKey]);
+
+  useEffect(() => {
+    const handler = () => {
+      setSession(readAuthSession());
+    };
+    window.addEventListener(profileChangedEvent, handler);
+    return () => window.removeEventListener(profileChangedEvent, handler);
+  }, []);
 
   useEffect(() => {
     const canLoadNotifications = sectionKey === 'client' || sectionKey === 'tutor';

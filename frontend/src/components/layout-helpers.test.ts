@@ -190,3 +190,10 @@ describe('tutor workspace sidebar cards', () => {
     });
   });
 });
+
+describe('profile changed event', () => {
+  it('uses a stable event name for refreshing the workspace header', async () => {
+    const { profileChangedEvent } = await import('./layout-helpers');
+    expect(profileChangedEvent).toBe('tutorspace:profile-changed');
+  });
+});

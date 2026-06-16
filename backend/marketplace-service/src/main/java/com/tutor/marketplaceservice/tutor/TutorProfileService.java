@@ -27,8 +27,11 @@ public class TutorProfileService {
     @Transactional(readOnly = true)
     public List<TutorProfileDto> search(String subjectSlug,
                                         Integer minExperienceYears,
-                                        BigDecimal maxPricePerHour) {
-        return tutorProfileRepository.searchPublicProfiles(subjectSlug, minExperienceYears, maxPricePerHour)
+                                        BigDecimal minPricePerHour,
+                                        BigDecimal maxPricePerHour,
+                                        Double minRating,
+                                        Double maxRating) {
+        return tutorProfileRepository.searchPublicProfiles(subjectSlug, minExperienceYears, minPricePerHour, maxPricePerHour, minRating, maxRating)
                 .stream()
                 .map(TutorProfileDto::from)
                 .toList();

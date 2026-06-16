@@ -7,6 +7,9 @@ import {
   updateTutorSettings,
   updateTutorWorkspaceProfile,
 } from '../../shared/api/tutor';
+import { updateAuthProfile } from '../../shared/api/auth';
+import { updateSessionUserName } from '../../shared/auth/session';
+import { profileChangedEvent } from '../../components/layout-helpers';
 import { cn } from '../../shared/lib/cn';
 import type { TutorSettingsPageData, TutorWorkspaceProfilePageData } from '../../shared/types';
 import {
@@ -14,7 +17,6 @@ import {
   setTutorHidden,
   setWorkspaceProfileField,
   shouldShowTutorProfileOnboarding,
-  toggleTutorSettingItem,
   toggleTutorSubject,
 } from './tutor-profile-settings-helpers';
 
@@ -79,11 +81,6 @@ export function TutorWorkspaceProfilePage() {
     setErrors((current) => ({ ...current, [fieldId]: undefined }));
   };
 
-  const handleToggle = (section: 'visibility' | 'notifications', index: number) => {
-    setSettings((current) => (current ? toggleTutorSettingItem(current, section, index) : current));
-    setStatus('');
-  };
-
   const handleSubjectToggle = (subject: string) => {
     setSettings((current) => (current ? toggleTutorSubject(current, subject) : current));
     setStatus('');
@@ -119,6 +116,10 @@ export function TutorWorkspaceProfilePage() {
     setSaving(true);
     setStatus('');
     try {
+      await updateAuthProfile({ name: profile.identity.name });
+      updateSessionUserName(profile.identity.name);
+      window.dispatchEvent(new Event(profileChangedEvent));
+
       const updated = await updateTutorWorkspaceProfile(profile);
       const settingsPayload = buildTutorSettingsFromWorkspaceProfile(updated, settings);
       const updatedSettings = await updateTutorSettings(settingsPayload);
@@ -329,33 +330,12 @@ export function TutorWorkspaceProfilePage() {
                     onClick={handleHiddenToggle}
                   />
                 </article>
-                {settings.visibility.map((item, index) => (
-                  <article key={item.title} className="tutor-settings-toggle">
-                    <div>
-                      <strong>{item.title}</strong>
-                      <p>{item.description}</p>
-                    </div>
-                    <button
-                      className={cn('settings-switch', item.enabled && 'is-on')}
-                      type="button"
-                      aria-pressed={item.enabled}
-                      onClick={() => handleToggle('visibility', index)}
-                    />
-                  </article>
-                ))}
               </div>
-            <p className="tutor-settings-privacy">Контакты показываются только после отклика или активной заявки.</p>
           </section>
         ) : null}
 
       </aside>
       </div>
-
-      <section className="tutor-profile-note" aria-label="Подсказка по профилю">
-        <strong>Подсказка</strong>
-        <p>После сохранения профиль синхронизируется с marketplace-service и обновится в каталоге.</p>
-        <Button>Отправить на проверку</Button>
-      </section>
     </div>
   );
 }

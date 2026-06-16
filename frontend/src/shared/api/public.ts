@@ -266,8 +266,17 @@ export function listTutors(filters: TutorFilters = {}): Promise<TutorSummary[]> 
   if (subjectSlug) {
     params.set('subject', subjectSlug);
   }
+  if (filters.minPrice) {
+    params.set('minPricePerHour', String(filters.minPrice));
+  }
   if (filters.maxPrice) {
     params.set('maxPricePerHour', String(filters.maxPrice));
+  }
+  if (filters.minRating) {
+    params.set('minRating', String(filters.minRating));
+  }
+  if (filters.maxRating) {
+    params.set('maxRating', String(filters.maxRating));
   }
 
   return apiRequest<BackendTutorProfile[]>(`/marketplace/tutors${params.size ? `?${params.toString()}` : ''}`).then((profiles) =>
@@ -282,9 +291,7 @@ export function listTutors(filters: TutorFilters = {}): Promise<TutorSummary[]> 
           matchesQuery(tutor.city, query) ||
           tutor.subjects.some((value) => matchesQuery(value, query)) ||
           matchesQuery(tutor.about, query);
-        const ratingMatches = !filters.minRating || tutor.rating >= filters.minRating;
-        const onlineMatches = !filters.onlineOnly || tutor.tags.some((tag) => tag.toLowerCase().includes('онлайн'));
-        return queryMatches && cityMatches && ratingMatches && onlineMatches;
+        return queryMatches && cityMatches;
       }),
   );
 }

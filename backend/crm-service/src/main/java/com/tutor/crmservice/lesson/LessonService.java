@@ -107,6 +107,11 @@ public class LessonService {
         int occurrences = recurrenceOccurrences(request.recurrence());
         UUID seriesId = occurrences > 1 ? UUID.randomUUID() : null;
         Lesson firstSaved = null;
+        LocalDateTime now = LocalDateTime.now();
+
+        if (startTime.isBefore(now)) {
+            throw new ConflictException("Нельзя создать урок в прошлом.");
+        }
 
         for (int index = 0; index < occurrences; index++) {
             LocalDateTime lessonStart = startTime.plusWeeks(index);
@@ -153,6 +158,9 @@ public class LessonService {
     public Lesson rescheduleTutorLesson(UUID tutorUserId, UUID lessonId, RescheduleLessonRequest request) {
         if (request == null || request.startsAt() == null) {
             throw new IllegalArgumentException("Новое время урока обязательно.");
+        }
+        if (request.startsAt().isBefore(LocalDateTime.now())) {
+            throw new ConflictException("Нельзя перенести урок в прошлое.");
         }
         Lesson lesson = lessonRepository.findByIdForUpdate(lessonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Урок не найден."));

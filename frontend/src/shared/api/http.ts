@@ -33,17 +33,32 @@ const englishErrorMap: Record<string, string> = {
 
 function translateErrorMessage(message: string): string {
   for (const [english, russian] of Object.entries(englishErrorMap)) {
-    if (message.toLowerCase().startsWith(english.toLowerCase())) {
+    if (message.toLowerCase().includes(english.toLowerCase())) {
       return russian;
     }
   }
   return message;
 }
 
+function friendlyFallbackForStatus(status: number): string {
+  if (status === 400) return 'Проверьте правильность введённых данных.';
+  if (status === 401) return 'Сессия истекла. Войдите снова.';
+  if (status === 403) return 'Доступ запрещён. Обратитесь в поддержку.';
+  if (status === 404) return 'Запрошенный ресурс не найден.';
+  if (status === 409) return 'Конфликт данных. Проверьте введённые значения.';
+  if (status >= 500) return 'Сервер временно недоступен. Попробуйте позже.';
+  return 'Не удалось выполнить запрос. Попробуйте позже.';
+}
+
 async function readErrorMessage(response: Response, path: string) {
   try {
-    const payload = (await response.json()) as { message?: string; error?: string };
-    const raw = payload.message ?? payload.error ?? `Request failed for ${path}`;
+    const payload = (await response.json()) as { message?: string; error?: string } | string;
+    if (typeof payload === 'string' && payload.length > 0) {
+      return translateErrorMessage(payload);
+    }
+    const raw = (payload as { message?: string; error?: string }).message
+      ?? (payload as { message?: string; error?: string }).error
+      ?? friendlyFallbackForStatus(response.status);
     return translateErrorMessage(String(raw));
   } catch {
     if (path.startsWith('/auth/') && response.status === 401) {
@@ -52,7 +67,7 @@ async function readErrorMessage(response: Response, path: string) {
     if (path.startsWith('/auth/') && response.status === 403) {
       return 'Доступ запрещен. Обратитесь в поддержку.';
     }
-    return `Request failed for ${path}: ${response.status} ${response.statusText}`;
+    return friendlyFallbackForStatus(response.status);
   }
 }
 
