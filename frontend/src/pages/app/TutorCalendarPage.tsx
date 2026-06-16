@@ -345,7 +345,7 @@ export function TutorCalendarPage() {
       closeLessonModal();
       await loadCalendarData(currentWeekStart);
     } catch (err) {
-      await dialog.alert('Не удалось создать занятие: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось создать занятие: ' + (err instanceof Error ? err.message : 'Не удалось выполнить действие. Попробуйте ещё раз.'));
     }
   };
 
@@ -400,7 +400,7 @@ export function TutorCalendarPage() {
       form.reset();
     } catch (err) {
       await Promise.allSettled(createdScheduleIds.map((id) => deleteTutorAvailabilitySchedule(id)));
-      await dialog.alert('Не удалось сохранить правило: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось сохранить правило: ' + (err instanceof Error ? err.message : 'Не удалось выполнить действие. Попробуйте ещё раз.'));
     }
   };
 
@@ -418,7 +418,7 @@ export function TutorCalendarPage() {
         await dialog.alert('Уже удалено');
         return;
       }
-      await dialog.alert('Не удалось удалить: ' + (msg || 'Unknown error'));
+      await dialog.alert('Не удалось удалить: ' + (msg || 'Не удалось выполнить действие. Попробуйте ещё раз.'));
     } finally {
       setDeletingScheduleId(null);
     }
@@ -443,7 +443,7 @@ export function TutorCalendarPage() {
       setEditingSchedule(null);
       await loadAvailabilityData();
     } catch (err) {
-      await dialog.alert('Не удалось обновить: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось обновить: ' + (err instanceof Error ? err.message : 'Не удалось выполнить действие. Попробуйте ещё раз.'));
     }
   };
 
@@ -464,7 +464,7 @@ export function TutorCalendarPage() {
       setShowCreateSlotModal(false);
       await handleSync();
     } catch (err) {
-      await dialog.alert('Не удалось создать окно: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось создать окно: ' + (err instanceof Error ? err.message : 'Не удалось выполнить действие. Попробуйте ещё раз.'));
     }
   };
 
@@ -502,7 +502,7 @@ export function TutorCalendarPage() {
       setSelectedSlot(null);
       await handleSync();
     } catch (err) {
-      await dialog.alert('Не удалось записать ученика: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось записать ученика: ' + (err instanceof Error ? err.message : 'Не удалось выполнить действие. Попробуйте ещё раз.'));
     }
   };
 
@@ -531,7 +531,7 @@ export function TutorCalendarPage() {
       setSelectedLesson(null);
       await handleSync();
     } catch (err) {
-      await dialog.alert('Не удалось перенести урок: ' + (err instanceof Error ? err.message : 'Unknown error'));
+      await dialog.alert('Не удалось перенести урок: ' + (err instanceof Error ? err.message : 'Не удалось выполнить действие. Попробуйте ещё раз.'));
     }
   };
 

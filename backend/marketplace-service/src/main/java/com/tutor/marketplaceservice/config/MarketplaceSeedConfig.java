@@ -119,23 +119,23 @@ public class MarketplaceSeedConfig {
                     87,
                     Set.of(it)
             );
-            TutorProfile irina = createTutor(
+            TutorProfile darya = createTutor(
                     tutorProfileRepository,
-                    UUID.fromString("55555555-5555-5555-5555-555555555555"),
-                    "irina-vorontsova",
-                    "Ирина Воронцова",
-                    "Русский язык без перегруза: понятные правила и стабильный прогресс.",
-                    "Екатеринбург",
-                    List.of("УрФУ, филологический факультет"),
-                    List.of("Эксперт региональной предметной комиссии", "Средний результат ЕГЭ — 91 балл"),
-                    List.of("ЕГЭ", "Сочинение", "Грамотность"),
-                    30,
-                    15,
-                    "https://example.com/irina.jpg",
-                    new BigDecimal("2600"),
-                    5.0,
-                    203,
-                    Set.of(russian)
+                    UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbb10"),
+                    "darya-lazareva",
+                    "Дарья Лазарева",
+                    "Готовлю к ЕГЭ и олимпиадам по истории: учу работать с источниками, аргументировать позицию и видеть причинно-следственные связи",
+                    "Нижний Новгород",
+                    List.of("ННГУ им. Лобачевского, исторический факультет"),
+                    List.of("Помогаю выстраивать таймлайн и связывать эпохи", "Готовлю к олимпиадам «Высшая проба» и «Ломоносов»"),
+                    List.of("ЕГЭ", "История России", "Олимпиады"),
+                    25,
+                    8,
+                    "https://example.com/darya.jpg",
+                    new BigDecimal("1500"),
+                    4.6,
+                    35,
+                    Set.of(history)
             );
             TutorProfile olga = createTutor(
                     tutorProfileRepository,
@@ -508,8 +508,8 @@ public class MarketplaceSeedConfig {
                     "Олимпиадные задачи перестали пугать: разбираем по шагам, без воды.");
             createReview(reviewRepository, maria, UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa5"), 4,
                     "Хороший преподаватель, дочь стала увереннее говорить на английском.");
-            createReview(reviewRepository, irina, UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa6"), 5,
-                    "Сочинение перестало быть стрессом: чёткая структура и понятные критерии.");
+            createReview(reviewRepository, darya, UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaa26"), 5,
+                    "Хороший преподаватель, ребёнок стал понимать историю как единый процесс.");
             createReview(reviewRepository, olga, UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa7"), 5,
                     "Наконец-то понял термодинамику, благодаря экспериментам и примерам из жизни.");
             createReview(reviewRepository, sergey, UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa8"), 4,
