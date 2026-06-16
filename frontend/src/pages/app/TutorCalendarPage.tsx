@@ -737,6 +737,7 @@ export function TutorCalendarPage() {
 
                 {pageData.slots
                   .filter((slot) => slot.available)
+                  .filter((slot) => !isCalendarCellInPast(slot.date, slot.startTime.slice(0, 5), calendarNow))
                   .map((slot, index) => {
                     const slotDate = new Date(slot.date + 'T00:00:00');
                     const dayDiff = Math.round((slotDate.getTime() - currentWeekStart.getTime()) / (24 * 60 * 60 * 1000));
@@ -754,12 +755,15 @@ export function TutorCalendarPage() {
                         }}
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (isCalendarCellInPast(slot.date, slot.startTime.slice(0, 5), calendarNow)) {
+                            return;
+                          }
                           setSelectedSlot(slot);
                           setShowBookSlotModal(true);
                         }}
                         role="button"
                         tabIndex={0}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedSlot(slot); setShowBookSlotModal(true); } }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (isCalendarCellInPast(slot.date, slot.startTime.slice(0, 5), calendarNow)) return; setSelectedSlot(slot); setShowBookSlotModal(true); } }}
                       >
                         <strong>Свободно</strong>
                         <span>{slot.startTime} – {slot.endTime}</span>

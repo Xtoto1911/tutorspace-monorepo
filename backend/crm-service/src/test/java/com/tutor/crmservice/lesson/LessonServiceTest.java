@@ -16,7 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -222,6 +224,45 @@ class LessonServiceTest {
                         "Математика",
                         "Онлайн",
                         new CreateLessonRequest.RecurrenceRequest(CreateLessonRequest.RecurrenceType.WEEKLY, 4)
+                )));
+    }
+
+    @Test
+    void createLesson_slotInPast_throwsConflict() {
+        UUID tutorId = UUID.randomUUID();
+        UUID appId = UUID.randomUUID();
+
+        CrmApplication app = new CrmApplication();
+        app.setId(appId);
+        app.setClientUserId(UUID.randomUUID());
+        app.setTutorUserId(tutorId);
+        app.setTutorName("Иван");
+        app.setSubjectName("Математика");
+        app.setFormat("Онлайн");
+        app.setDesiredStartTime(LocalDateTime.now().plusDays(1));
+
+        StudentCard card = new StudentCard();
+        card.setId(UUID.randomUUID());
+        card.setName("Ученик");
+
+        LocalDate pastSlotDate = LocalDateTime.now().minusDays(1).toLocalDate();
+        LocalTime pastSlotTime = LocalTime.of(14, 0);
+
+        when(applicationRepository.findByIdAndTutorUserId(appId, tutorId)).thenReturn(Optional.of(app));
+        when(studentCardRepository.findByApplicationId(appId)).thenReturn(Optional.of(card));
+        when(availabilitySlotService.isSlotAvailable(tutorId, pastSlotDate, pastSlotTime, 60)).thenReturn(true);
+
+        assertThrows(ConflictException.class, () ->
+                service.createTutorLesson(tutorId, new CreateLessonRequest(
+                        appId,
+                        null,
+                        null,
+                        null,
+                        new CreateLessonRequest.SlotRequest(pastSlotDate, pastSlotTime, 60),
+                        null,
+                        null,
+                        null,
+                        null
                 )));
     }
 

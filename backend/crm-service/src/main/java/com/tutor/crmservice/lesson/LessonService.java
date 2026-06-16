@@ -64,7 +64,11 @@ public class LessonService {
                 if (!available) {
                     throw new ConflictException("Выбранный слот недоступен или уже забронирован.");
                 }
-                startTime = request.slot().date().atTime(request.slot().startTime());
+                LocalDateTime slotStart = request.slot().date().atTime(request.slot().startTime());
+                if (slotStart.isBefore(LocalDateTime.now())) {
+                    throw new ConflictException("Нельзя записать ученика на прошедшее время.");
+                }
+                startTime = slotStart;
                 duration = request.slot().durationMinutes();
             } else {
                 startTime = request.startsAt() == null ? application.getDesiredStartTime() : request.startsAt();
