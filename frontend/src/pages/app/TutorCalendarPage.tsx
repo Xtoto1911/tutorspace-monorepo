@@ -24,6 +24,7 @@ import {
   buildSlotLessonPayload,
   formatLessonRequestStartTime,
   getLessonModalDefaults,
+  getRecurrenceValidationError,
   getTutorCalendarGridPosition,
   getTutorCalendarDisplayStats,
   isCalendarCellInPast,
@@ -313,6 +314,13 @@ export function TutorCalendarPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const recurrenceType = String(formData.get('recurrenceType'));
+    const date = String(formData.get('date'));
+    const time = String(formData.get('time'));
+    const recurrenceError = getRecurrenceValidationError(date, time, recurrenceType);
+    if (recurrenceError) {
+      await dialog.alert(recurrenceError);
+      return;
+    }
     const studentId = lessonMode === 'manual' && studentInputMode === 'existing'
       ? String(formData.get('studentId') ?? '')
       : '';
@@ -320,8 +328,8 @@ export function TutorCalendarPage() {
       mode: lessonMode,
       applicationId: selectedApplicationId,
       studentId: studentId || undefined,
-      date: String(formData.get('date')),
-      time: String(formData.get('time')),
+      date,
+      time,
       durationMinutes: Number(formData.get('duration')),
       studentName: String(formData.get('studentName')),
       subject: String(formData.get('subject')),
@@ -464,12 +472,19 @@ export function TutorCalendarPage() {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const recurrenceType = String(formData.get('recurrenceType'));
+    const slotDate = selectedSlot.date;
+    const slotTime = selectedSlot.startTime.slice(0, 5);
+    const recurrenceError = getRecurrenceValidationError(slotDate, slotTime, recurrenceType);
+    if (recurrenceError) {
+      await dialog.alert(recurrenceError);
+      return;
+    }
     const studentId = studentInputMode === 'existing' ? String(formData.get('studentId') ?? '') : '';
     const payload = buildSlotLessonPayload({
       mode: 'manual',
       studentId: studentId || undefined,
-      slotDate: selectedSlot.date,
-      slotStartTime: selectedSlot.startTime.slice(0, 5),
+      slotDate,
+      slotStartTime: slotTime,
       slotEndTime: selectedSlot.endTime.slice(0, 5),
       studentName: String(formData.get('studentName')),
       subject: String(formData.get('subject')),
